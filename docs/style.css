@@ -26,7 +26,11 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: url("img/bg.svg");
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: contain;
   color: var(--fg);
   font-family:
     "Segoe UI Variable Text",
