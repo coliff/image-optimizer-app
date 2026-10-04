@@ -37,3 +37,4 @@ jobs:
           VALIDATE_EDITORCONFIG: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_JSCPD: false
+          VALIDATE_SPELL_CODESPELL: false

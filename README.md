@@ -44,13 +44,28 @@ orientation are always kept so images look exactly the same.
 - Maximum compression: Zopfli for PNG, maximum effort for WebP and AVIF, multipass SVGO (off by default; much slower)
 - Allow progressive JPEG (on by default)
 - Keep each file's original "Date modified" (on by default)
+- Check for updates when the app starts (on by default)
 
 Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 
-## Requirements
+## Install
 
-Windows 10 or 11 (x64) with the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0).
-Windows offers to download it the first time if it's missing.
+Download `ImageOptimizer-win-Setup.exe` from the [latest release](https://github.com/coliff/image-optimizer-app/releases/latest)
+and run it. It installs for your user account only (no admin prompt), adds Start menu and desktop shortcuts,
+and installs the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) first if it's missing.
+Uninstall it from Windows Settings > Apps.
+
+When the app starts it quietly checks for a newer release and downloads it in the background. Once it's ready,
+a **Restart to update** button appears in the footer; if you'd rather carry on, the update installs the next
+time you open the app. You can turn this off in Settings.
+
+Requires Windows 10 or 11 (x64).
+
+## Releasing
+
+Bump `<Version>` in `Directory.Build.props`, then push a matching tag (for example `git tag v0.2.0 && git push origin v0.2.0`).
+The Release workflow builds and tests that commit, packs the installer and update packages with
+[Velopack](https://velopack.io/), and publishes them as a GitHub Release. Installed copies pick it up on their next launch.
 
 ## Building
 
@@ -61,8 +76,8 @@ dotnet test ImageOptimizer.sln
 dotnet publish src/ImageOptimizer.App -c Release -r win-x64 --self-contained false -o publish
 ```
 
-Every push is built and tested on Windows by GitHub Actions, and the ready-to-run app is attached
-to the workflow run as the `ImageOptimizer-win-x64` artifact.
+Every push is built and tested on Windows by GitHub Actions, and the ready-to-run app and its installer
+are attached to the workflow run as the `ImageOptimizer-win-x64` and `ImageOptimizer-win-Setup` artifacts.
 
 The engine (`src/ImageOptimizer.Core`) is cross-platform, so its tests also run on Linux or macOS
 with `oxipng`, `jpegtran`, `cwebp`/`dwebp`/`webpmux`, `avifenc`/`avifdec` and `gifsicle` on the `PATH`.

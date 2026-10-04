@@ -41,6 +41,7 @@
 
       <CheckBox x:Name="AllowProgressiveJpeg" Content="Allow progressive JPEG when it's smaller" />
       <CheckBox x:Name="PreserveModifiedDate" Content="Keep each file's original &quot;Date modified&quot;" />
+      <CheckBox x:Name="CheckForUpdates" Content="Check for updates when the app starts" />
 
       <TextBlock Style="{StaticResource HintText}" Margin="0,16,0,0">
         Files are replaced in place only when the result is smaller and (for bitmaps) every pixel is identical.

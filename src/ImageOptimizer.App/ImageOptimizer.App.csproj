@@ -11,7 +11,13 @@
     <ApplicationIcon>Assets\ImageOptimizer.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- Program.Main runs Velopack's install/update hooks before WPF starts. -->
+    <StartupObject>ImageOptimizer.App.Program</StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ImageOptimizer.Core\ImageOptimizer.Core.csproj" />

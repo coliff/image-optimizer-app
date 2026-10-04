@@ -12,5 +12,6 @@ Each runs as a separate program and remains under its own license.
 | Gifsicle                                          | Lossless GIF optimization                                    | GNU GPL v2                                                | <https://www.lcdf.org/gifsicle/>                 |
 | SVGO (`svgo.browser.js`)                          | SVG optimization                                             | MIT                                                       | <https://github.com/svg/svgo>                    |
 | Jint (NuGet package, compiled into the app)       | Runs SVGO                                                    | BSD-2-Clause                                              | <https://github.com/sebastienros/jint>           |
+| Velopack (NuGet package, compiled into the app)   | Installer and automatic updates                              | MIT                                                       | <https://github.com/velopack/velopack>           |
 
 The full license texts are included next to each tool in the `tools/licenses` folder of a release build.
