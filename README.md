@@ -2,7 +2,7 @@
 
 A lightweight, fast, lossless image optimizer for Windows, inspired by [ImageOptim](https://imageoptim.com/) on the Mac.
 
-Drop PNG, JPEG, WebP, AVIF, GIF and SVG files (or whole folders) onto the window. Each file is optimized and
+Drop AVIF, GIF, JPEG, PNG, SVG and WebP files (or whole folders) onto the window. Each file is optimized and
 **replaced in place**. There's nothing to configure: the defaults are safe, and a small Settings panel
 (gear button) is there if you want it.
 
@@ -30,19 +30,19 @@ If anything fails along the way, the original file is left exactly as it was.
 
 | Format | Tool                                                                          | What it does                                                                                                                                                      |
 | ------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PNG    | [oxipng](https://github.com/oxipng/oxipng)                                    | Lossless filter, bit depth, palette and deflate optimization. Animated PNGs are left untouched.                                                                   |
-| JPEG   | `jpegtran` from [libjpeg-turbo](https://libjpeg-turbo.org/)                   | Optimized Huffman tables and progressive encoding, without touching the image data.                                                                               |
-| WebP   | `cwebp` / `webpmux` from [libwebp](https://developers.google.com/speed/webp)  | Lossless WebPs are re-encoded losslessly. Lossy WebPs are never re-encoded, only stripped of metadata.                                                            |
 | AVIF   | `avifenc` / `avifdec` from [libavif](https://github.com/AOMediaCodec/libavif) | Lossless AVIFs are re-encoded losslessly at a higher effort (typically a few percent smaller). Lossy AVIFs are left untouched.                                    |
 | GIF    | [Gifsicle](https://www.lcdf.org/gifsicle/)                                    | `-O3` lossless frame and LZW optimization.                                                                                                                        |
+| JPEG   | `jpegtran` from [libjpeg-turbo](https://libjpeg-turbo.org/)                   | Optimized Huffman tables and progressive encoding, without touching the image data.                                                                               |
+| PNG    | [oxipng](https://github.com/oxipng/oxipng)                                    | Lossless filter, bit depth, palette and deflate optimization. Animated PNGs are left untouched.                                                                   |
 | SVG    | [SVGO](https://github.com/svg/svgo)                                           | SVGO's default preset, run in the built-in [Jint](https://github.com/sebastienros/jint) engine (no Node.js needed). SVGs are text, so they aren't pixel-compared. |
+| WebP   | `cwebp` / `webpmux` from [libwebp](https://developers.google.com/speed/webp)  | Lossless WebPs are re-encoded losslessly. Lossy WebPs are never re-encoded, only stripped of metadata.                                                            |
 
 By default metadata (EXIF, comments, camera info) is removed, but color profiles and JPEG
 orientation are always kept so images look exactly the same.
 
 ## Settings
 
-- Formats to optimize (PNG, JPEG, WebP, AVIF, GIF, SVG)
+- Formats to optimize (AVIF, GIF, JPEG, PNG, SVG, WebP)
 - Remove metadata (on by default)
 - Maximum compression: Zopfli for PNG, maximum effort for WebP and AVIF, multipass SVGO (off by default; much slower)
 - Allow progressive JPEG (on by default)
