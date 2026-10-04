@@ -6,17 +6,18 @@
   <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#F7F7F7" />
   <SolidColorBrush x:Key="DividerBrush" Color="#E3E3E3" />
   <SolidColorBrush x:Key="TextBrush" Color="#1F1F1F" />
-  <SolidColorBrush x:Key="SubtleTextBrush" Color="#6E6E6E" />
+  <SolidColorBrush x:Key="SubtleTextBrush" Color="#666666" />
   <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#F3F3F3" />
-  <SolidColorBrush x:Key="AccentBrush" Color="#2F7DE1" />
-  <SolidColorBrush x:Key="SuccessBrush" Color="#2EAD4E" />
-  <SolidColorBrush x:Key="DangerBrush" Color="#D9443B" />
-  <SolidColorBrush x:Key="NeutralBrush" Color="#B5B5B5" />
+  <SolidColorBrush x:Key="AccentBrush" Color="#1A6BD1" />
+  <SolidColorBrush x:Key="SuccessBrush" Color="#1F8A3A" />
+  <SolidColorBrush x:Key="DangerBrush" Color="#C9372E" />
+  <SolidColorBrush x:Key="NeutralBrush" Color="#767676" />
   <SolidColorBrush x:Key="SelectionBrush" Color="#DCEAFB" />
   <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#FFFFFF" />
   <SolidColorBrush x:Key="ButtonHoverBrush" Color="#EEEEEE" />
   <SolidColorBrush x:Key="ButtonPressedBrush" Color="#E2E2E2" />
-  <SolidColorBrush x:Key="ButtonBorderBrush" Color="#CDCDCD" />
-  <SolidColorBrush x:Key="DropHighlightBrush" Color="#142F7DE1" />
+  <SolidColorBrush x:Key="ButtonBorderBrush" Color="#8A8A8A" />
+  <SolidColorBrush x:Key="DropHighlightBrush" Color="#141A6BD1" />
+  <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
   <SolidColorBrush x:Key="OnBadgeBrush" Color="#FFFFFF" />
 </ResourceDictionary>

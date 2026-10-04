@@ -36,6 +36,7 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
       OnPropertyChanged();
       OnPropertyChanged(nameof(IsFinished));
       OnPropertyChanged(nameof(ToolTip));
+      OnPropertyChanged(nameof(AccessibleName));
     }
   }
 
@@ -51,6 +52,7 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
       OnPropertyChanged(nameof(SizeSortKey));
       OnPropertyChanged(nameof(SavingsSortKey));
       OnPropertyChanged(nameof(ToolTip));
+      OnPropertyChanged(nameof(AccessibleName));
     }
   }
 
@@ -71,6 +73,31 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
     _ => "",
   };
 
+  /// <summary>What the status icon shows, in words.</summary>
+  public string StatusText => Status switch
+  {
+    FileStatus.Queued => "Waiting",
+    FileStatus.Working => "Optimizing",
+    FileStatus.Optimized => "Optimized",
+    FileStatus.AlreadyOptimized => "Already optimized",
+    FileStatus.Skipped => "Skipped",
+    _ => "Failed",
+  };
+
+  /// <summary>The whole row as one phrase for screen readers, which can't see the status icon.</summary>
+  public string AccessibleName
+  {
+    get
+    {
+      var parts = new List<string> { Name, StatusText };
+      if (SizeText.Length > 0)
+        parts.Add(SizeText);
+      if (Status == FileStatus.Optimized && SavingsText.Length > 0)
+        parts.Add($"saved {SavingsText}");
+      return string.Join(", ", parts);
+    }
+  }
+
   public string ToolTip
   {
     get
@@ -87,6 +114,8 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
       return $"{Path}\n{detail}";
     }
   }
+
+  public override string ToString() => Name;
 
   public void Apply(OptimizationResult result)
   {
