@@ -17,8 +17,10 @@ public partial class SettingsWindow : Window
     ExplorerMenu.IsChecked = _explorerMenu;
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
 
+    // The release workflow builds with -p:Version from the vX.Y.Z tag, so this matches the installer.
+    // Local builds show the <Version> from Directory.Build.props.
     var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
-    Credits.Text = $"Image Optimizer {version}. Powered by oxipng, libjpeg-turbo, libwebp, libavif, Gifsicle and SVGO.";
+    VersionLabel.Text = version is null ? "" : $"Version {version}";
   }
 
   private readonly bool _explorerMenu;
