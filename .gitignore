@@ -24,3 +24,7 @@ obj/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# npm (Prettier runs through npx, so there is no lockfile)
+package-lock.json
+node_modules/
