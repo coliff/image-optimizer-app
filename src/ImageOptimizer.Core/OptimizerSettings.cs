@@ -24,6 +24,9 @@ public sealed record OptimizerSettings
   /// <summary>Keeps each file's original "date modified" after it is replaced.</summary>
   public bool PreserveModifiedDate { get; init; } = true;
 
+  /// <summary>Looks for a newer version when the app starts and downloads it in the background.</summary>
+  public bool CheckForUpdates { get; init; } = true;
+
   public bool IsEnabled(ImageFormat format) => format switch
   {
     ImageFormat.Png => OptimizePng,

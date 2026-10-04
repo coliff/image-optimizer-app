@@ -10,11 +10,13 @@ namespace ImageOptimizer.App;
 public partial class MainWindow : Window
 {
   private readonly MainViewModel _viewModel;
+  private readonly UpdateChecker _updates;
 
-  public MainWindow(MainViewModel viewModel)
+  public MainWindow(MainViewModel viewModel, UpdateChecker updates)
   {
     InitializeComponent();
     _viewModel = viewModel;
+    _updates = updates;
     DataContext = viewModel;
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
     Closed += (_, _) => _viewModel.Dispose();
@@ -65,6 +67,12 @@ public partial class MainWindow : Window
   }
 
   private void OnRunAgain(object sender, RoutedEventArgs e) => _viewModel.RunAgain();
+
+  private void OnRestartToUpdate(object sender, RoutedEventArgs e)
+  {
+    if (!_viewModel.IsBusy)
+      _updates.RestartToUpdate();
+  }
 
   private void OnOpenSettings(object sender, RoutedEventArgs e)
   {

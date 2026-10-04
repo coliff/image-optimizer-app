@@ -59,6 +59,16 @@ jobs:
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-light.png -Theme Light
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-dark.png -Theme Dark
 
+      - name: Pack the installer
+        shell: pwsh
+        run: ./scripts/pack-installer.ps1 -Version (dotnet msbuild src/ImageOptimizer.App/ImageOptimizer.App.csproj -getProperty:Version)
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ImageOptimizer-win-Setup
+          path: releases/ImageOptimizer-win-Setup.exe
+          if-no-files-found: error
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ImageOptimizer-win-x64

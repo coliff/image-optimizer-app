@@ -1,0 +1,70 @@
+name: Release
+
+# Pushing a version tag (e.g. v0.2.0) builds, tests and publishes a GitHub Release with the installer.
+# Installed copies of the app find it the next time they start and update themselves.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Read the version from the tag
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          $version = $env:TAG.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Tag '$env:TAG' isn't a version like v1.2.3" }
+          "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Download optimizer tools
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./scripts/fetch-tools.ps1
+
+      - name: Build
+        run: dotnet build ImageOptimizer.sln --configuration Release -p:Version=$env:VERSION
+
+      - name: Test
+        env:
+          IMAGEOPTIMIZER_REQUIRE_TOOLS: "1"
+          IMAGEOPTIMIZER_TOOLS: ${{ github.workspace }}\tools
+        run: dotnet test ImageOptimizer.sln --configuration Release --no-build
+
+      - name: Publish
+        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish -p:Version=$env:VERSION
+
+      - name: Pack the installer and update packages
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./scripts/pack-installer.ps1 -Version $env:VERSION -WithDeltas
+
+      - name: Publish the GitHub Release
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          dotnet vpk upload github --repoUrl "https://github.com/$env:GITHUB_REPOSITORY" --channel win --outputDir releases `
+            --token $env:GITHUB_TOKEN --tag $env:TAG --releaseName "Image Optimizer $env:VERSION" --publish
+          if ($LASTEXITCODE -ne 0) { throw 'vpk upload failed' }

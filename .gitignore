@@ -3,6 +3,7 @@ bin/
 obj/
 /publish/
 /artifacts/
+/releases/
 /TestResults/
 
 # Optimizer binaries are downloaded by scripts/fetch-tools.ps1

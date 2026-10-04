@@ -31,6 +31,7 @@ public partial class SettingsWindow : Window
     MaximumCompression.IsChecked = settings.MaximumCompression;
     AllowProgressiveJpeg.IsChecked = settings.AllowProgressiveJpeg;
     PreserveModifiedDate.IsChecked = settings.PreserveModifiedDate;
+    CheckForUpdates.IsChecked = settings.CheckForUpdates;
   }
 
   private void OnRestoreDefaults(object sender, RoutedEventArgs e) => Load(new OptimizerSettings());
@@ -49,6 +50,7 @@ public partial class SettingsWindow : Window
       MaximumCompression = MaximumCompression.IsChecked == true,
       AllowProgressiveJpeg = AllowProgressiveJpeg.IsChecked == true,
       PreserveModifiedDate = PreserveModifiedDate.IsChecked == true,
+      CheckForUpdates = CheckForUpdates.IsChecked == true,
     };
     DialogResult = true;
   }
