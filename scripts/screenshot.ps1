@@ -24,6 +24,9 @@ public static class NativeWindow {
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
   [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+  [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern bool SystemParametersInfo(int action, int param, string value, int flags);
+  [DllImport("user32.dll")] public static extern bool SetSysColors(int count, int[] elements, int[] colors);
   [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(IntPtr hWnd, int attribute, out RECT rect, int size);
 }
 '@
@@ -38,6 +41,12 @@ $work = Join-Path ([System.IO.Path]::GetTempPath()) ("imageoptimizer-screenshot-
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 Copy-Item (Join-Path $Images '*') $work
 
+# The window border is slightly see-through, so put a plain grey desktop behind it.
+(New-Object -ComObject Shell.Application).MinimizeAll()
+[NativeWindow]::SystemParametersInfo(0x14, 0, '', 0) | Out-Null # no wallpaper
+[NativeWindow]::SetSysColors(1, @(1), @(0x363636)) | Out-Null # COLOR_DESKTOP
+Start-Sleep -Milliseconds 500
+
 $process = Start-Process -FilePath (Resolve-Path $App) -ArgumentList "`"$work`"" -PassThru
 try {
   $deadline = (Get-Date).AddSeconds(30)
@@ -48,6 +57,10 @@ try {
   if ($process.MainWindowHandle -eq [IntPtr]::Zero) { throw 'The app window never appeared.' }
 
   Start-Sleep -Seconds $WaitSeconds
+  # Park the mouse in the corner so no row is hovered and no tooltip shows.
+  Add-Type -AssemblyName System.Windows.Forms
+  $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+  [NativeWindow]::SetCursorPos($screen.Right - 1, $screen.Bottom - 1) | Out-Null
   [NativeWindow]::SetForegroundWindow($process.MainWindowHandle) | Out-Null
   Start-Sleep -Milliseconds 500
   $window = $process.MainWindowHandle
