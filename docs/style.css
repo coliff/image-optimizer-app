@@ -27,12 +27,13 @@
 body {
   margin: 0;
   background-color: var(--bg);
-  background-image: url("img/bg.svg");
+  background-image: url("bg.svg");
   background-position: top center;
   background-repeat: no-repeat;
   background-size: contain;
   color: var(--fg);
   font-family:
+    Roboto,
     "Segoe UI Variable Text",
     "Segoe UI",
     system-ui,
