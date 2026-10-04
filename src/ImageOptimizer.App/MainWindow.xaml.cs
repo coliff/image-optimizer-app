@@ -22,6 +22,13 @@ public partial class MainWindow : Window
     Closed += (_, _) => _viewModel.Dispose();
   }
 
+  public void BringToFront()
+  {
+    if (WindowState == WindowState.Minimized)
+      WindowState = WindowState.Normal;
+    Activate();
+  }
+
   private static bool HasFiles(DragEventArgs e) => e.Data.GetDataPresent(DataFormats.FileDrop);
 
   private void OnDragEnter(object sender, DragEventArgs e)

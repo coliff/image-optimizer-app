@@ -6,6 +6,9 @@ Drop PNG, JPEG, WebP, AVIF, GIF and SVG files (or whole folders) onto the window
 **replaced in place**. There's nothing to configure: the defaults are safe, and a small Settings panel
 (gear button) is there if you want it.
 
+You can also right-click images or folders in File Explorer and choose **Optimize with Image Optimizer**
+(on Windows 11 it's under **Show more options**). Selecting many files at once opens them all in one window.
+
 Click the File, Size or Savings header to sort the list (click again to reverse it).
 The app follows the Windows light or dark app mode automatically.
 
@@ -45,6 +48,7 @@ orientation are always kept so images look exactly the same.
 - Allow progressive JPEG (on by default)
 - Keep each file's original "Date modified" (on by default)
 - Check for updates when the app starts (on by default)
+- Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default when installed)
 
 Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 
@@ -53,7 +57,8 @@ Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 Download `ImageOptimizer-win-Setup.exe` from the [latest release](https://github.com/coliff/image-optimizer-app/releases/latest)
 and run it. It installs for your user account only (no admin prompt), adds Start menu and desktop shortcuts,
 and installs the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) first if it's missing.
-Uninstall it from Windows Settings > Apps.
+It also adds the File Explorer right-click entry for your account. Uninstall it from Windows Settings > Apps, which
+removes the entry too.
 
 When the app starts it quietly checks for a newer release and downloads it in the background. Once it's ready,
 a **Restart to update** button appears in the footer; if you'd rather carry on, the update installs the next
