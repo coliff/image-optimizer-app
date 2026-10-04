@@ -11,5 +11,9 @@
     "url": "git+https://github.com/coliff/image-optimizer-app.git"
   },
   "license": "MIT",
-  "author": "Christian Oliff"
+  "author": "Christian Oliff",
+  "scripts": {
+    "cspell": "npx cspell --no-progress \"**\"",
+    "prettier": "npx prettier --write ."
+  }
 }
