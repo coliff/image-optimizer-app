@@ -58,6 +58,8 @@ jobs:
         run: |
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-light.png -Theme Light
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-dark.png -Theme Dark
+          ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-settings-light.png -Theme Light -Settings
+          ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-settings-dark.png -Theme Dark -Settings
 
       - name: Pack the installer
         shell: pwsh

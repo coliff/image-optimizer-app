@@ -1,13 +1,14 @@
 <#
 .SYNOPSIS
-  Launches Image Optimizer on a copy of some images and saves a screenshot of its window.
-  Used by CI so every build has a picture of the real UI.
+  Launches Image Optimizer on a copy of some images and saves a screenshot of its window,
+  or of the Settings window with -Settings. Used by CI so every build has a picture of the real UI.
 #>
 param(
   [Parameter(Mandatory)] [string]$App,
   [Parameter(Mandatory)] [string]$Images,
   [Parameter(Mandatory)] [string]$Output,
   [ValidateSet('Light', 'Dark')] [string]$Theme = 'Light',
+  [switch]$Settings,
   [int]$WaitSeconds = 8
 )
 
@@ -22,6 +23,7 @@ public static class NativeWindow {
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(IntPtr hWnd, int attribute, out RECT rect, int size);
 }
 '@
@@ -48,11 +50,24 @@ try {
   Start-Sleep -Seconds $WaitSeconds
   [NativeWindow]::SetForegroundWindow($process.MainWindowHandle) | Out-Null
   Start-Sleep -Milliseconds 500
+  $window = $process.MainWindowHandle
+
+  if ($Settings) {
+    # Ctrl+, opens Settings; it is a modal window, so it becomes the foreground window.
+    (New-Object -ComObject WScript.Shell).SendKeys('^,')
+    $deadline = (Get-Date).AddSeconds(10)
+    do {
+      Start-Sleep -Milliseconds 250
+      $window = [NativeWindow]::GetForegroundWindow()
+    } while ($window -eq $process.MainWindowHandle -and (Get-Date) -lt $deadline)
+    if ($window -eq $process.MainWindowHandle) { throw 'The Settings window never appeared.' }
+    Start-Sleep -Milliseconds 500
+  }
 
   # DWMWA_EXTENDED_FRAME_BOUNDS excludes the invisible resize borders.
   $rect = New-Object NativeWindow+RECT
-  if ([NativeWindow]::DwmGetWindowAttribute($process.MainWindowHandle, 9, [ref]$rect, 16) -ne 0) {
-    [NativeWindow]::GetWindowRect($process.MainWindowHandle, [ref]$rect) | Out-Null
+  if ([NativeWindow]::DwmGetWindowAttribute($window, 9, [ref]$rect, 16) -ne 0) {
+    [NativeWindow]::GetWindowRect($window, [ref]$rect) | Out-Null
   }
   $width = $rect.Right - $rect.Left
   $height = $rect.Bottom - $rect.Top
