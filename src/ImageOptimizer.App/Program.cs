@@ -9,9 +9,18 @@ public static class Program
   {
     // Handles the installer's and updater's hooks (which exit straight away) and applies an update
     // that was downloaded last time, before any window opens.
-    VelopackApp.Build().Run();
+    VelopackApp.Build()
+        .OnAfterInstallFastCallback(_ => ExplorerContextMenu.TryRun(ExplorerContextMenu.Register))
+        .OnAfterUpdateFastCallback(_ => ExplorerContextMenu.TryRun(ExplorerContextMenu.Refresh))
+        .OnBeforeUninstallFastCallback(_ => ExplorerContextMenu.TryRun(ExplorerContextMenu.Unregister))
+        .Run();
 
-    var app = new App();
+    // Explorer starts one copy per selected file, so all but the first pass their files on and exit.
+    using var instance = new SingleInstance();
+    if (!instance.IsFirst && instance.TrySend(args, TimeSpan.FromSeconds(5)))
+      return;
+
+    var app = new App(instance.IsFirst ? instance : null);
     app.InitializeComponent();
     app.Run();
   }

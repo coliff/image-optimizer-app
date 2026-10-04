@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ImageOptimizer.App.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ImageOptimizer.Core\ImageOptimizer.Core.csproj" />
   </ItemGroup>
 

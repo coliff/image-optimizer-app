@@ -6,6 +6,13 @@ namespace ImageOptimizer.App;
 public partial class App : Application
 {
   private readonly UpdateChecker _updates = new();
+  private readonly SingleInstance? _instance;
+
+  /// <param name="instance">Receives files from later launches, or null if another copy already has that job.</param>
+  public App(SingleInstance? instance = null)
+  {
+    _instance = instance;
+  }
 
   protected override void OnStartup(StartupEventArgs e)
   {
@@ -21,6 +28,14 @@ public partial class App : Application
     // Files passed on the command line (e.g. dropped onto the .exe or a shortcut) start right away.
     if (e.Args.Length > 0)
       viewModel.Add(e.Args);
+
+    // Files opened from Explorer's right-click menu (or the app opened again) arrive from the other copies.
+    _instance?.Listen(paths => Dispatcher.BeginInvoke(() =>
+    {
+      if (paths.Length > 0)
+        viewModel.Add(paths);
+      window.BringToFront();
+    }));
 
     if (viewModel.Settings.CheckForUpdates)
       _ = DownloadUpdateAsync(viewModel);

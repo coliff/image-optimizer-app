@@ -1,4 +1,6 @@
+using System.IO;
 using System.Reflection;
+using System.Security;
 using System.Windows;
 using ImageOptimizer.Core;
 
@@ -11,11 +13,15 @@ public partial class SettingsWindow : Window
     InitializeComponent();
     Settings = settings;
     Load(settings);
+    _explorerMenu = TryReadExplorerMenu();
+    ExplorerMenu.IsChecked = _explorerMenu;
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
 
     var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
     Credits.Text = $"Image Optimizer {version}. Powered by oxipng, libjpeg-turbo, libwebp, libavif, Gifsicle and SVGO.";
   }
+
+  private readonly bool _explorerMenu;
 
   public OptimizerSettings Settings { get; private set; }
 
@@ -34,7 +40,42 @@ public partial class SettingsWindow : Window
     CheckForUpdates.IsChecked = settings.CheckForUpdates;
   }
 
-  private void OnRestoreDefaults(object sender, RoutedEventArgs e) => Load(new OptimizerSettings());
+  private void OnRestoreDefaults(object sender, RoutedEventArgs e)
+  {
+    Load(new OptimizerSettings());
+    ExplorerMenu.IsChecked = true;
+  }
+
+  private static bool TryReadExplorerMenu()
+  {
+    try
+    {
+      return ExplorerContextMenu.IsRegistered();
+    }
+    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException)
+    {
+      return false;
+    }
+  }
+
+  /// <summary>The Explorer menu lives in the registry rather than settings.json, so it's applied straight away.</summary>
+  private void ApplyExplorerMenu()
+  {
+    var wanted = ExplorerMenu.IsChecked == true;
+    if (wanted == _explorerMenu)
+      return;
+    try
+    {
+      if (wanted)
+        ExplorerContextMenu.Register();
+      else
+        ExplorerContextMenu.Unregister();
+    }
+    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException or InvalidOperationException)
+    {
+      MessageBox.Show(this, $"The File Explorer menu couldn't be changed:\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
+  }
 
   private void OnSave(object sender, RoutedEventArgs e)
   {
@@ -52,6 +93,7 @@ public partial class SettingsWindow : Window
       PreserveModifiedDate = PreserveModifiedDate.IsChecked == true,
       CheckForUpdates = CheckForUpdates.IsChecked == true,
     };
+    ApplyExplorerMenu();
     DialogResult = true;
   }
 }

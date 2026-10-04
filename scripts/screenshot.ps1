@@ -66,6 +66,7 @@ try {
   Write-Information "Saved ${width}x${height} screenshot to $Output"
 }
 finally {
-  if (-not $process.HasExited) { $process.Kill() }
+  # Waits for it to be gone, since the app only allows one window and the next screenshot starts another.
+  if (-not $process.HasExited) { $process.Kill(); $process.WaitForExit() }
   Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue
 }
