@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace ImageOptimizer.Core;
 
 /// <summary>An optimized copy of the input, written somewhere in the work directory.</summary>
@@ -187,5 +189,80 @@ public sealed class GifOptimizer(IToolRunner tools) : IFormatOptimizer
 
     await tools.RunAsync("gifsicle", args, cancellationToken).ConfigureAwait(false);
     return new CandidateSet([new Candidate(output)]);
+  }
+}
+
+/// <summary>
+/// AVIF: lossless AVIFs (full-resolution RGB planes) are decoded with avifdec and re-encoded losslessly with
+/// avifenc at a higher effort. Lossy AVIFs are left alone, because re-encoding them would lose quality and
+/// there is no tool that removes their metadata without re-encoding.
+/// </summary>
+public sealed class AvifOptimizer(IToolRunner tools) : IFormatOptimizer
+{
+  public ImageFormat Format => ImageFormat.Avif;
+
+  public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
+  {
+    var info = AvifInspector.Inspect(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
+    if (!info.IsValid)
+      return CandidateSet.Skip("Not a valid AVIF file");
+    if (info.IsAnimated)
+      return CandidateSet.Skip("Animated AVIF is left untouched");
+    if (info.UnsupportedReason is not null)
+      return CandidateSet.Skip(info.UnsupportedReason);
+    if (info.AlphaPremultiplied)
+      return CandidateSet.Skip("AVIF with premultiplied alpha is left untouched");
+    if (!info.IsLikelyLossless)
+      return CandidateSet.Skip("Lossy AVIF can't be recompressed without losing quality");
+
+    // y4m keeps the decoded planes exactly as stored (depth, range and alpha included), with no RGB conversion.
+    var planes = context.WorkFile("planes.y4m");
+    await tools.RunAsync("avifdec", ["--jobs", "all", context.InputPath, planes], cancellationToken).ConfigureAwait(false);
+
+    var args = new List<string> { "--lossless", "--jobs", "all", "--cicp", $"{info.Cicp!.Value.Primaries}/{info.Cicp.Value.Transfer}/{info.Cicp.Value.Matrix}" };
+    if (info.Rotation is { } rotation)
+      args.AddRange(["--irot", rotation.ToString(CultureInfo.InvariantCulture)]);
+    if (info.MirrorAxis is { } axis)
+      args.AddRange(["--imir", axis.ToString(CultureInfo.InvariantCulture)]);
+    if (info.CleanAperture is { } clap)
+      // The offset numerators (fields 4 and 6) are signed.
+      args.AddRange(["--clap", string.Join(',', clap.Select((v, i) => (i is 4 or 6 ? (long)(int)v : v).ToString(CultureInfo.InvariantCulture)))]);
+    if (info.PixelAspectRatio is { } pasp)
+      args.AddRange(["--pasp", FormattableString.Invariant($"{pasp.Horizontal},{pasp.Vertical}")]);
+    if (info.ContentLightLevel is { } clli)
+      args.AddRange(["--clli", FormattableString.Invariant($"{clli.MaxCll},{clli.MaxPall}")]);
+
+    var keepExif = info.ExifTiff is not null && !context.Settings.StripMetadata;
+    var keepXmp = info.Xmp is not null && !context.Settings.StripMetadata;
+    if (info.IccProfile is { } icc)
+      args.AddRange(["--icc", await WriteAsync(context.WorkFile("profile.icc"), icc, cancellationToken).ConfigureAwait(false)]);
+    if (keepExif)
+      args.AddRange(["--exif", await WriteAsync(context.WorkFile("metadata.exif"), info.ExifTiff!, cancellationToken).ConfigureAwait(false)]);
+    if (keepXmp)
+      args.AddRange(["--xmp", await WriteAsync(context.WorkFile("metadata.xmp"), info.Xmp!, cancellationToken).ConfigureAwait(false)]);
+
+    // Lossless AV1 doesn't always get smaller at slower speeds, so try a few and keep the smallest.
+    int[] speeds = context.Settings.MaximumCompression ? [0, 2, 4] : [4];
+    var outputs = speeds.Select(speed => context.WorkFile($"avifenc-s{speed}.avif")).ToList();
+    await Task.WhenAll(speeds.Select((speed, i) =>
+        tools.RunAsync("avifenc", [.. args, "--speed", speed.ToString(CultureInfo.InvariantCulture), planes, outputs[i]], cancellationToken))).ConfigureAwait(false);
+
+    // Only keep encodes that carry over everything that affects how the image looks, and the metadata we keep.
+    var candidates = new List<Candidate>();
+    foreach (var output in outputs)
+    {
+      var encoded = AvifInspector.Inspect(await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false));
+      if (encoded.SameAppearance(info) &&
+          AvifInfo.ArraysEqual(encoded.ExifTiff, keepExif ? info.ExifTiff : null) &&
+          AvifInfo.ArraysEqual(encoded.Xmp, keepXmp ? info.Xmp : null))
+        candidates.Add(new Candidate(output));
+    }
+    return new CandidateSet(candidates);
+  }
+
+  private static async Task<string> WriteAsync(string path, byte[] contents, CancellationToken cancellationToken)
+  {
+    await File.WriteAllBytesAsync(path, contents, cancellationToken).ConfigureAwait(false);
+    return path;
   }
 }

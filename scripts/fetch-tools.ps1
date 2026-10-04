@@ -7,6 +7,7 @@
    oxipng         PNG     https://github.com/oxipng/oxipng
    libjpeg-turbo  JPEG    https://github.com/libjpeg-turbo/libjpeg-turbo   (jpegtran)
    libwebp        WebP    https://developers.google.com/speed/webp         (cwebp, dwebp, webpmux)
+   libavif        AVIF    https://github.com/AOMediaCodec/libavif          (avifenc, avifdec; statically linked with libaom and dav1d)
    Gifsicle       GIF     https://www.lcdf.org/gifsicle/ (Windows builds by eternallybored.org)
   SVGO           SVG     https://github.com/svg/svgo (browser build from npm, run by the app's JavaScript engine)
 #>
@@ -21,6 +22,10 @@ $ProgressPreference = 'SilentlyContinue'
 $OxipngVersion = '10.2.1'
 $LibjpegTurboVersion = '3.1.2'
 $LibwebpVersion = '1.6.0'
+$LibavifVersion = '1.4.2'
+# The codec versions the libavif release links in (its ext/aom.cmd and ext/dav1d.cmd), for their license texts.
+$LibaomVersion = '3.14.1'
+$Dav1dVersion = '1.5.3'
 $GifsicleVersion = '1.95'
 $SvgoVersion = '4.1.0'
 
@@ -101,6 +106,19 @@ if (-not (Get-ChildItem $licenses -Filter 'libwebp-*')) {
   Save-Url "https://raw.githubusercontent.com/webmproject/libwebp/v$LibwebpVersion/COPYING" (Join-Path $licenses 'libwebp-COPYING')
 }
 
+# libavif (the Windows release has no license files, so take them from the matching sources)
+$archive = Join-Path $work 'libavif.zip'
+Save-GitHubAsset -Repo 'AOMediaCodec/libavif' -Tag "v$LibavifVersion" -Pattern '^windows-artifacts\.zip$' -OutFile $archive
+$dir = Expand-To $archive 'libavif'
+foreach ($tool in 'avifenc.exe', 'avifdec.exe') { Copy-Tool $dir $tool | Out-Null }
+Save-Url "https://raw.githubusercontent.com/AOMediaCodec/libavif/v$LibavifVersion/LICENSE" (Join-Path $licenses 'libavif-LICENSE')
+Save-Url "https://raw.githubusercontent.com/videolan/dav1d/$Dav1dVersion/COPYING" (Join-Path $licenses 'dav1d-COPYING')
+$archive = Join-Path $work 'libaom.tar.gz'
+Save-Url "https://storage.googleapis.com/aom-releases/libaom-$LibaomVersion.tar.gz" $archive
+tar -xzf $archive -C $work "libaom-$LibaomVersion/LICENSE" "libaom-$LibaomVersion/PATENTS"
+if ($LASTEXITCODE -ne 0) { throw "Failed to extract $archive" }
+foreach ($file in 'LICENSE', 'PATENTS') { Copy-Item (Join-Path $work "libaom-$LibaomVersion/$file") (Join-Path $licenses "libaom-$file") -Force }
+
 # Gifsicle
 $archive = Join-Path $work 'gifsicle.zip'
 Save-Url "https://eternallybored.org/misc/gifsicle/releases/gifsicle-$GifsicleVersion-win64.zip" $archive
@@ -127,6 +145,8 @@ $checks = @(
   @('cwebp.exe', '-version'),
   @('dwebp.exe', '-version'),
   @('webpmux.exe', '-version'),
+  @('avifenc.exe', '--version'),
+  @('avifdec.exe', '--version'),
   @('gifsicle.exe', '--version')
 )
 foreach ($check in $checks) {

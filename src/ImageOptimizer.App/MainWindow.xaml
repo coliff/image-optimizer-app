@@ -172,7 +172,7 @@
       <Image Source="Assets/Logo.png" Width="64" Height="64" Opacity="0.9" Margin="0,0,0,14"
           RenderOptions.BitmapScalingMode="HighQuality" />
       <TextBlock Text="Drop images here" FontSize="20" HorizontalAlignment="Center" />
-      <TextBlock Text="PNG, JPEG, WebP, GIF and SVG files are optimized in place."
+      <TextBlock Text="PNG, JPEG, WebP, AVIF, GIF and SVG files are optimized in place."
             Style="{StaticResource HintText}" HorizontalAlignment="Center" Margin="0,6,0,0" />
     </StackPanel>
 

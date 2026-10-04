@@ -70,3 +70,31 @@ public sealed class WebPPixelVerifier(IToolRunner tools) : IPixelVerifier
     }
   }
 }
+
+/// <summary>
+/// Decodes AVIF files to raw planes (y4m) with avifdec and compares them byte for byte, after checking that
+/// both containers describe the planes the same way (color space, depth, alpha, rotation, ...).
+/// </summary>
+public sealed class AvifPixelVerifier(IToolRunner tools) : IPixelVerifier
+{
+  public async Task<VerificationResult> VerifyAsync(ImageFormat format, string originalPath, string candidatePath, string workDirectory, CancellationToken cancellationToken)
+  {
+    if (format != ImageFormat.Avif)
+      return VerificationResult.NotSupported;
+
+    var original = AvifInspector.Inspect(await File.ReadAllBytesAsync(originalPath, cancellationToken).ConfigureAwait(false));
+    var candidate = AvifInspector.Inspect(await File.ReadAllBytesAsync(candidatePath, cancellationToken).ConfigureAwait(false));
+    if (!original.SameAppearance(candidate))
+      return VerificationResult.Different;
+
+    var id = Guid.NewGuid().ToString("N");
+    var originalPixels = Path.Combine(workDirectory, $"verify-{id}-a.y4m");
+    var candidatePixels = Path.Combine(workDirectory, $"verify-{id}-b.y4m");
+    await tools.RunAsync("avifdec", ["--jobs", "all", originalPath, originalPixels], cancellationToken).ConfigureAwait(false);
+    await tools.RunAsync("avifdec", ["--jobs", "all", candidatePath, candidatePixels], cancellationToken).ConfigureAwait(false);
+
+    return await WebPPixelVerifier.FilesEqualAsync(originalPixels, candidatePixels, cancellationToken).ConfigureAwait(false)
+        ? VerificationResult.Identical
+        : VerificationResult.Different;
+  }
+}

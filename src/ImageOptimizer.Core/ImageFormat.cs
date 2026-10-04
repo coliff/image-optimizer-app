@@ -6,6 +6,7 @@ public enum ImageFormat
   Png,
   Jpeg,
   WebP,
+  Avif,
   Gif,
   Svg,
 }
@@ -20,6 +21,7 @@ public static class ImageFormats
     [".jpe"] = ImageFormat.Jpeg,
     [".jfif"] = ImageFormat.Jpeg,
     [".webp"] = ImageFormat.WebP,
+    [".avif"] = ImageFormat.Avif,
     [".gif"] = ImageFormat.Gif,
     [".svg"] = ImageFormat.Svg,
   };
@@ -41,6 +43,8 @@ public static class ImageFormats
       return ImageFormat.Jpeg;
     if (header.Length >= 12 && header[..4].SequenceEqual("RIFF"u8) && header[8..12].SequenceEqual("WEBP"u8))
       return ImageFormat.WebP;
+    if (AvifInspector.HasAvifBrand(header))
+      return ImageFormat.Avif;
     if (header.Length >= 6 && (header[..6].SequenceEqual("GIF87a"u8) || header[..6].SequenceEqual("GIF89a"u8)))
       return ImageFormat.Gif;
     return ImageFormat.Unknown;
@@ -48,7 +52,8 @@ public static class ImageFormats
 
   public static ImageFormat Detect(string path)
   {
-    Span<byte> header = stackalloc byte[12];
+    // Long enough for an ftyp box with a few compatible brands.
+    Span<byte> header = stackalloc byte[64];
     using var stream = File.OpenRead(path);
     var read = stream.ReadAtLeast(header, header.Length, throwOnEndOfStream: false);
     var format = Detect(header[..read]);
@@ -70,6 +75,7 @@ public static class ImageFormats
     ImageFormat.Png => "PNG",
     ImageFormat.Jpeg => "JPEG",
     ImageFormat.WebP => "WebP",
+    ImageFormat.Avif => "AVIF",
     ImageFormat.Gif => "GIF",
     ImageFormat.Svg => "SVG",
     _ => "Unknown",

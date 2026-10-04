@@ -6,6 +6,8 @@ public class InspectorTests
   [InlineData("unoptimized.png", ImageFormat.Png)]
   [InlineData("photo.jpg", ImageFormat.Jpeg)]
   [InlineData("lossless.webp", ImageFormat.WebP)]
+  [InlineData("lossless.avif", ImageFormat.Avif)]
+  [InlineData("lossy.avif", ImageFormat.Avif)]
   [InlineData("animation.gif", ImageFormat.Gif)]
   [InlineData("drawing.svg", ImageFormat.Svg)]
   public void Detects_format_from_signature(string fixture, ImageFormat expected)
@@ -61,6 +63,38 @@ public class InspectorTests
     Assert.False(lossy.IsStillLossless);
 
     Assert.False(ImageInspector.InspectWebP("RIFF"u8).IsValid);
+  }
+
+  [Fact]
+  public void Classifies_avif_files()
+  {
+    var lossless = AvifInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.avif")));
+    Assert.True(lossless.IsValid);
+    Assert.Null(lossless.UnsupportedReason);
+    Assert.True(lossless.IsLikelyLossless);
+    Assert.Equal((96u, 64u), (lossless.Width, lossless.Height));
+    Assert.Equal(8, lossless.Depth);
+    Assert.Equal(1, lossless.Rotation);
+    Assert.NotNull(lossless.ExifTiff);
+    Assert.StartsWith("MM", System.Text.Encoding.ASCII.GetString(lossless.ExifTiff));
+    Assert.Contains("Image Optimizer", System.Text.Encoding.UTF8.GetString(lossless.Xmp!));
+    Assert.True(lossless.SameAppearance(lossless));
+
+    var lossy = AvifInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossy.avif")));
+    Assert.True(lossy.IsValid);
+    Assert.True(lossy.ChromaSubsampled);
+    Assert.False(lossy.IsLikelyLossless);
+    Assert.False(lossy.SameAppearance(lossless));
+
+    Assert.False(AvifInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.webp"))).IsValid);
+  }
+
+  [Fact]
+  public void Truncated_avif_does_not_throw()
+  {
+    var avif = File.ReadAllBytes(TestFiles.FixturePath("lossless.avif"));
+    for (var length = 0; length < avif.Length; length += 7)
+      AvifInspector.Inspect(avif.AsSpan(0, length));
   }
 
   [Theory]

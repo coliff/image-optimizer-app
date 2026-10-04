@@ -14,7 +14,7 @@ public partial class SettingsWindow : Window
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
 
     var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
-    Credits.Text = $"Image Optimizer {version}. Powered by oxipng, libjpeg-turbo, libwebp, Gifsicle and SVGO.";
+    Credits.Text = $"Image Optimizer {version}. Powered by oxipng, libjpeg-turbo, libwebp, libavif, Gifsicle and SVGO.";
   }
 
   public OptimizerSettings Settings { get; private set; }
@@ -24,6 +24,7 @@ public partial class SettingsWindow : Window
     Png.IsChecked = settings.OptimizePng;
     Jpeg.IsChecked = settings.OptimizeJpeg;
     WebP.IsChecked = settings.OptimizeWebP;
+    Avif.IsChecked = settings.OptimizeAvif;
     Gif.IsChecked = settings.OptimizeGif;
     Svg.IsChecked = settings.OptimizeSvg;
     StripMetadata.IsChecked = settings.StripMetadata;
@@ -41,6 +42,7 @@ public partial class SettingsWindow : Window
       OptimizePng = Png.IsChecked == true,
       OptimizeJpeg = Jpeg.IsChecked == true,
       OptimizeWebP = WebP.IsChecked == true,
+      OptimizeAvif = Avif.IsChecked == true,
       OptimizeGif = Gif.IsChecked == true,
       OptimizeSvg = Svg.IsChecked == true,
       StripMetadata = StripMetadata.IsChecked == true,

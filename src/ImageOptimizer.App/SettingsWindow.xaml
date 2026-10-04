@@ -21,10 +21,11 @@
 
     <StackPanel Margin="20,16,20,16">
       <TextBlock Text="Optimize these formats" Style="{StaticResource SectionHeader}" />
-      <UniformGrid Columns="5" Margin="0,0,0,14">
+      <UniformGrid Columns="6" Margin="0,0,0,14">
         <CheckBox x:Name="Png" Content="PNG" />
         <CheckBox x:Name="Jpeg" Content="JPEG" />
         <CheckBox x:Name="WebP" Content="WebP" />
+        <CheckBox x:Name="Avif" Content="AVIF" />
         <CheckBox x:Name="Gif" Content="GIF" />
         <CheckBox x:Name="Svg" Content="SVG" />
       </UniformGrid>
@@ -35,7 +36,7 @@
             Style="{StaticResource HintText}" Margin="22,0,0,6" />
 
       <CheckBox x:Name="MaximumCompression" Content="Maximum compression (much slower)" />
-      <TextBlock Text="Uses Zopfli for PNG, the highest effort for lossless WebP and multipass SVGO."
+      <TextBlock Text="Uses Zopfli for PNG, the highest effort for lossless WebP and AVIF, and multipass SVGO."
             Style="{StaticResource HintText}" Margin="22,0,0,6" />
 
       <CheckBox x:Name="AllowProgressiveJpeg" Content="Allow progressive JPEG when it's smaller" />
