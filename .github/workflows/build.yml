@@ -1,0 +1,71 @@
+---
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Download optimizer tools
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: ./scripts/fetch-tools.ps1
+
+      - name: Build
+        run: dotnet build ImageOptimizer.sln --configuration Release
+
+      - name: Test
+        env:
+          IMAGEOPTIMIZER_REQUIRE_TOOLS: "1"
+          IMAGEOPTIMIZER_TOOLS: ${{ github.workspace }}\tools
+        run: dotnet test ImageOptimizer.sln --configuration Release --no-build
+
+      - name: Publish
+        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish
+
+      - name: Check the published app bundles every tool
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "publish/tools/svgo.browser.js")) { throw "svgo.browser.js is missing from the published app" }
+          foreach ($tool in 'oxipng', 'jpegtran', 'cwebp', 'dwebp', 'webpmux', 'gifsicle') {
+            if (-not (Test-Path "publish/tools/$tool.exe")) { throw "$tool.exe is missing from the published app" }
+          }
+          Get-ChildItem publish -Recurse -File | Measure-Object Length -Sum | ForEach-Object { "Published {0:N0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
+
+      - name: Screenshot the app optimizing the test images
+        shell: pwsh
+        run: |
+          ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-light.png -Theme Light
+          ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-dark.png -Theme Dark
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ImageOptimizer-win-x64
+          path: publish
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: screenshots
+          path: screenshot-*.png
