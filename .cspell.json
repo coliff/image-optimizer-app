@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "words": [
+    "christianoliff",
+    "coliff",
+    "COMMITLINT",
+    "cwebp",
+    "dwebp",
+    "DWMWA",
+    "eternallybored",
+    "EXIF",
+    "gifsicle",
+    "IMAGEOPTIMIZER",
+    "Jint",
+    "jpegtran",
+    "LASTEXITCODE",
+    "libjpeg",
+    "libwebp",
+    "Oliff",
+    "Optim",
+    "oxipng",
+    "webp",
+    "webpmux",
+    "xunit",
+    "ZIZMOR",
+    "Zopfli"
+  ],
+  "language": "en,en-US",
+  "ignorePaths": [
+    ".cspell.json",
+    "**/node_modules/**"
+  ],
+  "useGitignore": true
+}

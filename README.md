@@ -33,7 +33,7 @@ If anything fails along the way, the original file is left exactly as it was.
 | GIF    | [Gifsicle](https://www.lcdf.org/gifsicle/)                                   | `-O3` lossless frame and LZW optimization.                                                                                                                        |
 | SVG    | [SVGO](https://github.com/svg/svgo)                                          | SVGO's default preset, run in the built-in [Jint](https://github.com/sebastienros/jint) engine (no Node.js needed). SVGs are text, so they aren't pixel-compared. |
 
-By default metadata (EXIF, comments, camera info) is removed, but colour profiles and JPEG
+By default metadata (EXIF, comments, camera info) is removed, but color profiles and JPEG
 orientation are always kept so images look exactly the same.
 
 ## Settings
