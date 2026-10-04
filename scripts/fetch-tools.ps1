@@ -8,6 +8,7 @@
    libjpeg-turbo  JPEG    https://github.com/libjpeg-turbo/libjpeg-turbo   (jpegtran)
    libwebp        WebP    https://developers.google.com/speed/webp         (cwebp, dwebp, webpmux)
    libavif        AVIF    https://github.com/AOMediaCodec/libavif          (avifenc, avifdec; statically linked with libaom and dav1d)
+   libjxl         JPEG XL https://github.com/libjxl/libjxl                 (cjxl, djxl and their DLLs, in tools\jxl)
    Gifsicle       GIF     https://www.lcdf.org/gifsicle/ (Windows builds by eternallybored.org)
   SVGO           SVG     https://github.com/svg/svgo (browser build from npm, run by the app's JavaScript engine)
 #>
@@ -26,6 +27,7 @@ $LibavifVersion = '1.4.2'
 # The codec versions the libavif release links in (its ext/aom.cmd and ext/dav1d.cmd), for their license texts.
 $LibaomVersion = '3.14.1'
 $Dav1dVersion = '1.5.3'
+$LibjxlVersion = '0.12.0'
 $GifsicleVersion = '1.95'
 $SvgoVersion = '4.1.0'
 
@@ -119,6 +121,34 @@ tar -xzf $archive -C $work "libaom-$LibaomVersion/LICENSE" "libaom-$LibaomVersio
 if ($LASTEXITCODE -ne 0) { throw "Failed to extract $archive" }
 foreach ($file in 'LICENSE', 'PATENTS') { Copy-Item (Join-Path $work "libaom-$LibaomVersion/$file") (Join-Path $licenses "libaom-$file") -Force }
 
+# libjxl (the Windows release links its DLLs dynamically. They go in their own folder because libjxl and
+# libjpeg-turbo both ship a jpeg62.dll, and the tools load DLLs from their own folder first.)
+$archive = Join-Path $work 'libjxl.zip'
+Save-GitHubAsset -Repo 'libjxl/libjxl' -Tag "v$LibjxlVersion" -Pattern '^jxl-x64-windows\.zip$' -OutFile $archive
+$dir = Expand-To $archive 'libjxl'
+$jxlDestination = Join-Path $Destination 'jxl'
+New-Item -ItemType Directory -Force -Path $jxlDestination | Out-Null
+$jxlFiles = 'cjxl.exe', 'djxl.exe', 'jxl.dll', 'jxl_cms.dll', 'jxl_threads.dll', 'brotlicommon.dll', 'brotlidec.dll',
+  'brotlienc.dll', 'libpng16.dll', 'zlib1.dll', 'jpeg62.dll', 'gif.dll'
+foreach ($file in $jxlFiles) {
+  $found = Get-ChildItem -Path $dir -Recurse -File -Filter $file | Select-Object -First 1
+  if (-not $found) { throw "$file not found in $dir" }
+  Copy-Item $found.FullName $jxlDestination -Force
+}
+Copy-License $dir 'libjxl'
+# They also need the Visual C++ runtime, which isn't part of Windows, so ship it next to them (app-local
+# deployment, as the Visual C++ Redistributable license allows), taken from Visual Studio's redist folder.
+$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+$crt = if (Test-Path $vswhere) {
+  & $vswhere -latest -products * -find 'VC\Redist\MSVC\*\x64\Microsoft.VC*.CRT\msvcp140.dll' |
+    Sort-Object | Select-Object -Last 1 | Split-Path
+}
+if (-not $crt) { throw 'The Visual C++ runtime (VC\Redist\MSVC) was not found. Install Visual Studio or its Build Tools with the C++ workload.' }
+Write-Information "Visual C++ runtime from $crt"
+foreach ($file in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+  Copy-Item (Join-Path $crt $file) $jxlDestination -Force
+}
+
 # Gifsicle
 $archive = Join-Path $work 'gifsicle.zip'
 Save-Url "https://eternallybored.org/misc/gifsicle/releases/gifsicle-$GifsicleVersion-win64.zip" $archive
@@ -147,6 +177,8 @@ $checks = @(
   @('webpmux.exe', '-version'),
   @('avifenc.exe', '--version'),
   @('avifdec.exe', '--version'),
+  @('jxl\cjxl.exe', '--version'),
+  @('jxl\djxl.exe', '--version'),
   @('gifsicle.exe', '--version')
 )
 foreach ($check in $checks) {

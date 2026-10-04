@@ -21,10 +21,11 @@
 
     <StackPanel Margin="20,16,20,16">
       <TextBlock Text="Optimize these formats" Style="{StaticResource SectionHeader}" />
-      <UniformGrid Columns="6" Margin="0,0,0,14">
+      <UniformGrid Columns="4" Margin="0,0,0,14">
         <CheckBox x:Name="Avif" Content="AVIF" />
         <CheckBox x:Name="Gif" Content="GIF" />
         <CheckBox x:Name="Jpeg" Content="JPEG" />
+        <CheckBox x:Name="JpegXl" Content="JPEG XL" />
         <CheckBox x:Name="Png" Content="PNG" />
         <CheckBox x:Name="Svg" Content="SVG" />
         <CheckBox x:Name="WebP" Content="WebP" />
@@ -36,7 +37,7 @@
             Style="{StaticResource HintText}" Margin="22,0,0,6" />
 
       <CheckBox x:Name="MaximumCompression" Content="Maximum compression (much slower)" />
-      <TextBlock Text="Uses Zopfli for PNG, the highest effort for lossless WebP and AVIF, and multipass SVGO."
+      <TextBlock Text="Uses Zopfli for PNG, the highest effort for lossless WebP, AVIF and JPEG XL, and multipass SVGO."
             Style="{StaticResource HintText}" Margin="22,0,0,6" />
 
       <CheckBox x:Name="AllowProgressiveJpeg" Content="Allow progressive JPEG when it's smaller" />
@@ -52,7 +53,7 @@
         Otherwise the original is left untouched.
       </TextBlock>
       <TextBlock Style="{StaticResource HintText}" Margin="0,8,0,0"
-            Text="Powered by oxipng, libjpeg-turbo, libwebp, libavif, Gifsicle and SVGO." />
+            Text="Powered by oxipng, libjpeg-turbo, libwebp, libavif, libjxl, Gifsicle and SVGO." />
       <TextBlock x:Name="VersionLabel" Style="{StaticResource HintText}" FontSize="11"
             HorizontalAlignment="Center" TextAlignment="Center" Margin="0,16,0,0" />
     </StackPanel>

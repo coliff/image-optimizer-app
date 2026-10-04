@@ -47,10 +47,11 @@ public sealed class ImageOptimizerEngine
             new JpegOptimizer(tools),
             new WebPOptimizer(tools),
             new AvifOptimizer(tools),
+            new JxlOptimizer(tools),
             new GifOptimizer(tools),
             new SvgOptimizer(() => (tools as ToolRunner)?.LocateFile(SvgOptimizer.ScriptName)),
           ],
-          new CompositeVerifier([.. extraVerifiers, new WebPPixelVerifier(tools), new AvifPixelVerifier(tools)]));
+          new CompositeVerifier([.. extraVerifiers, new WebPPixelVerifier(tools), new AvifPixelVerifier(tools), new JxlPixelVerifier(tools)]));
 
   public async Task<OptimizationResult> OptimizeAsync(string path, OptimizerSettings settings, CancellationToken cancellationToken = default)
   {
@@ -74,7 +75,7 @@ public sealed class ImageOptimizerEngine
         new(status, format, originalSize, finalSize ?? originalSize, message);
 
     if (format == ImageFormat.Unknown || !_optimizers.TryGetValue(format, out var optimizer))
-      return Result(OptimizationStatus.Skipped, "Not a PNG, JPEG, WebP, AVIF, GIF or SVG image");
+      return Result(OptimizationStatus.Skipped, "Not an AVIF, GIF, JPEG, JPEG XL, PNG, SVG or WebP image");
     if (!settings.IsEnabled(format))
       return Result(OptimizationStatus.Skipped, $"{ImageFormats.DisplayName(format)} optimization is turned off in Settings");
     if (originalSize == 0)
@@ -200,6 +201,7 @@ public sealed class ImageOptimizerEngine
     ImageFormat.Avif => ".avif",
     ImageFormat.Gif => ".gif",
     ImageFormat.Svg => ".svg",
+    ImageFormat.JpegXl => ".jxl",
     _ => ".bin",
   };
 }

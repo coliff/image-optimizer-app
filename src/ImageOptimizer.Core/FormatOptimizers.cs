@@ -266,3 +266,88 @@ public sealed class AvifOptimizer(IToolRunner tools) : IFormatOptimizer
     return path;
   }
 }
+
+/// <summary>
+/// JPEG XL: lossless images are re-encoded losslessly with cjxl at a higher effort, and recompressed JPEGs are
+/// rebuilt with djxl and recompressed again, so the original JPEG can still be restored bit for bit. Lossy
+/// images are left alone, because re-encoding them would lose quality.
+/// </summary>
+public sealed class JxlOptimizer(IToolRunner tools) : IFormatOptimizer
+{
+  public ImageFormat Format => ImageFormat.JpegXl;
+
+  public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
+  {
+    var info = JxlInspector.Inspect(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
+    if (!info.IsValid)
+      return CandidateSet.Skip("Not a valid JPEG XL file");
+    if (info.IsAnimated)
+      return CandidateSet.Skip("Animated JPEG XL is left untouched");
+    if (info.UnsupportedReason is not null)
+      return CandidateSet.Skip(info.UnsupportedReason);
+    if (info.HasJpegReconstruction)
+      return await RecompressJpegAsync(context, info, cancellationToken).ConfigureAwait(false);
+    if (info.XybEncoded)
+      return CandidateSet.Skip("Lossy JPEG XL can't be recompressed without losing quality");
+    // cjxl applies the orientation to the pixels when it reads a JPEG XL file, so it can't be kept as a flag.
+    if (info.Orientation != 1)
+      return CandidateSet.Skip("Rotated or flipped JPEG XL is left untouched");
+    if (info.ExponentBitsPerSample != 0 || info.BitsPerSample > 16)
+      return CandidateSet.Skip("JPEG XL with more than 16 bits per channel is left untouched");
+    if (info.ExtraChannels.Count > 1 || info.ExtraChannels.Any(c => c.Type != 0))
+      return CandidateSet.Skip("JPEG XL with extra channels is left untouched");
+
+    var args = new List<string> { "--distance", "0", "--quiet" };
+    if (context.Settings.StripMetadata)
+      args.AddRange(["-x", "strip=exif", "-x", "strip=xmp", "-x", "strip=jumbf"]);
+    var outputs = await EncodeAsync(context, context.InputPath, args, cancellationToken).ConfigureAwait(false);
+
+    // Only keep encodes that carry over everything that affects how the image looks, and the metadata we keep.
+    var keepMetadata = !context.Settings.StripMetadata;
+    var candidates = new List<Candidate>();
+    foreach (var output in outputs)
+    {
+      var encoded = JxlInspector.Inspect(await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false));
+      if (encoded.SameAppearance(info) && !encoded.HasJpegReconstruction &&
+          AvifInfo.ArraysEqual(encoded.ExifTiff, keepMetadata ? info.ExifTiff : null) &&
+          AvifInfo.ArraysEqual(encoded.Xmp, keepMetadata ? info.Xmp : null) &&
+          AvifInfo.ArraysEqual(encoded.Jumbf, keepMetadata ? info.Jumbf : null))
+        candidates.Add(new Candidate(output));
+    }
+    return new CandidateSet(candidates);
+  }
+
+  /// <summary>
+  /// Rebuilds the original JPEG and recompresses it. The JPEG carries its own metadata, which has to stay
+  /// for the reconstruction to be exact, so nothing is removed.
+  /// </summary>
+  private async Task<CandidateSet> RecompressJpegAsync(OptimizationContext context, JxlInfo info, CancellationToken cancellationToken)
+  {
+    var jpeg = context.WorkFile("reconstructed.jpg");
+    await tools.RunAsync("djxl", [context.InputPath, jpeg, "--reconstruct_jpeg", "--quiet"], cancellationToken).ConfigureAwait(false);
+
+    var outputs = await EncodeAsync(context, jpeg, ["--lossless_jpeg", "1", "--brotli_effort", "11", "--quiet"], cancellationToken).ConfigureAwait(false);
+
+    var candidates = new List<Candidate>();
+    foreach (var output in outputs)
+    {
+      var encoded = JxlInspector.Inspect(await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false));
+      if (encoded.SameAppearance(info) && encoded.HasJpegReconstruction)
+        candidates.Add(new Candidate(output));
+    }
+    return new CandidateSet(candidates);
+  }
+
+  private async Task<List<string>> EncodeAsync(OptimizationContext context, string input, List<string> args, CancellationToken cancellationToken)
+  {
+    // A higher effort isn't always smaller, so with maximum compression try both and keep the smallest.
+    // Encoding large images in one piece (no buffering) is slower but finds a few more percent.
+    int[] efforts = context.Settings.MaximumCompression ? [9, 10] : [9];
+    if (context.Settings.MaximumCompression)
+      args = [.. args, "--buffering", "0"];
+    var outputs = efforts.Select(effort => context.WorkFile($"cjxl-e{effort}.jxl")).ToList();
+    await Task.WhenAll(efforts.Select((effort, i) =>
+        tools.RunAsync("cjxl", [input, outputs[i], .. args, "--effort", effort.ToString(CultureInfo.InvariantCulture)], cancellationToken))).ConfigureAwait(false);
+    return outputs;
+  }
+}

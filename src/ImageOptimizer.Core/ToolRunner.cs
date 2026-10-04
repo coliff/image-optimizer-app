@@ -38,14 +38,23 @@ public sealed class ToolRunner : IToolRunner
     yield return Path.Combine(AppContext.BaseDirectory, "tools");
   }
 
+  // Tools that ship with their own DLLs live in a subfolder, so their DLLs can't clash with other tools' DLLs
+  // (libjxl and libjpeg-turbo both have a jpeg62.dll).
+  private static readonly Dictionary<string, string> Subfolders = new(StringComparer.OrdinalIgnoreCase)
+  {
+    ["cjxl"] = "jxl",
+    ["djxl"] = "jxl",
+  };
+
   public string? Locate(string tool) => LocateFile(OperatingSystem.IsWindows() ? tool + ".exe" : tool);
 
   /// <summary>Finds a bundled file (a tool or a script) in the tools folders, then on PATH.</summary>
   public string? LocateFile(string fileName)
   {
+    Subfolders.TryGetValue(Path.GetFileNameWithoutExtension(fileName), out var subfolder);
     foreach (var dir in _searchDirectories)
     {
-      var candidate = Path.Combine(dir, fileName);
+      var candidate = Path.Combine(dir, subfolder ?? "", fileName);
       if (File.Exists(candidate))
         return candidate;
     }

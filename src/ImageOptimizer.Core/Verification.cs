@@ -98,3 +98,46 @@ public sealed class AvifPixelVerifier(IToolRunner tools) : IPixelVerifier
         : VerificationResult.Different;
   }
 }
+
+/// <summary>
+/// Decodes JPEG XL files to 32-bit float samples (NumPy files, so nothing is rounded or dithered) and their
+/// ICC profiles with djxl, and compares them byte for byte, after checking that both headers describe the
+/// image the same way. Recompressed JPEGs must also rebuild exactly the same JPEG file.
+/// </summary>
+public sealed class JxlPixelVerifier(IToolRunner tools) : IPixelVerifier
+{
+  public async Task<VerificationResult> VerifyAsync(ImageFormat format, string originalPath, string candidatePath, string workDirectory, CancellationToken cancellationToken)
+  {
+    if (format != ImageFormat.JpegXl)
+      return VerificationResult.NotSupported;
+
+    var original = JxlInspector.Inspect(await File.ReadAllBytesAsync(originalPath, cancellationToken).ConfigureAwait(false));
+    var candidate = JxlInspector.Inspect(await File.ReadAllBytesAsync(candidatePath, cancellationToken).ConfigureAwait(false));
+    if (!original.SameAppearance(candidate) || original.HasJpegReconstruction != candidate.HasJpegReconstruction)
+      return VerificationResult.Different;
+
+    var id = Guid.NewGuid().ToString("N");
+    var outputs = new List<(string A, string B)>();
+    if (original.HasJpegReconstruction)
+    {
+      var jpegs = (Path.Combine(workDirectory, $"verify-{id}-a.jpg"), Path.Combine(workDirectory, $"verify-{id}-b.jpg"));
+      await tools.RunAsync("djxl", [originalPath, jpegs.Item1, "--reconstruct_jpeg", "--quiet"], cancellationToken).ConfigureAwait(false);
+      await tools.RunAsync("djxl", [candidatePath, jpegs.Item2, "--reconstruct_jpeg", "--quiet"], cancellationToken).ConfigureAwait(false);
+      outputs.Add(jpegs);
+    }
+
+    var pixels = (Path.Combine(workDirectory, $"verify-{id}-a.npy"), Path.Combine(workDirectory, $"verify-{id}-b.npy"));
+    var profiles = (Path.Combine(workDirectory, $"verify-{id}-a.icc"), Path.Combine(workDirectory, $"verify-{id}-b.icc"));
+    await tools.RunAsync("djxl", [originalPath, pixels.Item1, "--icc_out", profiles.Item1, "--quiet"], cancellationToken).ConfigureAwait(false);
+    await tools.RunAsync("djxl", [candidatePath, pixels.Item2, "--icc_out", profiles.Item2, "--quiet"], cancellationToken).ConfigureAwait(false);
+    outputs.Add(pixels);
+    outputs.Add(profiles);
+
+    foreach (var (a, b) in outputs)
+    {
+      if (!await WebPPixelVerifier.FilesEqualAsync(a, b, cancellationToken).ConfigureAwait(false))
+        return VerificationResult.Different;
+    }
+    return VerificationResult.Identical;
+  }
+}

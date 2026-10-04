@@ -210,6 +210,89 @@ public class ToolIntegrationTests : IDisposable
   }
 
   [Fact]
+  public async Task Lossless_jpeg_xl_gets_smaller_with_identical_pixels()
+  {
+    RequireTools("cjxl", "djxl");
+    var path = _files.CopyFixture("lossless.jxl");
+    var before = new FileInfo(path).Length;
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.True(new FileInfo(path).Length < before);
+    var original = JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.jxl")));
+    var optimized = JxlInspector.Inspect(File.ReadAllBytes(path));
+    Assert.True(optimized.SameAppearance(original));
+    Assert.Null(optimized.Exif);
+    Assert.Null(optimized.Xmp);
+
+    var verifier = new JxlPixelVerifier(_tools);
+    Assert.Equal(VerificationResult.Identical,
+        await verifier.VerifyAsync(ImageFormat.JpegXl, TestFiles.FixturePath("lossless.jxl"), path, _files.Directory, TestContext.Current.CancellationToken));
+  }
+
+  [Fact]
+  public async Task Jpeg_xl_keeps_metadata_when_asked()
+  {
+    RequireTools("cjxl", "djxl");
+    var path = _files.CopyFixture("lossless.jxl");
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings { StripMetadata = false, MaximumCompression = true }, TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var original = JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.jxl")));
+    var optimized = JxlInspector.Inspect(File.ReadAllBytes(path));
+    Assert.Equal(original.ExifTiff, optimized.ExifTiff);
+    Assert.Equal(original.Xmp, optimized.Xmp);
+  }
+
+  [Fact]
+  public async Task Recompressed_jpeg_in_jpeg_xl_still_rebuilds_the_same_jpeg()
+  {
+    RequireTools("cjxl", "djxl");
+    var path = _files.CopyFixture("recompressed-jpeg.jxl");
+    var before = new FileInfo(path).Length;
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.True(new FileInfo(path).Length < before);
+    Assert.True(JxlInspector.Inspect(File.ReadAllBytes(path)).HasJpegReconstruction);
+    var jpeg = Path.Combine(_files.Directory, "rebuilt.jpg");
+    await _tools.RunAsync("djxl", [path, jpeg, "--reconstruct_jpeg"], TestContext.Current.CancellationToken);
+    Assert.Equal(File.ReadAllBytes(TestFiles.FixturePath("photo.jpg")), File.ReadAllBytes(jpeg));
+  }
+
+  [Theory]
+  [InlineData("lossy.jxl", "Lossy JPEG XL")]
+  [InlineData("animated.jxl", "Animated JPEG XL")]
+  public async Task Lossy_or_animated_jpeg_xl_is_never_reencoded(string fixture, string reason)
+  {
+    var path = _files.CopyFixture(fixture);
+    var before = File.ReadAllBytes(path);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Skipped, result.Status);
+    Assert.Contains(reason, result.Message);
+    Assert.Equal(before, File.ReadAllBytes(path));
+  }
+
+  [Fact]
+  public async Task Jpeg_xl_verifier_spots_different_pixels()
+  {
+    RequireTools("cjxl", "djxl");
+    var path = _files.CopyFixture("lossless.jxl");
+    // Re-encode with the same header but slightly different pixels (lossy modular, no XYB).
+    var lossy = Path.Combine(_files.Directory, "near-lossless.jxl");
+    await _tools.RunAsync("cjxl", [path, lossy, "--distance", "0.5", "--modular", "1", "--disable_perceptual_optimizations", "--quiet"], TestContext.Current.CancellationToken);
+
+    var verifier = new JxlPixelVerifier(_tools);
+    var result = await verifier.VerifyAsync(ImageFormat.JpegXl, path, lossy, _files.Directory, TestContext.Current.CancellationToken);
+    Assert.Equal(VerificationResult.Different, result);
+  }
+
+  [Fact]
   public async Task Gif_is_optimized_or_left_alone()
   {
     RequireTools("gifsicle");

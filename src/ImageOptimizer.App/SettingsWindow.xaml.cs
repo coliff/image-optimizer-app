@@ -31,6 +31,7 @@ public partial class SettingsWindow : Window
   {
     Png.IsChecked = settings.OptimizePng;
     Jpeg.IsChecked = settings.OptimizeJpeg;
+    JpegXl.IsChecked = settings.OptimizeJpegXl;
     WebP.IsChecked = settings.OptimizeWebP;
     Avif.IsChecked = settings.OptimizeAvif;
     Gif.IsChecked = settings.OptimizeGif;
@@ -85,6 +86,7 @@ public partial class SettingsWindow : Window
     {
       OptimizePng = Png.IsChecked == true,
       OptimizeJpeg = Jpeg.IsChecked == true,
+      OptimizeJpegXl = JpegXl.IsChecked == true,
       OptimizeWebP = WebP.IsChecked == true,
       OptimizeAvif = Avif.IsChecked == true,
       OptimizeGif = Gif.IsChecked == true,
