@@ -138,15 +138,28 @@ public class EngineTests : IDisposable
   }
 
   [Fact]
-  public async Task Preserves_modified_date_when_asked()
+  public async Task Preserves_modified_date_by_default()
   {
     var path = _files.CopyFixture("unoptimized.png");
     var date = new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc);
     File.SetLastWriteTimeUtc(path, date);
     var engine = Engine(ctx => new([WriteCandidate(ctx, "a.png", 100)]));
 
-    await engine.OptimizeAsync(path, new OptimizerSettings { PreserveModifiedDate = true }, TestContext.Current.CancellationToken);
+    await engine.OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
 
     Assert.Equal(date, File.GetLastWriteTimeUtc(path));
+  }
+
+  [Fact]
+  public async Task Updates_modified_date_when_not_preserved()
+  {
+    var path = _files.CopyFixture("unoptimized.png");
+    var date = new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc);
+    File.SetLastWriteTimeUtc(path, date);
+    var engine = Engine(ctx => new([WriteCandidate(ctx, "a.png", 100)]));
+
+    await engine.OptimizeAsync(path, new OptimizerSettings { PreserveModifiedDate = false }, TestContext.Current.CancellationToken);
+
+    Assert.NotEqual(date, File.GetLastWriteTimeUtc(path));
   }
 }

@@ -21,7 +21,7 @@ public sealed record OptimizerSettings
   public bool AllowProgressiveJpeg { get; init; } = true;
 
   /// <summary>Keeps each file's original "date modified" after it is replaced.</summary>
-  public bool PreserveModifiedDate { get; init; }
+  public bool PreserveModifiedDate { get; init; } = true;
 
   public bool IsEnabled(ImageFormat format) => format switch
   {

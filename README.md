@@ -42,7 +42,7 @@ orientation are always kept so images look exactly the same.
 - Remove metadata (on by default)
 - Maximum compression: Zopfli for PNG, maximum effort for WebP, multipass SVGO (off by default; much slower)
 - Allow progressive JPEG (on by default)
-- Keep each file's original "Date modified" (off by default)
+- Keep each file's original "Date modified" (on by default)
 
 Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 
