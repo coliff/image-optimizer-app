@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="ListBackgroundBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="AlternateRowBrush" Color="#F6F7F9" />
+  <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#F7F7F7" />
+  <SolidColorBrush x:Key="DividerBrush" Color="#E3E3E3" />
+  <SolidColorBrush x:Key="TextBrush" Color="#1F1F1F" />
+  <SolidColorBrush x:Key="SubtleTextBrush" Color="#6E6E6E" />
+  <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#F3F3F3" />
+  <SolidColorBrush x:Key="AccentBrush" Color="#2F7DE1" />
+  <SolidColorBrush x:Key="SuccessBrush" Color="#2EAD4E" />
+  <SolidColorBrush x:Key="DangerBrush" Color="#D9443B" />
+  <SolidColorBrush x:Key="NeutralBrush" Color="#B5B5B5" />
+  <SolidColorBrush x:Key="SelectionBrush" Color="#DCEAFB" />
+  <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="ButtonHoverBrush" Color="#EEEEEE" />
+  <SolidColorBrush x:Key="ButtonPressedBrush" Color="#E2E2E2" />
+  <SolidColorBrush x:Key="ButtonBorderBrush" Color="#CDCDCD" />
+  <SolidColorBrush x:Key="DropHighlightBrush" Color="#142F7DE1" />
+  <SolidColorBrush x:Key="OnBadgeBrush" Color="#FFFFFF" />
+</ResourceDictionary>

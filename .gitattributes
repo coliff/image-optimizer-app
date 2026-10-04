@@ -1,0 +1,17 @@
+# Normalize line endings in the repository to LF; Git converts on checkout as configured.
+* text=auto eol=lf
+
+# Windows-only scripts and solution files are happier with CRLF in a working tree.
+*.sln text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.exe binary
+*.dll binary
