@@ -64,7 +64,7 @@
   <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
     <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource OnBadgeBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     <Setter Property="MinWidth" Value="80" />
   </Style>
 

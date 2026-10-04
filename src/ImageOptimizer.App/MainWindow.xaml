@@ -75,6 +75,15 @@
       </Style.Triggers>
     </Style>
 
+    <Style x:Key="SubtleCell" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource SubtleTextBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+          <Setter Property="Foreground" Value="{DynamicResource SelectionSubtleTextBrush}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
     <Style x:Key="FileRow" TargetType="ListBoxItem">
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="ToolTip" Value="{Binding ToolTip}" />
@@ -91,6 +100,7 @@
               </Trigger>
               <Trigger Property="IsSelected" Value="True">
                 <Setter TargetName="Row" Property="Background" Value="{DynamicResource SelectionBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource SelectionTextBrush}" />
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -150,7 +160,7 @@
             <ContentControl Style="{StaticResource StatusIcon}" Content="{Binding}" />
             <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
             <TextBlock Grid.Column="2" Text="{Binding SizeText}" HorizontalAlignment="Right" VerticalAlignment="Center"
-                  Margin="0,0,12,0" Foreground="{DynamicResource SubtleTextBrush}" />
+                  Margin="0,0,12,0" Style="{StaticResource SubtleCell}" />
             <TextBlock Grid.Column="3" Text="{Binding SavingsText}" HorizontalAlignment="Right" VerticalAlignment="Center"
                   Margin="0,0,16,0" FontWeight="SemiBold" />
           </Grid>
