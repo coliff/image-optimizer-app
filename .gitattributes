@@ -13,6 +13,7 @@
 *.gif binary
 *.webp binary
 *.avif binary
+*.jxl binary
 *.ico binary
 *.exe binary
 *.dll binary

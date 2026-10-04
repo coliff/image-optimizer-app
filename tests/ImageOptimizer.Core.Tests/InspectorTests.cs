@@ -9,6 +9,8 @@ public class InspectorTests
   [InlineData("lossless.avif", ImageFormat.Avif)]
   [InlineData("lossy.avif", ImageFormat.Avif)]
   [InlineData("animation.gif", ImageFormat.Gif)]
+  [InlineData("lossless.jxl", ImageFormat.JpegXl)]
+  [InlineData("lossy.jxl", ImageFormat.JpegXl)]
   [InlineData("drawing.svg", ImageFormat.Svg)]
   public void Detects_format_from_signature(string fixture, ImageFormat expected)
   {
@@ -95,6 +97,51 @@ public class InspectorTests
     var avif = File.ReadAllBytes(TestFiles.FixturePath("lossless.avif"));
     for (var length = 0; length < avif.Length; length += 7)
       AvifInspector.Inspect(avif.AsSpan(0, length));
+  }
+
+  [Fact]
+  public void Classifies_jpeg_xl_files()
+  {
+    var lossless = JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.jxl")));
+    Assert.True(lossless.IsValid);
+    Assert.True(lossless.IsContainer);
+    Assert.Null(lossless.UnsupportedReason);
+    Assert.False(lossless.XybEncoded);
+    Assert.False(lossless.IsAnimated);
+    Assert.False(lossless.HasJpegReconstruction);
+    Assert.Equal((96u, 64u), (lossless.Width, lossless.Height));
+    Assert.Equal(1, lossless.Orientation);
+    Assert.Equal(8, lossless.BitsPerSample);
+    Assert.Empty(lossless.ExtraChannels);
+    Assert.StartsWith("MM", System.Text.Encoding.ASCII.GetString(lossless.ExifTiff!));
+    Assert.Contains("xmpmeta", System.Text.Encoding.UTF8.GetString(lossless.Xmp!));
+    Assert.True(lossless.SameAppearance(lossless));
+
+    var lossy = JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossy.jxl")));
+    Assert.True(lossy.IsValid);
+    Assert.False(lossy.IsContainer);
+    Assert.True(lossy.XybEncoded);
+    Assert.Equal((96u, 64u), (lossy.Width, lossy.Height));
+    Assert.False(lossy.SameAppearance(lossless));
+
+    var jpeg = JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("recompressed-jpeg.jxl")));
+    Assert.True(jpeg.HasJpegReconstruction);
+    Assert.False(jpeg.XybEncoded);
+    Assert.Equal((160u, 120u), (jpeg.Width, jpeg.Height));
+
+    Assert.True(JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("animated.jxl"))).IsAnimated);
+    Assert.False(JxlInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.webp"))).IsValid);
+  }
+
+  [Fact]
+  public void Truncated_jpeg_xl_does_not_throw()
+  {
+    foreach (var fixture in new[] { "lossless.jxl", "lossy.jxl", "recompressed-jpeg.jxl" })
+    {
+      var jxl = File.ReadAllBytes(TestFiles.FixturePath(fixture));
+      for (var length = 0; length < jxl.Length; length += 7)
+        JxlInspector.Inspect(jxl.AsSpan(0, length));
+    }
   }
 
   [Theory]

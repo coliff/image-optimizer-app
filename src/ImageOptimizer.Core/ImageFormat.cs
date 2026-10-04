@@ -9,6 +9,7 @@ public enum ImageFormat
   Avif,
   Gif,
   Svg,
+  JpegXl,
 }
 
 public static class ImageFormats
@@ -24,6 +25,7 @@ public static class ImageFormats
     [".avif"] = ImageFormat.Avif,
     [".gif"] = ImageFormat.Gif,
     [".svg"] = ImageFormat.Svg,
+    [".jxl"] = ImageFormat.JpegXl,
   };
 
   public static IReadOnlyCollection<string> SupportedExtensions => ExtensionMap.Keys;
@@ -45,6 +47,8 @@ public static class ImageFormats
       return ImageFormat.WebP;
     if (AvifInspector.HasAvifBrand(header))
       return ImageFormat.Avif;
+    if (JxlInspector.HasSignature(header))
+      return ImageFormat.JpegXl;
     if (header.Length >= 6 && (header[..6].SequenceEqual("GIF87a"u8) || header[..6].SequenceEqual("GIF89a"u8)))
       return ImageFormat.Gif;
     return ImageFormat.Unknown;
@@ -78,6 +82,7 @@ public static class ImageFormats
     ImageFormat.Avif => "AVIF",
     ImageFormat.Gif => "GIF",
     ImageFormat.Svg => "SVG",
+    ImageFormat.JpegXl => "JPEG XL",
     _ => "Unknown",
   };
 

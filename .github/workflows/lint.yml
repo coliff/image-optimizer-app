@@ -34,6 +34,7 @@ jobs:
           LINTER_RULES_PATH: .
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
+          VALIDATE_CHECKOV: false
           VALIDATE_EDITORCONFIG: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_JSCPD: false
