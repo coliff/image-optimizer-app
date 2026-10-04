@@ -8,13 +8,14 @@ public sealed record OptimizerSettings
   public bool OptimizePng { get; init; } = true;
   public bool OptimizeJpeg { get; init; } = true;
   public bool OptimizeWebP { get; init; } = true;
+  public bool OptimizeAvif { get; init; } = true;
   public bool OptimizeGif { get; init; } = true;
   public bool OptimizeSvg { get; init; } = true;
 
   /// <summary>Removes comments, camera data and other metadata. Color profiles and orientation are always kept.</summary>
   public bool StripMetadata { get; init; } = true;
 
-  /// <summary>Spends much more time searching for the smallest PNG and WebP encoding (Zopfli / maximum effort).</summary>
+  /// <summary>Spends much more time searching for the smallest PNG, WebP and AVIF encoding (Zopfli / maximum effort).</summary>
   public bool MaximumCompression { get; init; }
 
   /// <summary>Lets JPEGs be rewritten as progressive when that is smaller.</summary>
@@ -28,6 +29,7 @@ public sealed record OptimizerSettings
     ImageFormat.Png => OptimizePng,
     ImageFormat.Jpeg => OptimizeJpeg,
     ImageFormat.WebP => OptimizeWebP,
+    ImageFormat.Avif => OptimizeAvif,
     ImageFormat.Gif => OptimizeGif,
     ImageFormat.Svg => OptimizeSvg,
     _ => false,

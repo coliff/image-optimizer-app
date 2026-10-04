@@ -48,7 +48,7 @@ jobs:
         shell: pwsh
         run: |
           if (-not (Test-Path "publish/tools/svgo.browser.js")) { throw "svgo.browser.js is missing from the published app" }
-          foreach ($tool in 'oxipng', 'jpegtran', 'cwebp', 'dwebp', 'webpmux', 'gifsicle') {
+          foreach ($tool in 'oxipng', 'jpegtran', 'cwebp', 'dwebp', 'webpmux', 'avifenc', 'avifdec', 'gifsicle') {
             if (-not (Test-Path "publish/tools/$tool.exe")) { throw "$tool.exe is missing from the published app" }
           }
           Get-ChildItem publish -Recurse -File | Measure-Object Length -Sum | ForEach-Object { "Published {0:N0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }

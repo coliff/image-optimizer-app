@@ -141,6 +141,75 @@ public class ToolIntegrationTests : IDisposable
   }
 
   [Fact]
+  public async Task Lossless_avif_gets_smaller_with_identical_pixels()
+  {
+    RequireTools("avifenc", "avifdec");
+    var path = _files.CopyFixture("lossless.avif");
+    var before = new FileInfo(path).Length;
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.True(new FileInfo(path).Length < before);
+    var original = AvifInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.avif")));
+    var optimized = AvifInspector.Inspect(File.ReadAllBytes(path));
+    Assert.True(optimized.SameAppearance(original));
+    Assert.Equal(1, optimized.Rotation);
+    Assert.Null(optimized.Exif);
+    Assert.Null(optimized.Xmp);
+
+    var verifier = new AvifPixelVerifier(_tools);
+    Assert.Equal(VerificationResult.Identical,
+        await verifier.VerifyAsync(ImageFormat.Avif, TestFiles.FixturePath("lossless.avif"), path, _files.Directory, TestContext.Current.CancellationToken));
+  }
+
+  [Fact]
+  public async Task Avif_keeps_metadata_when_asked()
+  {
+    RequireTools("avifenc", "avifdec");
+    var path = _files.CopyFixture("lossless.avif");
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings { StripMetadata = false, MaximumCompression = true }, TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var original = AvifInspector.Inspect(File.ReadAllBytes(TestFiles.FixturePath("lossless.avif")));
+    var optimized = AvifInspector.Inspect(File.ReadAllBytes(path));
+    Assert.Equal(original.ExifTiff, optimized.ExifTiff);
+    Assert.Equal(original.Xmp, optimized.Xmp);
+  }
+
+  [Fact]
+  public async Task Lossy_avif_is_never_reencoded()
+  {
+    var path = _files.CopyFixture("lossy.avif");
+    var before = File.ReadAllBytes(path);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Skipped, result.Status);
+    Assert.Contains("Lossy AVIF", result.Message);
+    Assert.Equal(before, File.ReadAllBytes(path));
+  }
+
+  [Fact]
+  public async Task Avif_verifier_spots_different_pixels()
+  {
+    RequireTools("avifenc", "avifdec");
+    var path = _files.CopyFixture("lossless.avif");
+    var bytes = File.ReadAllBytes(path);
+    // Re-encode the same container settings with a lossy quality, so only the pixels differ.
+    var planes = Path.Combine(_files.Directory, "planes.y4m");
+    var lossy = Path.Combine(_files.Directory, "lossy444.avif");
+    await _tools.RunAsync("avifdec", [path, planes], TestContext.Current.CancellationToken);
+    await _tools.RunAsync("avifenc", ["-q", "60", "--cicp", "1/2/0", "--irot", "1", planes, lossy], TestContext.Current.CancellationToken);
+
+    var verifier = new AvifPixelVerifier(_tools);
+    var result = await verifier.VerifyAsync(ImageFormat.Avif, path, lossy, _files.Directory, TestContext.Current.CancellationToken);
+    Assert.Equal(VerificationResult.Different, result);
+    Assert.Equal(bytes, File.ReadAllBytes(path));
+  }
+
+  [Fact]
   public async Task Gif_is_optimized_or_left_alone()
   {
     RequireTools("gifsicle");
