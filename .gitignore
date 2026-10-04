@@ -14,7 +14,8 @@ obj/
 
 # IDEs and editors
 .vs/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.user
 *.suo
