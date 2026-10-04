@@ -1,5 +1,5 @@
 ---
-name: 'Check spelling'
+name: "Check spelling"
 on:
   push:
     branches: [main]
