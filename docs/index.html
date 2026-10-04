@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Image Optimizer: lossless image optimizer for Windows</title>
+    <meta
+      name="description"
+      content="A lightweight, fast, lossless image optimizer for Windows, inspired by ImageOptim. Drop AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files onto the window and they're optimized in place."
+    />
+    <meta name="author" content="Christian Oliff" />
+    <link
+      rel="canonical"
+      href="https://coliff.github.io/image-optimizer-app/"
+    />
+    <link
+      rel="license"
+      href="https://github.com/coliff/image-optimizer-app/blob/main/LICENSE"
+    />
+    <link rel="author" href="https://github.com/coliff" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Image Optimizer</h1>
+      <p class="lead">
+        A lightweight, fast, lossless image optimizer for Windows, inspired by
+        <a href="https://imageoptim.com/">ImageOptim</a> on the Mac.
+      </p>
+      <div class="actions">
+        <a
+          class="button primary"
+          href="https://github.com/coliff/image-optimizer-app/releases/latest"
+          >Download for Windows</a
+        >
+        <a class="button" href="https://github.com/coliff/image-optimizer-app"
+          >View on GitHub</a
+        >
+      </div>
+      <p class="note">Free and open source. Requires Windows 10 or 11 (x64).</p>
+    </header>
+    <main>
+      <section class="screenshots" aria-label="Screenshots">
+        <figure>
+          <img
+            src="screenshot-light.png"
+            width="626"
+            height="433"
+            alt="Image Optimizer in light mode"
+          />
+          <figcaption>Light mode</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="screenshot-dark.png"
+            width="626"
+            height="433"
+            alt="Image Optimizer in dark mode"
+          />
+          <figcaption>Dark mode</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>Features</h2>
+        <ul class="features">
+          <li>
+            <strong>Drag and drop</strong> Drop files or whole folders onto the
+            window. Each file is optimized and replaced in place.
+          </li>
+          <li>
+            <strong>Lossless and safe</strong> A result is only kept if it's
+            strictly smaller and pixel-identical to the original. Otherwise the
+            original is left untouched.
+          </li>
+          <li>
+            <strong>Seven formats</strong> AVIF, GIF, JPEG, JPEG XL, PNG, SVG
+            and WebP.
+          </li>
+          <li>
+            <strong>Nothing to configure</strong> The defaults are safe, and a
+            small Settings panel is there if you want it.
+          </li>
+          <li>
+            <strong>File Explorer integration</strong> Right-click images or
+            folders and choose <em>Optimize with Image Optimizer</em>.
+          </li>
+          <li>
+            <strong>Keeps what matters</strong> Metadata is removed, but color
+            profiles and JPEG orientation are always kept so images look exactly
+            the same.
+          </li>
+          <li>
+            <strong>Light, dark and High Contrast</strong> Follows your Windows
+            app mode and contrast theme automatically.
+          </li>
+          <li>
+            <strong>Automatic updates</strong> New releases download quietly in
+            the background and install on your next launch.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Supported formats</h2>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Format</th>
+              <th scope="col">Tool</th>
+              <th scope="col">What it does</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AVIF</td>
+              <td>
+                <a href="https://github.com/AOMediaCodec/libavif">libavif</a>
+              </td>
+              <td>
+                Lossless AVIFs are re-encoded losslessly at a higher effort.
+                Lossy AVIFs are left untouched.
+              </td>
+            </tr>
+            <tr>
+              <td>GIF</td>
+              <td><a href="https://www.lcdf.org/gifsicle/">Gifsicle</a></td>
+              <td>Lossless frame and LZW optimization.</td>
+            </tr>
+            <tr>
+              <td>JPEG</td>
+              <td><a href="https://libjpeg-turbo.org/">libjpeg-turbo</a></td>
+              <td>
+                Optimized Huffman tables and progressive encoding, without
+                touching the image data.
+              </td>
+            </tr>
+            <tr>
+              <td>JPEG XL</td>
+              <td><a href="https://github.com/libjxl/libjxl">libjxl</a></td>
+              <td>
+                Lossless JPEG XLs are re-encoded at a higher effort, and
+                recompressed JPEGs still turn back into the exact original JPEG.
+              </td>
+            </tr>
+            <tr>
+              <td>PNG</td>
+              <td><a href="https://github.com/oxipng/oxipng">oxipng</a></td>
+              <td>
+                Lossless filter, bit depth, palette and deflate optimization.
+              </td>
+            </tr>
+            <tr>
+              <td>SVG</td>
+              <td><a href="https://github.com/svg/svgo">SVGO</a></td>
+              <td>SVGO's default preset, built in. No Node.js needed.</td>
+            </tr>
+            <tr>
+              <td>WebP</td>
+              <td>
+                <a href="https://developers.google.com/speed/webp">libwebp</a>
+              </td>
+              <td>
+                Lossless WebPs are re-encoded losslessly. Lossy WebPs are only
+                stripped of metadata.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+    <footer>
+      <p>
+        <a href="https://github.com/coliff/image-optimizer-app">GitHub</a> ·
+        <a href="https://github.com/coliff/image-optimizer-app/releases"
+          >Releases</a
+        >
+        ·
+        <a href="https://github.com/coliff/image-optimizer-app/issues"
+          >Report an issue</a
+        >
+        ·
+        <a
+          href="https://github.com/coliff/image-optimizer-app/blob/main/LICENSE"
+          >MIT License</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
