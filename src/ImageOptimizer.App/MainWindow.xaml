@@ -78,7 +78,8 @@
     <Style x:Key="FileRow" TargetType="ListBoxItem">
       <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
       <Setter Property="ToolTip" Value="{Binding ToolTip}" />
-      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}" />
+      <Setter Property="FocusVisualStyle" Value="{StaticResource InsetFocusRing}" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ListBoxItem">
@@ -158,7 +159,7 @@
       </ListBox.ItemTemplate>
       <ListBox.ContextMenu>
         <ContextMenu>
-          <MenuItem Header="Show in folder" Click="OnShowInFolder" />
+          <MenuItem Header="Show in folder" InputGestureText="Enter" Click="OnShowInFolder" />
           <MenuItem Header="Remove from list" InputGestureText="Del" Click="OnRemoveSelected" />
           <Separator />
           <MenuItem Header="Clear finished" Click="OnClearFinished" />
@@ -181,14 +182,17 @@
         BorderThickness="0,1,0,0" Padding="10,8">
       <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Left" Style="{StaticResource IconButton}" Content="&#xE710;"
+            AutomationProperties.Name="Add images" AutomationProperties.AcceleratorKey="Ctrl+O"
             ToolTip="Add images (Ctrl+O)" Click="OnAddFiles" />
         <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE713;" Margin="6,0,0,0"
-            ToolTip="Settings" Click="OnOpenSettings" />
+            AutomationProperties.Name="Settings" AutomationProperties.AcceleratorKey="Ctrl+,"
+            ToolTip="Settings (Ctrl+,)" Click="OnOpenSettings" />
         <Button DockPanel.Dock="Right" Style="{StaticResource FlatButton}" Content="Restart to update" Margin="0,0,6,0"
             ToolTip="{Binding UpdateVersion, StringFormat='Version {0} is ready. It also installs the next time you open Image Optimizer.'}"
             Visibility="{Binding IsUpdateReady, Converter={StaticResource BoolToVisibility}}"
             IsEnabled="{Binding CanRestartToUpdate}" Click="OnRestartToUpdate" />
-        <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Center"
+        <TextBlock x:Name="SummaryText" Text="{Binding Summary}" AutomationProperties.LiveSetting="Polite"
+              VerticalAlignment="Center" HorizontalAlignment="Center"
               TextTrimming="CharacterEllipsis" Margin="12,0" Foreground="{DynamicResource SubtleTextBrush}" />
       </DockPanel>
     </Border>

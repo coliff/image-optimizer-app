@@ -13,6 +13,30 @@
     <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
   </Style>
 
+  <!-- Keyboard focus rings. WPF only shows these when focus moves with the keyboard, not on click. -->
+  <Style x:Key="FocusRing">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle Margin="-3" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" RadiusX="7" RadiusY="7"
+              SnapsToDevicePixels="True" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Drawn inside the element, for rows and headers where the next row or header would cover a ring outside it. -->
+  <Style x:Key="InsetFocusRing">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle Margin="1" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" RadiusX="3" RadiusY="3"
+              SnapsToDevicePixels="True" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- Flat, rounded push button used in the footer and dialogs. -->
   <Style x:Key="FlatButton" TargetType="Button">
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -21,7 +45,7 @@
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Padding" Value="12,4" />
     <Setter Property="MinHeight" Value="28" />
-    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Template">
       <Setter.Value>
@@ -42,9 +66,6 @@
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ButtonPressedBrush}" />
             </Trigger>
-            <Trigger Property="IsKeyboardFocused" Value="True">
-              <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-            </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.45" />
             </Trigger>
@@ -64,7 +85,7 @@
   <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
     <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-    <Setter Property="Foreground" Value="{DynamicResource OnBadgeBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     <Setter Property="MinWidth" Value="80" />
   </Style>
 
@@ -72,7 +93,7 @@
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="Margin" Value="0,4" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
   </Style>
 
   <!-- Clickable column header: plain text that sorts the list. -->
@@ -81,7 +102,7 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="Cursor" Value="Hand" />
-    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource InsetFocusRing}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
