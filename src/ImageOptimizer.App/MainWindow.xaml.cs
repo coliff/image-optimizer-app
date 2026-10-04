@@ -1,6 +1,8 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Input;
 using ImageOptimizer.Core;
 using Microsoft.Win32;
@@ -11,6 +13,7 @@ public partial class MainWindow : Window
 {
   private readonly MainViewModel _viewModel;
   private readonly UpdateChecker _updates;
+  private bool _announcedBusy;
 
   public MainWindow(MainViewModel viewModel, UpdateChecker updates)
   {
@@ -20,6 +23,23 @@ public partial class MainWindow : Window
     DataContext = viewModel;
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
     Closed += (_, _) => _viewModel.Dispose();
+    _viewModel.PropertyChanged += OnViewModelPropertyChanged;
+  }
+
+  /// <summary>
+  /// Tells screen readers when a batch starts and when it finishes with its summary. The per-file
+  /// "Optimizing 3 of 10" updates stay readable in the footer but aren't announced, so they don't
+  /// talk over each other.
+  /// </summary>
+  private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+  {
+    if (e.PropertyName != nameof(MainViewModel.Summary) || _viewModel.Summary.Length == 0)
+      return;
+    if (_viewModel.IsBusy && _announcedBusy)
+      return;
+    _announcedBusy = _viewModel.IsBusy;
+    var peer = UIElementAutomationPeer.FromElement(SummaryText) ?? UIElementAutomationPeer.CreatePeerForElement(SummaryText);
+    peer?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
   }
 
   public void BringToFront()
@@ -131,6 +151,10 @@ public partial class MainWindow : Window
     {
       case Key.Delete when FileList.IsKeyboardFocusWithin:
         _viewModel.Remove(FileList.SelectedItems.Cast<FileItem>());
+        e.Handled = true;
+        break;
+      case Key.Enter when FileList.IsKeyboardFocusWithin && FileList.SelectedItem is FileItem item:
+        RevealInExplorer(item.Path);
         e.Handled = true;
         break;
       case Key.O when ctrl:
