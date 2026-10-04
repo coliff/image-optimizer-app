@@ -13,6 +13,8 @@
   <SolidColorBrush x:Key="DangerBrush" Color="#C9372E" />
   <SolidColorBrush x:Key="NeutralBrush" Color="#767676" />
   <SolidColorBrush x:Key="SelectionBrush" Color="#DCEAFB" />
+  <SolidColorBrush x:Key="SelectionTextBrush" Color="#1F1F1F" />
+  <SolidColorBrush x:Key="SelectionSubtleTextBrush" Color="#666666" />
   <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#FFFFFF" />
   <SolidColorBrush x:Key="ButtonHoverBrush" Color="#EEEEEE" />
   <SolidColorBrush x:Key="ButtonPressedBrush" Color="#E2E2E2" />

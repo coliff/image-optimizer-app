@@ -1,11 +1,12 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using Microsoft.Win32;
 
 namespace ImageOptimizer.App;
 
-/// <summary>Follows the Windows light/dark app mode, including the window title bar.</summary>
+/// <summary>Follows the Windows light/dark app mode and High Contrast, including the window title bar.</summary>
 public static class ThemeManager
 {
   private const int DwmUseImmersiveDarkMode = 20;
@@ -13,22 +14,22 @@ public static class ThemeManager
 
   public static bool IsDark { get; private set; }
 
+  /// <summary>True while Windows High Contrast is on, when the app uses the system's contrast colors.</summary>
+  public static bool IsHighContrast { get; private set; }
+
   public static void Initialize(Application app)
   {
-    Apply(app, ReadSystemPrefersDark());
+    Apply(app);
     SystemEvents.UserPreferenceChanged += (_, e) =>
     {
-      if (e.Category != UserPreferenceCategory.General)
-        return;
-      app.Dispatcher.Invoke(() =>
-      {
-        var dark = ReadSystemPrefersDark();
-        if (dark == IsDark)
-          return;
-        Apply(app, dark);
-        foreach (Window window in app.Windows)
-          ApplyTitleBar(window);
-      });
+      if (e.Category is UserPreferenceCategory.General or UserPreferenceCategory.Color)
+        app.Dispatcher.BeginInvoke(() => Refresh(app));
+    };
+    // Raised on the UI thread once WPF has picked up a High Contrast switch.
+    SystemParameters.StaticPropertyChanged += (_, e) =>
+    {
+      if (e.PropertyName == nameof(SystemParameters.HighContrast))
+        Refresh(app);
     };
   }
 
@@ -41,12 +42,26 @@ public static class ThemeManager
     _ = DwmSetWindowAttribute(handle, DwmUseImmersiveDarkMode, ref value, sizeof(int));
   }
 
-  private static void Apply(Application app, bool dark)
+  private static void Refresh(Application app)
   {
-    IsDark = dark;
+    if (SystemParameters.HighContrast != IsHighContrast || (!IsHighContrast && ReadSystemPrefersDark() != IsDark))
+      Apply(app);
+    else if (IsHighContrast)
+      IsDark = IsDarkColor(SystemColors.WindowColor); // Switched contrast themes; the brushes follow by themselves.
+    else
+      return;
+    foreach (Window window in app.Windows)
+      ApplyTitleBar(window);
+  }
+
+  private static void Apply(Application app)
+  {
+    IsHighContrast = SystemParameters.HighContrast;
+    IsDark = IsHighContrast ? IsDarkColor(SystemColors.WindowColor) : ReadSystemPrefersDark();
+    var name = IsHighContrast ? "HighContrast" : IsDark ? "Dark" : "Light";
     var theme = new ResourceDictionary
     {
-      Source = new Uri($"pack://application:,,,/ImageOptimizer;component/Themes/{(dark ? "Dark" : "Light")}.xaml"),
+      Source = new Uri($"pack://application:,,,/ImageOptimizer;component/Themes/{name}.xaml"),
     };
     var dictionaries = app.Resources.MergedDictionaries;
     if (_current is not null)
@@ -54,6 +69,8 @@ public static class ThemeManager
     dictionaries.Insert(0, theme);
     _current = theme;
   }
+
+  private static bool IsDarkColor(Color color) => (0.299 * color.R) + (0.587 * color.G) + (0.114 * color.B) < 128;
 
   private static bool ReadSystemPrefersDark()
   {

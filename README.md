@@ -10,7 +10,7 @@ You can also right-click images or folders in File Explorer and choose **Optimiz
 (on Windows 11 it's under **Show more options**). Selecting many files at once opens them all in one window.
 
 Click the File, Size or Savings header to sort the list (click again to reverse it).
-The app follows the Windows light or dark app mode automatically.
+The app follows the Windows light or dark app mode automatically, and uses your High Contrast colors when a contrast theme is on.
 
 | Light                                                       | Dark                                                      |
 | ----------------------------------------------------------- | --------------------------------------------------------- |

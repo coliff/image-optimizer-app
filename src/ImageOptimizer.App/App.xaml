@@ -5,7 +5,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <!-- Light.xaml or Dark.xaml is inserted first at startup by ThemeManager. -->
+        <!-- Light.xaml, Dark.xaml or HighContrast.xaml is inserted first at startup by ThemeManager. -->
         <ResourceDictionary Source="Themes/Styles.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
