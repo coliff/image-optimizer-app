@@ -1,10 +1,17 @@
-name: Release
+name: Publish
 
-# Pushing a version tag (e.g. v0.2.0) builds, tests and publishes a GitHub Release with the installer.
-# Installed copies of the app find it the next time they start and update themselves.
+# Builds, tests and publishes a GitHub Release with the installer. Run it from the Actions tab
+# ("Publish" > "Run workflow"), or push a version tag such as v0.2.0.
+# Installed copies of the app find the release the next time they start and update themselves.
 on:
   push:
     tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish, like 0.2.0 (leave empty to use <Version> from Directory.Build.props)"
+        required: false
+        type: string
 
 permissions: {}
 
@@ -26,14 +33,30 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Read the version from the tag
+      - name: Work out the version
         shell: pwsh
         env:
-          TAG: ${{ github.ref_name }}
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          $version = $env:TAG.TrimStart('v')
-          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Tag '$env:TAG' isn't a version like v1.2.3" }
+          if ($env:EVENT -eq 'push') {
+            $version = $env:REF_NAME.TrimStart('v')
+          } elseif ($env:INPUT_VERSION) {
+            $version = $env:INPUT_VERSION.Trim().TrimStart('v')
+          } else {
+            $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          }
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "'$version' isn't a version like 1.2.3" }
+          if ($env:EVENT -ne 'push') {
+            # A manual run creates the tag itself, so stop early if that version was already released.
+            gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/v$version" --silent 2>$null
+            if ($LASTEXITCODE -eq 0) { throw "Tag v$version already exists. Bump the version first." }
+            $global:LASTEXITCODE = 0
+          }
           "VERSION=$version" >> $env:GITHUB_ENV
+          "TAG=v$version" >> $env:GITHUB_ENV
 
       - name: Download optimizer tools
         shell: pwsh
@@ -59,11 +82,19 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: ./scripts/pack-installer.ps1 -Version $env:VERSION -WithDeltas
 
+      - name: Create the tag
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$env:GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$env:TAG" -f "sha=$env:GITHUB_SHA" --silent
+          if ($LASTEXITCODE -ne 0) { throw "Couldn't create tag $env:TAG" }
+
       - name: Publish the GitHub Release
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
         run: |
           dotnet vpk upload github --repoUrl "https://github.com/$env:GITHUB_REPOSITORY" --channel win --outputDir releases `
             --token $env:GITHUB_TOKEN --tag $env:TAG --releaseName "Image Optimizer $env:VERSION" --publish
