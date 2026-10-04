@@ -68,9 +68,10 @@ Requires Windows 10 or 11 (x64).
 
 ## Releasing
 
-Bump `<Version>` in `Directory.Build.props`, then push a matching tag (for example `git tag v0.2.0 && git push origin v0.2.0`).
-The Release workflow builds and tests that commit, packs the installer and update packages with
+Bump `<Version>` in `Directory.Build.props`, then open **Actions > Publish > Run workflow**. It uses that version
+(or the one you type in), tags the commit `vX.Y.Z`, builds and tests it, packs the installer and update packages with
 [Velopack](https://velopack.io/), and publishes them as a GitHub Release. Installed copies pick it up on their next launch.
+Pushing a `vX.Y.Z` tag yourself does the same.
 
 ## Building
 
