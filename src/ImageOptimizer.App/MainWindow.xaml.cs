@@ -73,8 +73,6 @@ public partial class MainWindow : Window
       _viewModel.SortBy(column);
   }
 
-  private void OnRunAgain(object sender, RoutedEventArgs e) => _viewModel.RunAgain();
-
   private void OnRestartToUpdate(object sender, RoutedEventArgs e)
   {
     if (!_viewModel.IsBusy)
@@ -137,10 +135,6 @@ public partial class MainWindow : Window
         break;
       case Key.O when ctrl:
         OnAddFiles(sender, e);
-        e.Handled = true;
-        break;
-      case Key.R when ctrl && _viewModel.CanRunAgain:
-        _viewModel.RunAgain();
         e.Handled = true;
         break;
       case Key.OemComma when ctrl:

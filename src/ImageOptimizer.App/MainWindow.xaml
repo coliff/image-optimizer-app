@@ -188,9 +188,6 @@
             ToolTip="{Binding UpdateVersion, StringFormat='Version {0} is ready. It also installs the next time you open Image Optimizer.'}"
             Visibility="{Binding IsUpdateReady, Converter={StaticResource BoolToVisibility}}"
             IsEnabled="{Binding CanRestartToUpdate}" Click="OnRestartToUpdate" />
-        <Button DockPanel.Dock="Right" Style="{StaticResource FlatButton}" Content="Again"
-            ToolTip="Optimize all files again (Ctrl+R)"
-            IsEnabled="{Binding CanRunAgain}" Click="OnRunAgain" />
         <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" HorizontalAlignment="Center"
               TextTrimming="CharacterEllipsis" Margin="12,0" Foreground="{DynamicResource SubtleTextBrush}" />
       </DockPanel>

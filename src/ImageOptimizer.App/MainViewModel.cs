@@ -52,8 +52,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
   public bool IsBusy => _pending > 0;
 
-  public bool CanRunAgain => !IsEmpty && !IsBusy;
-
   /// <summary>The version of a downloaded update that installs on restart, or null when there's none.</summary>
   public string? UpdateVersion
   {
@@ -125,14 +123,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     }
     RaiseStateChanged();
     return added;
-  }
-
-  /// <summary>Runs every finished file through the optimizers again.</summary>
-  public void RunAgain()
-  {
-    foreach (var item in Files.Where(f => f.IsFinished).ToList())
-      Enqueue(item);
-    RaiseStateChanged();
   }
 
   public void Remove(IEnumerable<FileItem> items)
@@ -238,7 +228,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   {
     OnPropertyChanged(nameof(IsEmpty));
     OnPropertyChanged(nameof(IsBusy));
-    OnPropertyChanged(nameof(CanRunAgain));
     OnPropertyChanged(nameof(CanRestartToUpdate));
     OnPropertyChanged(nameof(Summary));
   }
