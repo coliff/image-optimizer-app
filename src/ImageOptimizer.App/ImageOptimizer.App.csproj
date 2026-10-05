@@ -6,6 +6,9 @@
     <UseWPF>true</UseWPF>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>ImageOptimizer</AssemblyName>
+    <!-- Shown as the file description in Explorer and Task Manager. -->
+    <AssemblyTitle>Image Optimizer</AssemblyTitle>
+    <Description>Lossless image optimizer for Windows</Description>
     <RootNamespace>ImageOptimizer.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\ImageOptimizer.ico</ApplicationIcon>
