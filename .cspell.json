@@ -2,6 +2,7 @@
   "version": "0.2",
   "words": [
     "ANMF",
+    "apikey",
     "APNG",
     "ASFW",
     "auxid",
@@ -86,6 +87,7 @@
     "pitm",
     "pixi",
     "prem",
+    "pscustomobject",
     "rdf",
     "Recognises",
     "redist",

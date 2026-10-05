@@ -1,0 +1,64 @@
+---
+name: VirusTotal
+
+# Scans a published release with VirusTotal's antivirus engines and lists any that flag it in the run summary.
+# The Publish workflow runs it after every release; run it from the Actions tab to scan an earlier one.
+# Needs a VIRUSTOTAL_API_KEY repository secret (a free key from virustotal.com); without one it scans nothing.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "Release tag to scan, like v0.7.3"
+        required: true
+        type: string
+    secrets:
+      VIRUSTOTAL_API_KEY:
+        required: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to scan, like v0.7.3 (leave empty for the latest release)"
+        required: false
+        type: string
+
+permissions: {}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          if (-not $env:TAG) {
+            $env:TAG = gh release view --repo $env:GITHUB_REPOSITORY --json tagName --jq .tagName
+          }
+          gh release download $env:TAG --repo $env:GITHUB_REPOSITORY --dir release --pattern '*Setup.exe' --pattern '*-full.nupkg'
+          if ($LASTEXITCODE -ne 0) { throw "Couldn't download release $env:TAG" }
+          # The app's own exe and DLL are what antivirus watches at run time, so scan them on their own too.
+          $package = Get-ChildItem release -Filter '*-full.nupkg' | Select-Object -First 1
+          unzip -q $package.FullName -d package
+          if ($LASTEXITCODE -ne 0) { throw "Couldn't unpack $($package.Name)" }
+          New-Item -ItemType Directory -Path scan | Out-Null
+          Copy-Item (Get-ChildItem release -Filter '*Setup.exe').FullName scan
+          foreach ($name in 'ImageOptimizer.exe', 'ImageOptimizer.dll') {
+            $file = Get-ChildItem package -Recurse -File -Filter $name | Select-Object -First 1
+            if (-not $file) { throw "$name isn't in $($package.Name)" }
+            Copy-Item $file.FullName scan
+          }
+          "Scanning release $env:TAG" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - name: Scan with VirusTotal
+        shell: pwsh
+        env:
+          VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        run: ./scripts/virustotal-scan.ps1 -Path (Get-ChildItem scan -File).FullName
