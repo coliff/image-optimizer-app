@@ -1,6 +1,6 @@
 {
   "name": "image-optimizer-app",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "private": true,
   "description": "A lightweight, fast, lossless image optimizer for Windows",
   "homepage": "https://github.com/coliff/image-optimizer-app#readme",
