@@ -13,7 +13,7 @@ public static class FileCollector
       {
         files = EnumerateImages(path);
       }
-      else if (File.Exists(path) && ImageFormats.HasSupportedExtension(path))
+      else if (File.Exists(path) && ImageFormats.HasSupportedExtension(path) && !ImageOptimizerEngine.IsStagingFile(path))
       {
         files = [path];
       }
@@ -40,7 +40,7 @@ public static class FileCollector
       AttributesToSkip = FileAttributes.System | FileAttributes.ReparsePoint,
     };
     return Directory.EnumerateFiles(directory, "*", options)
-        .Where(ImageFormats.HasSupportedExtension)
+        .Where(file => ImageFormats.HasSupportedExtension(file) && !ImageOptimizerEngine.IsStagingFile(file))
         .Order(StringComparer.OrdinalIgnoreCase);
   }
 }

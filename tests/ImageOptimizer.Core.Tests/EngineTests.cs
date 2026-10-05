@@ -48,7 +48,24 @@ public class EngineTests : IDisposable
     Assert.Equal(OptimizationStatus.Optimized, result.Status);
     Assert.Equal(500, result.FinalSize);
     Assert.Equal(500, new FileInfo(path).Length);
-    Assert.Empty(Directory.GetFiles(_files.Directory, "*.tmp"));
+    Assert.Equal([path], Directory.GetFiles(_files.Directory));
+  }
+
+  [Fact]
+  public void Staging_copies_keep_the_image_extension_and_are_not_collected()
+  {
+    var original = new FileInfo(_files.CopyFixture("unoptimized.png"));
+
+    var staging = ImageOptimizerEngine.StagingPath(original);
+
+    Assert.Equal(original.DirectoryName, Path.GetDirectoryName(staging));
+    Assert.Equal(".png", Path.GetExtension(staging));
+    Assert.StartsWith("unoptimized.imageoptimizer-", Path.GetFileName(staging));
+    Assert.True(ImageOptimizerEngine.IsStagingFile(staging));
+    Assert.False(ImageOptimizerEngine.IsStagingFile(original.FullName));
+
+    File.Copy(original.FullName, staging);
+    Assert.Equal([original.FullName], FileCollector.Collect([_files.Directory, staging]));
   }
 
   [Fact]
