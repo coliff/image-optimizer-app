@@ -56,6 +56,11 @@ jobs:
               if (-not (Test-Path "publish/$satellite")) { throw "$satellite is missing from the published app" }
             }
           }
+          # Blank file details make antivirus reputation checks more suspicious of an unsigned exe.
+          $details = (Get-Item publish/ImageOptimizer.exe).VersionInfo
+          foreach ($field in 'CompanyName', 'FileDescription', 'ProductName', 'LegalCopyright') {
+            if (-not $details.$field) { throw "ImageOptimizer.exe has no $field in its file details" }
+          }
           Get-ChildItem publish -Recurse -File | Measure-Object Length -Sum | ForEach-Object { "Published {0:N0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
 
       - name: Screenshot the app optimizing the test images

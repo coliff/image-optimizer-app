@@ -4,8 +4,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Version>0.7.0</Version>
-    <Company>Image Optimizer</Company>
+    <Version>0.7.1</Version>
+    <!-- Stamped into every exe and DLL's file details. Antivirus reputation checks treat binaries with
+         a named publisher and description as less suspicious than ones with blank details. -->
+    <Company>Christian Oliff</Company>
+    <Authors>Christian Oliff</Authors>
     <Product>Image Optimizer</Product>
+    <Copyright>Copyright (c) 2026 Christian Oliff</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 </Project>

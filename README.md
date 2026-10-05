@@ -75,6 +75,14 @@ time you open the app. You can turn this off in Settings.
 
 Requires Windows 10 or 11 (x64).
 
+### If your antivirus blocks it
+
+The installer and app aren't code-signed yet, and the app rewrites many image files in quick succession and runs
+bundled command-line tools, which some antivirus behavior checks mistake for ransomware. If yours blocks or closes it,
+add the install folder (`%LocalAppData%\ImageOptimizer`) to its exceptions and report the false positive to the vendor
+(for Trend Micro, [submit the file for analysis](https://helpcenter.trendlife.com/en-us/article/tmka-14388); on a work
+PC, ask your IT team).
+
 ## Releasing
 
 Bump `<Version>` in `Directory.Build.props`, then open **Actions > Publish > Run workflow**. It uses that version
