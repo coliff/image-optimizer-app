@@ -20,39 +20,49 @@
       </DockPanel>
     </Border>
     <StackPanel Margin="20,16,20,16">
+      <!-- Each group sits in its own card, like ImageOptim's preferences; both cards share a row so they line up. -->
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="16" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Margin="0,0,28,0">
-          <TextBlock Text="{x:Static local:Strings.EnableHeader}" Style="{StaticResource SectionHeader}" />
-          <CheckBox x:Name="Avif" Content="_AVIF" />
-          <CheckBox x:Name="Gif" Content="_GIF" />
-          <CheckBox x:Name="Jpeg" Content="_JPEG" />
-          <CheckBox x:Name="JpegXl" Content="JPEG _XL" />
-          <CheckBox x:Name="Png" Content="_PNG" />
-          <CheckBox x:Name="Svg" Content="_SVG" />
-          <CheckBox x:Name="WebP" Content="_WebP" />
-        </StackPanel>
-        <StackPanel Grid.Column="1">
-          <TextBlock Text="{x:Static local:Strings.OptionsHeader}" Style="{StaticResource SectionHeader}" />
-          <CheckBox x:Name="StripMetadata" Content="{x:Static local:Strings.StripMetadata}"
-              AutomationProperties.HelpText="{Binding Text, ElementName=StripMetadataHint}" />
-          <TextBlock x:Name="StripMetadataHint" Text="{x:Static local:Strings.StripMetadataHint}"
-                Style="{StaticResource HintText}" Margin="22,0,0,6" />
-          <CheckBox x:Name="MaximumCompression" Content="{x:Static local:Strings.MaximumCompression}"
-              AutomationProperties.HelpText="{Binding Text, ElementName=MaximumCompressionHint}" />
-          <TextBlock x:Name="MaximumCompressionHint" Text="{x:Static local:Strings.MaximumCompressionHint}"
-                Style="{StaticResource HintText}" Margin="22,0,0,6" />
-          <CheckBox x:Name="AllowProgressiveJpeg" Content="{x:Static local:Strings.AllowProgressiveJpeg}" />
-          <CheckBox x:Name="PreserveModifiedDate" Content="{x:Static local:Strings.PreserveModifiedDate}" />
-          <CheckBox x:Name="CheckForUpdates" Content="{x:Static local:Strings.CheckForUpdates}" />
-          <CheckBox x:Name="ExplorerMenu" Content="{x:Static local:Strings.ExplorerMenu}" Margin="0,6,0,0"
-              AutomationProperties.HelpText="{Binding Text, ElementName=ExplorerMenuHint}" />
-          <TextBlock x:Name="ExplorerMenuHint" Text="{x:Static local:Strings.ExplorerMenuHint}"
-                Style="{StaticResource HintText}" Margin="22,0,0,6" TextWrapping="Wrap" />
-        </StackPanel>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Text="{x:Static local:Strings.EnableHeader}" Style="{StaticResource SectionHeader}" />
+        <TextBlock Grid.Column="2" Text="{x:Static local:Strings.OptionsHeader}" Style="{StaticResource SectionHeader}" />
+        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource SettingsCard}">
+          <StackPanel>
+            <CheckBox x:Name="Avif" Content="_AVIF" />
+            <CheckBox x:Name="Gif" Content="_GIF" />
+            <CheckBox x:Name="Jpeg" Content="_JPEG" />
+            <CheckBox x:Name="JpegXl" Content="JPEG _XL" />
+            <CheckBox x:Name="Png" Content="_PNG" />
+            <CheckBox x:Name="Svg" Content="_SVG" />
+            <CheckBox x:Name="WebP" Content="_WebP" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource SettingsCard}">
+          <StackPanel>
+            <CheckBox x:Name="StripMetadata" Content="{x:Static local:Strings.StripMetadata}"
+                AutomationProperties.HelpText="{Binding Text, ElementName=StripMetadataHint}" />
+            <TextBlock x:Name="StripMetadataHint" Text="{x:Static local:Strings.StripMetadataHint}"
+                  Style="{StaticResource HintText}" Margin="22,0,0,6" />
+            <CheckBox x:Name="MaximumCompression" Content="{x:Static local:Strings.MaximumCompression}"
+                AutomationProperties.HelpText="{Binding Text, ElementName=MaximumCompressionHint}" />
+            <TextBlock x:Name="MaximumCompressionHint" Text="{x:Static local:Strings.MaximumCompressionHint}"
+                  Style="{StaticResource HintText}" Margin="22,0,0,6" />
+            <CheckBox x:Name="AllowProgressiveJpeg" Content="{x:Static local:Strings.AllowProgressiveJpeg}" />
+            <CheckBox x:Name="PreserveModifiedDate" Content="{x:Static local:Strings.PreserveModifiedDate}" />
+            <CheckBox x:Name="CheckForUpdates" Content="{x:Static local:Strings.CheckForUpdates}" />
+            <CheckBox x:Name="ExplorerMenu" Content="{x:Static local:Strings.ExplorerMenu}" Margin="0,6,0,0"
+                AutomationProperties.HelpText="{Binding Text, ElementName=ExplorerMenuHint}" />
+            <TextBlock x:Name="ExplorerMenuHint" Text="{x:Static local:Strings.ExplorerMenuHint}"
+                  Style="{StaticResource HintText}" Margin="22,0,0,4" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
       </Grid>
       <TextBlock Style="{StaticResource HintText}" Margin="0,16,0,0"
             Text="{x:Static local:Strings.SafetyNote}" />
