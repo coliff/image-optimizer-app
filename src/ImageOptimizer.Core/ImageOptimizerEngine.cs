@@ -130,7 +130,7 @@ public sealed class ImageOptimizerEngine
         return Result(OptimizationStatus.Failed, Strings.FileChanged);
 
       // Stage next to the original so the final swap is a same-volume replace, not a copy.
-      staging = Path.Combine(original.DirectoryName!, $".{original.Name}.{Guid.NewGuid():N}.imageoptimizer.tmp");
+      staging = StagingPath(original);
       File.Copy(winner.Path, staging);
       File.Replace(staging, path, destinationBackupFileName: null, ignoreMetadataErrors: true);
       staging = null;
@@ -173,6 +173,22 @@ public sealed class ImageOptimizerEngine
       }
     }
   }
+
+  private const string StagingMarker = ".imageoptimizer-";
+
+  /// <summary>
+  /// A name like <c>photo.imageoptimizer-1a2b3c4d.jpg</c>, keeping the image's own extension. Antivirus ransomware
+  /// checks flag programs that write unreadable files with a new extension tacked onto the original's name
+  /// (<c>photo.jpg.&lt;id&gt;.tmp</c>) and then remove the original, which is what the old staging name looked like.
+  /// </summary>
+  internal static string StagingPath(FileInfo original) =>
+      Path.Combine(
+          original.DirectoryName!,
+          $"{Path.GetFileNameWithoutExtension(original.Name)}{StagingMarker}{Guid.NewGuid().ToString("N")[..8]}{original.Extension}");
+
+  /// <summary>True for a staging copy left behind if the app was closed mid-swap, so it isn't optimized as an image.</summary>
+  public static bool IsStagingFile(string path) =>
+      Path.GetFileNameWithoutExtension(path).Contains(StagingMarker, StringComparison.OrdinalIgnoreCase);
 
   private static long SizeOf(string path)
   {
