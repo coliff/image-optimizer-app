@@ -54,6 +54,12 @@
   <data name="AnimatedWebPNothingToRemove" xml:space="preserve">
     <value>アニメーション WebP にはロスレスで削除できるものがありません</value>
   </data>
+  <data name="JpegTrailingData" xml:space="preserve">
+    <value>画像の後に追加データ (モーション フォトの動画や HDR ゲイン マップなど) を含む JPEG は変更しません</value>
+  </data>
+  <data name="SvgNotUtf8" xml:space="preserve">
+    <value>UTF-8 以外でエンコードされた SVG は変更しません</value>
+  </data>
   <data name="AvifGrid" xml:space="preserve">
     <value>タイル (グリッド) 形式の AVIF は変更しません</value>
   </data>

@@ -72,6 +72,24 @@ public sealed class TestFiles : IDisposable
   /// <summary>Inserts an EXIF APP1 segment with the given orientation right after SOI.</summary>
   public static byte[] WithExifOrientation(byte[] jpeg, ushort orientation, bool littleEndian = false)
   {
+    byte[] payload = [.. "Exif\0\0"u8, .. ExifTiff(orientation, littleEndian)];
+    var segment = new byte[4 + payload.Length];
+    segment[0] = 0xFF;
+    segment[1] = 0xE1;
+    BinaryPrimitives.WriteUInt16BigEndian(segment.AsSpan(2), (ushort)(payload.Length + 2));
+    payload.CopyTo(segment, 4);
+    return [.. jpeg[..2], .. segment, .. jpeg[2..]];
+  }
+
+  /// <summary>Inserts an eXIf chunk with the given orientation after IHDR.</summary>
+  public static byte[] WithPngExifOrientation(byte[] png, ushort orientation)
+  {
+    const int ihdrEnd = 8 + 4 + 4 + 13 + 4;
+    return [.. png[..ihdrEnd], .. Chunk("eXIf", ExifTiff(orientation, littleEndian: false)), .. png[ihdrEnd..]];
+  }
+
+  private static byte[] ExifTiff(ushort orientation, bool littleEndian)
+  {
     var tiff = new byte[8 + 2 + 12 + 4];
     void U16(int at, ushort v)
     {
@@ -92,13 +110,6 @@ public sealed class TestFiles : IDisposable
     U32(14, 1);          // count
     U16(18, orientation);
     U32(22, 0);          // no next IFD
-
-    byte[] payload = [.. "Exif\0\0"u8, .. tiff];
-    var segment = new byte[4 + payload.Length];
-    segment[0] = 0xFF;
-    segment[1] = 0xE1;
-    BinaryPrimitives.WriteUInt16BigEndian(segment.AsSpan(2), (ushort)(payload.Length + 2));
-    payload.CopyTo(segment, 4);
-    return [.. jpeg[..2], .. segment, .. jpeg[2..]];
+    return tiff;
   }
 }

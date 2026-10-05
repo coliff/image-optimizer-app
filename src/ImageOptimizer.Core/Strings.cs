@@ -32,6 +32,8 @@ internal static class Strings
   public static string AnimatedLeftUntouched(ImageFormat format) => Format(ImageFormats.DisplayName(format));
   public static string LossyCannotRecompress(ImageFormat format) => Format(ImageFormats.DisplayName(format));
   public static string AnimatedWebPNothingToRemove => Get();
+  public static string JpegTrailingData => Get();
+  public static string SvgNotUtf8 => Get();
   public static string AvifGrid => Get();
   public static string AvifUnsupportedType => Get();
   public static string AvifAuxiliaryImages => Get();

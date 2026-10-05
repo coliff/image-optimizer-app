@@ -14,6 +14,8 @@ public sealed class SvgOptimizer(Func<string?> locateScript) : IFormatOptimizer
 {
   public const string ScriptName = "svgo.browser.js";
 
+  private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: true, throwOnInvalidBytes: true);
+
   // Jint engines aren't thread-safe and loading SVGO takes a moment, so share one engine and take turns.
   private readonly SemaphoreSlim _gate = new(1, 1);
   private Engine? _engine;
@@ -23,7 +25,17 @@ public sealed class SvgOptimizer(Func<string?> locateScript) : IFormatOptimizer
 
   public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
   {
-    var input = await File.ReadAllTextAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
+    // The result is always written as UTF-8, so text in any other encoding would come out garbled.
+    var bytes = await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
+    string input;
+    try
+    {
+      input = StrictUtf8.GetString(bytes.AsSpan(bytes.AsSpan().StartsWith(StrictUtf8.Preamble) ? StrictUtf8.Preamble.Length : 0));
+    }
+    catch (DecoderFallbackException)
+    {
+      return CandidateSet.Skip(Strings.SvgNotUtf8);
+    }
     var config = BuildConfig(context.Settings);
 
     string output;

@@ -46,6 +46,34 @@ public class InspectorTests
   }
 
   [Fact]
+  public void Reads_png_exif_orientation()
+  {
+    var png = File.ReadAllBytes(TestFiles.FixturePath("unoptimized.png"));
+    Assert.Null(ImageInspector.GetPngExifOrientation(png));
+    Assert.Equal(6, ImageInspector.GetPngExifOrientation(TestFiles.WithPngExifOrientation(png, 6)));
+  }
+
+  [Fact]
+  public void Finds_data_after_the_end_of_a_jpeg()
+  {
+    var jpeg = File.ReadAllBytes(TestFiles.FixturePath("photo.jpg"));
+    Assert.False(ImageInspector.HasJpegTrailingData(jpeg));
+    Assert.False(ImageInspector.HasJpegTrailingData([.. jpeg, .. new byte[100]]));
+
+    // A motion photo's video, or the second image of an MPF file, starts right after the first image.
+    Assert.True(ImageInspector.HasJpegTrailingData([.. jpeg, .. "\0\0\0\u0018ftyp"u8, .. "mp42"u8]));
+    Assert.True(ImageInspector.HasJpegTrailingData([.. jpeg, .. jpeg]));
+  }
+
+  [Fact]
+  public void Truncated_jpeg_has_no_trailing_data()
+  {
+    var jpeg = File.ReadAllBytes(TestFiles.FixturePath("photo.jpg"));
+    for (var length = 0; length < jpeg.Length; length++)
+      Assert.False(ImageInspector.HasJpegTrailingData(jpeg.AsSpan(0, length)));
+  }
+
+  [Fact]
   public void Truncated_jpeg_does_not_throw()
   {
     var jpeg = TestFiles.WithExifOrientation(File.ReadAllBytes(TestFiles.FixturePath("photo.jpg")), 6);

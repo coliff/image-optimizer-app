@@ -61,6 +61,21 @@ public class ToolIntegrationTests : IDisposable
     Assert.Equal(before, File.ReadAllBytes(path));
   }
 
+  [Theory]
+  [InlineData(6, true)]
+  [InlineData(1, false)]
+  public async Task Png_keeps_exif_only_when_it_rotates_the_image(ushort orientation, bool kept)
+  {
+    RequireTools("oxipng");
+    var png = TestFiles.WithPngExifOrientation(File.ReadAllBytes(TestFiles.FixturePath("unoptimized.png")), orientation);
+    var path = _files.Write("rotated.png", png);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.Equal(kept ? orientation : null, ImageInspector.GetPngExifOrientation(File.ReadAllBytes(path)));
+  }
+
   [Fact]
   public async Task Animated_png_is_left_alone()
   {
@@ -333,6 +348,32 @@ public class ToolIntegrationTests : IDisposable
 
     Assert.Equal(OptimizationStatus.Optimized, result.Status);
     Assert.Contains("<metadata>", File.ReadAllText(path));
+  }
+
+  [Fact]
+  public async Task Jpeg_with_data_after_the_image_is_left_alone()
+  {
+    // Like a motion photo, whose video follows the JPEG.
+    byte[] jpeg = [.. File.ReadAllBytes(TestFiles.FixturePath("photo.jpg")), .. "\0\0\0\u0018ftyp"u8, .. "mp42"u8, .. new byte[5000]];
+    var path = _files.Write("motion.jpg", jpeg);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Skipped, result.Status);
+    Assert.Equal(jpeg, File.ReadAllBytes(path));
+  }
+
+  [Fact]
+  public async Task Svg_that_is_not_utf8_is_left_alone()
+  {
+    // "café" in Latin-1, which would come out as a replacement character if read as UTF-8.
+    byte[] svg = [.. "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><svg xmlns=\"http://www.w3.org/2000/svg\"><text>caf"u8, 0xE9, .. "</text></svg>"u8];
+    var path = _files.Write("latin1.svg", svg);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Skipped, result.Status);
+    Assert.Equal(svg, File.ReadAllBytes(path));
   }
 
   [Fact]
