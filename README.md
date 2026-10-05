@@ -111,6 +111,10 @@ are attached to the workflow run as the `ImageOptimizer-win-x64` and `ImageOptim
 The engine (`src/ImageOptimizer.Core`) is cross-platform, so its tests also run on Linux or macOS
 with `oxipng`, `jpegtran`, `cwebp`/`dwebp`/`webpmux`, `avifenc`/`avifdec`, `cjxl`/`djxl` and `gifsicle` on the `PATH`.
 
+The tests include [FsCheck](https://github.com/fscheck/FsCheck) property tests (`PropertyTests.cs`) that fuzz the
+engine with random and damaged images, checking that nothing crashes and that a file is only ever replaced by a
+smaller, verified copy.
+
 ## License
 
 Image Optimizer is released under the [MIT License](LICENSE). The bundled tools keep their own
