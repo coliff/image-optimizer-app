@@ -18,6 +18,10 @@
   <data name="Bytes" xml:space="preserve">
     <value>{0:N0} bytes</value>
   </data>
+  <data name="SizeUnits" xml:space="preserve">
+    <value>KB,MB,GB,TB</value>
+    <comment>Kilobytes, megabytes, gigabytes and terabytes, as Explorer shows them, separated by commas</comment>
+  </data>
   <data name="FileNotFound" xml:space="preserve">
     <value>File not found</value>
   </data>
@@ -64,6 +68,9 @@
   </data>
   <data name="SvgNotUtf8" xml:space="preserve">
     <value>SVG that isn't UTF-8 encoded is left untouched</value>
+  </data>
+  <data name="SvgTooDeep" xml:space="preserve">
+    <value>SVG that is nested too deeply is left untouched</value>
   </data>
   <data name="AvifGrid" xml:space="preserve">
     <value>Tiled (grid) AVIF is left untouched</value>

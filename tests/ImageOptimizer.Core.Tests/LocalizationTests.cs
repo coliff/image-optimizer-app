@@ -18,4 +18,11 @@ public class LocalizationTests
     Assert.Equal("有効な JPEG XL ファイルではありません", Strings.InvalidFile(ImageFormat.JpegXl));
     Assert.Equal("1 バイト", SizeFormatter.Format(1));
   });
+
+  [Fact]
+  public void Sizes_use_the_display_language_units() => Translations.InLanguage("fr-FR", () =>
+  {
+    Assert.Equal("2 Ko", SizeFormatter.Format(2048));
+    Assert.Equal("3 Mo", SizeFormatter.Format(3L * 1024 * 1024));
+  });
 }

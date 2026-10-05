@@ -18,6 +18,9 @@
   <data name="Bytes" xml:space="preserve">
     <value>{0:N0} octets</value>
   </data>
+  <data name="SizeUnits" xml:space="preserve">
+    <value>Ko,Mo,Go,To</value>
+  </data>
   <data name="FileNotFound" xml:space="preserve">
     <value>Fichier introuvable</value>
   </data>
@@ -59,6 +62,9 @@
   </data>
   <data name="SvgNotUtf8" xml:space="preserve">
     <value>Les SVG qui ne sont pas encodés en UTF-8 ne sont pas modifiés</value>
+  </data>
+  <data name="SvgTooDeep" xml:space="preserve">
+    <value>Les SVG trop profondément imbriqués ne sont pas modifiés</value>
   </data>
   <data name="AvifGrid" xml:space="preserve">
     <value>Les AVIF en mosaïque (grille) ne sont pas modifiés</value>

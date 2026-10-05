@@ -95,6 +95,26 @@ public class InspectorTests
     Assert.False(ImageInspector.InspectWebP("RIFF"u8).IsValid);
   }
 
+  [Theory]
+  [InlineData(false)]
+  [InlineData(true)]
+  public void Reads_webp_exif_orientation(bool withExifHeader)
+  {
+    byte[] exif = [.. withExifHeader ? "Exif\0\0"u8.ToArray() : [], .. TestFiles.ExifTiff(6, littleEndian: true)];
+    var chunk = new byte[8 + exif.Length + (exif.Length & 1)];
+    "EXIF"u8.CopyTo(chunk);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(chunk.AsSpan(4), (uint)exif.Length);
+    exif.CopyTo(chunk, 8);
+    var webp = File.ReadAllBytes(TestFiles.FixturePath("lossy.webp"));
+
+    var info = ImageInspector.InspectWebP([.. webp, .. chunk]);
+
+    Assert.True(info.HasExif);
+    Assert.Equal(6, info.ExifOrientation);
+    Assert.True(info.ExifRotates);
+    Assert.Null(ImageInspector.InspectWebP(webp).ExifOrientation);
+  }
+
   [Fact]
   public void Classifies_avif_files()
   {
@@ -208,6 +228,28 @@ public class InspectorTests
     Assert.Equal(2, collected.Count);
     Assert.Contains(Path.GetFullPath(a), collected);
     Assert.Contains(Path.GetFullPath(b), collected);
+  }
+
+  [Fact]
+  public void Skips_linked_files_and_folders_but_not_their_targets()
+  {
+    using var files = new TestFiles();
+    var photos = Path.Combine(files.Directory, "photos");
+    Directory.CreateDirectory(photos);
+    var a = files.CopyFixture("photo.jpg", Path.Combine("photos", "a.jpg"));
+    try
+    {
+      File.CreateSymbolicLink(Path.Combine(files.Directory, "link.jpg"), a);
+      Directory.CreateSymbolicLink(Path.Combine(files.Directory, "linked folder"), photos);
+    }
+    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+    {
+      Assert.Skip("This account can't create symbolic links.");
+    }
+
+    var collected = FileCollector.Collect([files.Directory]).ToList();
+
+    Assert.Equal([Path.GetFullPath(a)], collected);
   }
 
   [Fact]
