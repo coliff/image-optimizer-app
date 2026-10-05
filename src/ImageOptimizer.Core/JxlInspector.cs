@@ -27,7 +27,8 @@ public static class JxlInspector
     {
       return Parse(data);
     }
-    catch (Exception ex) when (ex is ArgumentOutOfRangeException or IndexOutOfRangeException or InvalidDataException or OverflowException or EndOfStreamException)
+    // BrotliStream reports a damaged compressed box with InvalidOperationException.
+    catch (Exception ex) when (ex is ArgumentOutOfRangeException or IndexOutOfRangeException or InvalidDataException or InvalidOperationException or OverflowException or EndOfStreamException)
     {
       return JxlInfo.Invalid;
     }

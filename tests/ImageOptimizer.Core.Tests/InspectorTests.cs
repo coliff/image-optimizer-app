@@ -192,6 +192,17 @@ public class InspectorTests
     }
   }
 
+  [Fact]
+  public void Damaged_compressed_jpeg_xl_box_does_not_throw()
+  {
+    // A brob box claiming to hold Brotli-compressed EXIF, put right after the signature and ftyp boxes, whose
+    // contents aren't valid Brotli.
+    byte[] brob = [0, 0, 0, 16, .. "brobExif"u8, 0xFF, 0xFF, 0xFF, 0xFF];
+    var jxl = File.ReadAllBytes(TestFiles.FixturePath("lossless.jxl"));
+
+    Assert.False(JxlInspector.Inspect([.. jxl[..32], .. brob, .. jxl[32..]]).IsValid);
+  }
+
   [Theory]
   [InlineData(0, "0 bytes")]
   [InlineData(1, "1 byte")]
