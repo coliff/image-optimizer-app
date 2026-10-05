@@ -116,6 +116,7 @@
   "language": "en,en-US",
   "ignorePaths": [
     ".cspell.json",
+    "src/*/Strings.*.resx",
     "**/node_modules/**"
   ],
   "useGitignore": true

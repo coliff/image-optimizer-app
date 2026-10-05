@@ -51,8 +51,10 @@ jobs:
           foreach ($tool in 'oxipng', 'jpegtran', 'cwebp', 'dwebp', 'webpmux', 'avifenc', 'avifdec', 'jxl/cjxl', 'jxl/djxl', 'gifsicle') {
             if (-not (Test-Path "publish/tools/$tool.exe")) { throw "$tool.exe is missing from the published app" }
           }
-          foreach ($satellite in 'ja/ImageOptimizer.resources.dll', 'ja/ImageOptimizer.Core.resources.dll') {
-            if (-not (Test-Path "publish/$satellite")) { throw "$satellite is missing from the published app" }
+          foreach ($language in 'de', 'es', 'fr', 'it', 'ja') {
+            foreach ($satellite in "$language/ImageOptimizer.resources.dll", "$language/ImageOptimizer.Core.resources.dll") {
+              if (-not (Test-Path "publish/$satellite")) { throw "$satellite is missing from the published app" }
+            }
           }
           Get-ChildItem publish -Recurse -File | Measure-Object Length -Sum | ForEach-Object { "Published {0:N0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
 

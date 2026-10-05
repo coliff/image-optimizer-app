@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="OneByte" xml:space="preserve">
+    <value>1 octet</value>
+  </data>
+  <data name="Bytes" xml:space="preserve">
+    <value>{0:N0} octets</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>Fichier introuvable</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Ce n'est pas une image AVIF, GIF, JPEG, JPEG XL, PNG, SVG ou WebP</value>
+  </data>
+  <data name="FormatTurnedOff" xml:space="preserve">
+    <value>L'optimisation {0} est désactivée dans les paramètres</value>
+  </data>
+  <data name="FileEmpty" xml:space="preserve">
+    <value>Le fichier est vide</value>
+  </data>
+  <data name="PixelsDiffer" xml:space="preserve">
+    <value>L'image optimisée ne correspondait pas à l'original, elle a donc été ignorée</value>
+  </data>
+  <data name="FileChanged" xml:space="preserve">
+    <value>Le fichier a été modifié pendant son optimisation</value>
+  </data>
+  <data name="CannotWrite" xml:space="preserve">
+    <value>Impossible d'écrire dans le fichier (il est peut-être en lecture seule ou en cours d'utilisation)</value>
+  </data>
+  <data name="ToolMissing" xml:space="preserve">
+    <value>L'optimiseur intégré « {0} » est introuvable. Veuillez réinstaller Image Optimizer.</value>
+  </data>
+  <data name="InvalidFile" xml:space="preserve">
+    <value>Ce n'est pas un fichier {0} valide</value>
+  </data>
+  <data name="AnimatedLeftUntouched" xml:space="preserve">
+    <value>Les {0} animés ne sont pas modifiés</value>
+  </data>
+  <data name="LossyCannotRecompress" xml:space="preserve">
+    <value>Un {0} avec perte ne peut pas être recompressé sans perte de qualité</value>
+  </data>
+  <data name="AnimatedWebPNothingToRemove" xml:space="preserve">
+    <value>Ce WebP animé ne contient rien à supprimer sans perte</value>
+  </data>
+  <data name="JpegTrailingData" xml:space="preserve">
+    <value>Les JPEG contenant des données après l'image (comme la vidéo d'une photo animée ou une carte de gain HDR) ne sont pas modifiés</value>
+  </data>
+  <data name="SvgNotUtf8" xml:space="preserve">
+    <value>Les SVG qui ne sont pas encodés en UTF-8 ne sont pas modifiés</value>
+  </data>
+  <data name="AvifGrid" xml:space="preserve">
+    <value>Les AVIF en mosaïque (grille) ne sont pas modifiés</value>
+  </data>
+  <data name="AvifUnsupportedType" xml:space="preserve">
+    <value>Type d'image AVIF non pris en charge</value>
+  </data>
+  <data name="AvifAuxiliaryImages" xml:space="preserve">
+    <value>Les AVIF avec des images auxiliaires supplémentaires ne sont pas modifiés</value>
+  </data>
+  <data name="AvifEmbeddedItems" xml:space="preserve">
+    <value>Les AVIF avec des éléments incorporés supplémentaires ne sont pas modifiés</value>
+  </data>
+  <data name="AvifProperty" xml:space="preserve">
+    <value>Les AVIF avec une propriété « {0} » ne sont pas modifiés</value>
+  </data>
+  <data name="AvifPremultipliedAlpha" xml:space="preserve">
+    <value>Les AVIF avec alpha prémultiplié ne sont pas modifiés</value>
+  </data>
+  <data name="JxlRotated" xml:space="preserve">
+    <value>Les JPEG XL pivotés ou retournés ne sont pas modifiés</value>
+  </data>
+  <data name="JxlHighBitDepth" xml:space="preserve">
+    <value>Les JPEG XL de plus de 16 bits par canal ne sont pas modifiés</value>
+  </data>
+  <data name="JxlExtraChannels" xml:space="preserve">
+    <value>Les JPEG XL avec des canaux supplémentaires ne sont pas modifiés</value>
+  </data>
+  <data name="JxlGainMap" xml:space="preserve">
+    <value>Les JPEG XL avec une carte de gain ne sont pas modifiés</value>
+  </data>
+  <data name="JxlBox" xml:space="preserve">
+    <value>Les JPEG XL avec une boîte « {0} » ne sont pas modifiés</value>
+  </data>
+  <data name="JxlCompressedBox" xml:space="preserve">
+    <value>Les JPEG XL avec une boîte « {0} » compressée ne sont pas modifiés</value>
+  </data>
+  <data name="JxlHeaderExtensions" xml:space="preserve">
+    <value>Les JPEG XL avec des extensions d'en-tête ne sont pas modifiés</value>
+  </data>
+</root>
