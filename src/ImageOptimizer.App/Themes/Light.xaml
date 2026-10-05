@@ -8,7 +8,10 @@
   <SolidColorBrush x:Key="TextBrush" Color="#1F1F1F" />
   <SolidColorBrush x:Key="SubtleTextBrush" Color="#666666" />
   <SolidColorBrush x:Key="FooterBackgroundBrush" Color="#F3F3F3" />
+  <SolidColorBrush x:Key="CardBackgroundBrush" Color="#F7F7F7" />
   <SolidColorBrush x:Key="AccentBrush" Color="#1A6BD1" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="#175EB8" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="#134F9C" />
   <SolidColorBrush x:Key="SuccessBrush" Color="#1F8A3A" />
   <SolidColorBrush x:Key="DangerBrush" Color="#C9372E" />
   <SolidColorBrush x:Key="NeutralBrush" Color="#767676" />

@@ -61,12 +61,6 @@
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
           </Border>
           <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-              <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ButtonPressedBrush}" />
-            </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.45" />
             </Trigger>
@@ -74,6 +68,15 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+    <!-- Style triggers rather than template triggers, so AccentButton can swap in its own hover and pressed colors. -->
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource ButtonPressedBrush}" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
   <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
@@ -88,6 +91,17 @@
     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
     <Setter Property="MinWidth" Value="80" />
+    <!-- Stay accent-colored on hover and press so OnAccentBrush text keeps its contrast. -->
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      </Trigger>
+      <Trigger Property="IsPressed" Value="True">
+        <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentPressedBrush}" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
   <Style TargetType="CheckBox">
@@ -132,6 +146,16 @@
   <Style x:Key="SectionHeader" TargetType="TextBlock">
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Margin" Value="0,0,0,6" />
+  </Style>
+
+  <!-- A rounded panel that groups related settings. -->
+  <Style x:Key="SettingsCard" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
   </Style>
 
   <Style x:Key="HintText" TargetType="TextBlock">
