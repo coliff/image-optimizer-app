@@ -46,7 +46,7 @@ orientation are always kept so images look exactly the same.
 - Formats to optimize (AVIF, GIF, JPEG, JPEG XL, PNG, SVG, WebP)
 - Remove metadata (on by default)
 - Maximum compression: Zopfli for PNG, maximum effort for WebP, AVIF and JPEG XL, multipass SVGO (off by default; much slower)
-- Allow progressive JPEG (on by default)
+- Use progressive JPEG when it's smaller (on by default)
 - Keep each file's original "Date modified" (on by default)
 - Check for updates when the app starts (on by default)
 - Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default when installed)

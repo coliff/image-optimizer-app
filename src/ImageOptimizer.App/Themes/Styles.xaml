@@ -224,7 +224,7 @@
     </Style.Triggers>
   </Style>
 
-  <!-- Small spinner shown while a file is being optimized. -->
+  <!-- Small spinner shown while a file is being optimized. It only spins while Windows animation effects are on. -->
   <Style x:Key="Spinner" TargetType="Ellipse">
     <Setter Property="Width" Value="14" />
     <Setter Property="Height" Value="14" />
@@ -239,14 +239,19 @@
       </Setter.Value>
     </Setter>
     <Style.Triggers>
-      <EventTrigger RoutedEvent="Loaded">
-        <BeginStoryboard>
-          <Storyboard>
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                     From="0" To="360" Duration="0:0:0.9" RepeatBehavior="Forever" />
-          </Storyboard>
-        </BeginStoryboard>
-      </EventTrigger>
+      <DataTrigger Binding="{Binding Path=(SystemParameters.ClientAreaAnimation)}" Value="True">
+        <DataTrigger.EnterActions>
+          <BeginStoryboard x:Name="Spin">
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                       From="0" To="360" Duration="0:0:0.9" RepeatBehavior="Forever" />
+            </Storyboard>
+          </BeginStoryboard>
+        </DataTrigger.EnterActions>
+        <DataTrigger.ExitActions>
+          <RemoveStoryboard BeginStoryboardName="Spin" />
+        </DataTrigger.ExitActions>
+      </DataTrigger>
     </Style.Triggers>
   </Style>
 

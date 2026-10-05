@@ -26,6 +26,8 @@ public class SortingTests
     Assert.Equal(["b.png", "a.png", "c.png"], Order(viewModel));
     Assert.EndsWith("\u25BE", viewModel.SavingsHeader);
     Assert.Equal("Size", viewModel.SizeHeader);
+    Assert.Equal("Savings, sorted descending", viewModel.SavingsHeaderName);
+    Assert.Equal("Size", viewModel.SizeHeaderName);
 
     viewModel.SortBy(SortColumn.Savings);
     Assert.Equal(["c.png", "a.png", "b.png"], Order(viewModel));
@@ -36,5 +38,6 @@ public class SortingTests
     viewModel.SortBy(SortColumn.File);
     Assert.Equal(["a.png", "b.png", "c.png"], Order(viewModel));
     Assert.EndsWith("\u25B4", viewModel.FileHeader);
+    Assert.Equal("File, sorted ascending", viewModel.FileHeaderName);
   }
 }

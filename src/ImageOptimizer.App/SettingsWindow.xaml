@@ -11,7 +11,7 @@
     <Border DockPanel.Dock="Bottom" Background="{DynamicResource FooterBackgroundBrush}"
         BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,1,0,0" Padding="16,10">
       <DockPanel>
-        <Button DockPanel.Dock="Left" Style="{StaticResource FlatButton}" Content="Restore defaults" Click="OnRestoreDefaults" />
+        <Button DockPanel.Dock="Left" Style="{StaticResource FlatButton}" Content="Res_tore defaults" Click="OnRestoreDefaults" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
           <Button Style="{StaticResource FlatButton}" Content="Cancel" IsCancel="True" MinWidth="80" Margin="0,0,8,0" />
           <Button Style="{StaticResource AccentButton}" Content="Save" IsDefault="True" Click="OnSave" />
@@ -26,27 +26,30 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Margin="0,0,28,0">
           <TextBlock Text="Enable" Style="{StaticResource SectionHeader}" />
-          <CheckBox x:Name="Avif" Content="AVIF" />
-          <CheckBox x:Name="Gif" Content="GIF" />
-          <CheckBox x:Name="Jpeg" Content="JPEG" />
-          <CheckBox x:Name="JpegXl" Content="JPEG XL" />
-          <CheckBox x:Name="Png" Content="PNG" />
-          <CheckBox x:Name="Svg" Content="SVG" />
-          <CheckBox x:Name="WebP" Content="WebP" />
+          <CheckBox x:Name="Avif" Content="_AVIF" />
+          <CheckBox x:Name="Gif" Content="_GIF" />
+          <CheckBox x:Name="Jpeg" Content="_JPEG" />
+          <CheckBox x:Name="JpegXl" Content="JPEG _XL" />
+          <CheckBox x:Name="Png" Content="_PNG" />
+          <CheckBox x:Name="Svg" Content="_SVG" />
+          <CheckBox x:Name="WebP" Content="_WebP" />
         </StackPanel>
         <StackPanel Grid.Column="1">
           <TextBlock Text="Options" Style="{StaticResource SectionHeader}" />
-          <CheckBox x:Name="StripMetadata" Content="Remove metadata (EXIF, comments, camera info)" />
-          <TextBlock Text="Color profiles and photo orientation are always kept, so images look the same."
+          <CheckBox x:Name="StripMetadata" Content="_Remove metadata (EXIF, comments, camera info)"
+              AutomationProperties.HelpText="{Binding Text, ElementName=StripMetadataHint}" />
+          <TextBlock x:Name="StripMetadataHint" Text="Color profiles and photo orientation are always kept, so images look the same."
                 Style="{StaticResource HintText}" Margin="22,0,0,6" />
-          <CheckBox x:Name="MaximumCompression" Content="Maximum compression (much slower)" />
-          <TextBlock Text="Uses Zopfli for PNG, the highest effort for lossless WebP, AVIF and JPEG XL, and multipass SVGO."
+          <CheckBox x:Name="MaximumCompression" Content="_Maximum compression (much slower)"
+              AutomationProperties.HelpText="{Binding Text, ElementName=MaximumCompressionHint}" />
+          <TextBlock x:Name="MaximumCompressionHint" Text="Uses Zopfli for PNG, the highest effort for lossless WebP, AVIF and JPEG XL, and multipass SVGO."
                 Style="{StaticResource HintText}" Margin="22,0,0,6" />
-          <CheckBox x:Name="AllowProgressiveJpeg" Content="Allow progressive JPEG when it's smaller" />
-          <CheckBox x:Name="PreserveModifiedDate" Content="Keep each file's original &quot;Date modified&quot;" />
-          <CheckBox x:Name="CheckForUpdates" Content="Check for updates when the app starts" />
-          <CheckBox x:Name="ExplorerMenu" Content="Add &quot;Optimize with Image Optimizer&quot; to File Explorer" Margin="0,6,0,0" />
-          <TextBlock Text="Right-click images or folders to optimize them. On Windows 11 it's under &quot;Show more options&quot;."
+          <CheckBox x:Name="AllowProgressiveJpeg" Content="_Use progressive JPEG when it's smaller" />
+          <CheckBox x:Name="PreserveModifiedDate" Content="_Keep each file's original &quot;Date modified&quot;" />
+          <CheckBox x:Name="CheckForUpdates" Content="_Check for updates when the app starts" />
+          <CheckBox x:Name="ExplorerMenu" Content="Add &quot;Optimize with Image Optimizer&quot; to File _Explorer" Margin="0,6,0,0"
+              AutomationProperties.HelpText="{Binding Text, ElementName=ExplorerMenuHint}" />
+          <TextBlock x:Name="ExplorerMenuHint" Text="Right-click images or folders to optimize them. On Windows 11 it's under &quot;Show more options&quot;."
                 Style="{StaticResource HintText}" Margin="22,0,0,6" TextWrapping="Wrap" />
         </StackPanel>
       </Grid>

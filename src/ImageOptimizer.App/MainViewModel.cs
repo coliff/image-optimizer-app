@@ -48,6 +48,11 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   public string SizeHeader => Header("Size", SortColumn.Size);
   public string SavingsHeader => Header("Savings", SortColumn.Savings);
 
+  /// <summary>Header names for screen readers, which read the sort arrows as symbols.</summary>
+  public string FileHeaderName => HeaderName("File", SortColumn.File);
+  public string SizeHeaderName => HeaderName("Size", SortColumn.Size);
+  public string SavingsHeaderName => HeaderName("Savings", SortColumn.Savings);
+
   public bool IsEmpty => Files.Count == 0;
 
   public bool IsBusy => _pending > 0;
@@ -219,10 +224,16 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     OnPropertyChanged(nameof(FileHeader));
     OnPropertyChanged(nameof(SizeHeader));
     OnPropertyChanged(nameof(SavingsHeader));
+    OnPropertyChanged(nameof(FileHeaderName));
+    OnPropertyChanged(nameof(SizeHeaderName));
+    OnPropertyChanged(nameof(SavingsHeaderName));
   }
 
   private string Header(string title, SortColumn column) =>
     SortedBy == column ? $"{title} {(SortDescending ? "\u25BE" : "\u25B4")}" : title;
+
+  private string HeaderName(string title, SortColumn column) =>
+    SortedBy == column ? $"{title}, sorted {(SortDescending ? "descending" : "ascending")}" : title;
 
   private void RaiseStateChanged()
   {
