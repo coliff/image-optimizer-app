@@ -36,8 +36,9 @@ public partial class App : Application
     if (e.Args.Length > 0)
       viewModel.Add(e.Args);
 
-    // Files opened from Explorer's right-click menu (or the app opened again) arrive from the other copies.
-    _instance?.Listen(paths => Dispatcher.BeginInvoke(() =>
+    // Files opened from Explorer's right-click menu (or the app opened again) arrive from the other copies,
+    // including any that arrived while the window was opening.
+    _instance?.OnReceived(paths => Dispatcher.BeginInvoke(() =>
     {
       if (paths.Length > 0)
         viewModel.Add(paths);

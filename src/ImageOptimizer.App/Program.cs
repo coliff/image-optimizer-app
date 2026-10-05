@@ -17,7 +17,9 @@ public static class Program
 
     // Explorer starts one copy per selected file, so all but the first pass their files on and exit.
     using var instance = new SingleInstance();
-    if (!instance.IsFirst && instance.TrySend(args, TimeSpan.FromSeconds(5)))
+    if (instance.IsFirst)
+      instance.Listen();
+    else if (instance.TrySend(args, TimeSpan.FromSeconds(5)))
       return;
 
     var app = new App(instance.IsFirst ? instance : null);

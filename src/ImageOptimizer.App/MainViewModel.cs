@@ -14,6 +14,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   private readonly Channel<FileItem> _queue = Channel.CreateUnbounded<FileItem>();
   private readonly CancellationTokenSource _shutdown = new();
   private readonly Dictionary<string, FileItem> _byPath = new(StringComparer.OrdinalIgnoreCase);
+  private readonly HashSet<Task> _running = [];
   private int _pending;
   private string? _updateVersion;
 
@@ -174,9 +175,12 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
         var settings = Settings;
         OptimizationResult result;
+        var work = Task.Run(() => _engine.OptimizeAsync(item.Path, settings, token), token);
+        lock (_running)
+          _running.Add(work);
         try
         {
-          result = await Task.Run(() => _engine.OptimizeAsync(item.Path, settings, token), token);
+          result = await work;
         }
         catch (OperationCanceledException)
         {
@@ -185,6 +189,11 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         catch (Exception ex)
         {
           result = new OptimizationResult(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, ex.Message);
+        }
+        finally
+        {
+          lock (_running)
+            _running.Remove(work);
         }
 
         item.Apply(result);
@@ -249,11 +258,27 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   private void OnPropertyChanged([CallerMemberName] string? name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+  /// <summary>
+  /// Stops the queue. Files being optimized are cut short: their tools are stopped and their temporary files
+  /// removed (the originals are only replaced in a single final step, so they're left as they were).
+  /// </summary>
   public void Dispose()
   {
     _shutdown.Cancel();
     _queue.Writer.TryComplete();
-    _shutdown.Dispose();
+
+    // Give the cancelled files a moment to stop their tools and clean up before the app exits. The engine
+    // doesn't need this thread to finish, so waiting here can't deadlock.
+    Task[] running;
+    lock (_running)
+      running = [.. _running];
+    try
+    {
+      Task.WaitAll(running, TimeSpan.FromSeconds(5));
+    }
+    catch (AggregateException)
+    {
+    }
   }
 }
 
