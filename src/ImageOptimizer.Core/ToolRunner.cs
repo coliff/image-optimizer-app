@@ -86,6 +86,8 @@ public sealed class ToolRunner : IToolRunner
 
     using var process = new Process { StartInfo = startInfo };
     process.Start();
+    // Closing the app mid-batch (or a crash) ends the tool too, rather than leaving it running in the background.
+    ChildProcessJob.Shared?.TryAdd(process);
     try
     {
       // Keep the desktop responsive while large batches are crunching.

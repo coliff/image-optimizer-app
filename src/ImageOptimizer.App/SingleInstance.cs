@@ -15,6 +15,9 @@ public sealed class SingleInstance : IDisposable
   private readonly Mutex _mutex;
   private readonly string _pipeName;
   private readonly CancellationTokenSource _stop = new();
+  private readonly Lock _lock = new();
+  private List<string[]>? _backlog = [];
+  private Action<string[]>? _received;
 
   public SingleInstance(string? name = null)
   {
@@ -51,15 +54,42 @@ public sealed class SingleInstance : IDisposable
     }
   }
 
-  /// <summary>Starts accepting paths from later launches. <paramref name="received"/> runs on a background thread.</summary>
-  public void Listen(Action<string[]> received)
+  /// <summary>
+  /// Starts accepting paths from later launches. Called as soon as the app starts, before the window is ready,
+  /// so copies that Explorer starts during a slow first launch find it rather than opening windows of their own.
+  /// Paths that arrive before <see cref="OnReceived"/> is called are kept for it.
+  /// </summary>
+  public void Listen()
   {
     if (!IsFirst)
       throw new InvalidOperationException("Only the first copy of the app listens.");
-    _ = Task.Run(() => ListenAsync(received, _stop.Token));
+    _ = Task.Run(() => ListenAsync(_stop.Token));
   }
 
-  private async Task ListenAsync(Action<string[]> received, CancellationToken cancel)
+  /// <summary>Hands over the paths received so far, then each later batch. <paramref name="received"/> runs on a background thread.</summary>
+  public void OnReceived(Action<string[]> received)
+  {
+    lock (_lock)
+    {
+      _received = received;
+      foreach (var paths in _backlog ?? [])
+        received(paths);
+      _backlog = null;
+    }
+  }
+
+  private void Deliver(string[] paths)
+  {
+    lock (_lock)
+    {
+      if (_received is null)
+        _backlog?.Add(paths);
+      else
+        _received(paths);
+    }
+  }
+
+  private async Task ListenAsync(CancellationToken cancel)
   {
     while (!cancel.IsCancellationRequested)
     {
@@ -90,7 +120,7 @@ public sealed class SingleInstance : IDisposable
           {
             using var reader = new StreamReader(server, Encoding.UTF8);
             var message = await reader.ReadToEndAsync(cancel);
-            received(message.Split('\n', StringSplitOptions.RemoveEmptyEntries));
+            Deliver(message.Split('\n', StringSplitOptions.RemoveEmptyEntries));
           }
           catch (Exception ex) when (ex is IOException or OperationCanceledException)
           {
