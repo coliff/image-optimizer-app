@@ -1,6 +1,7 @@
 {
   "name": "image-optimizer-app",
-  "version": "1.0.0",
+  "version": "0.7.0",
+  "private": true,
   "description": "A lightweight, fast, lossless image optimizer for Windows",
   "homepage": "https://github.com/coliff/image-optimizer-app#readme",
   "bugs": {
@@ -10,10 +11,14 @@
     "type": "git",
     "url": "git+https://github.com/coliff/image-optimizer-app.git"
   },
+  "funding": "https://github.com/sponsors/coliff",
   "license": "MIT",
   "author": "Christian Oliff",
   "scripts": {
     "cspell": "npx cspell --no-progress \"**\"",
     "prettier": "npx prettier --write ."
+  },
+  "engines": {
+    "node": ">=24"
   }
 }
