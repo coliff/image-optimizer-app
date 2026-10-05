@@ -24,6 +24,8 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -34,6 +36,7 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Work out the version
+        id: version
         shell: pwsh
         env:
           EVENT: ${{ github.event_name }}
@@ -57,6 +60,7 @@ jobs:
           }
           "VERSION=$version" >> $env:GITHUB_ENV
           "TAG=v$version" >> $env:GITHUB_ENV
+          "tag=v$version" >> $env:GITHUB_OUTPUT
 
       - name: Download optimizer tools
         shell: pwsh
@@ -99,3 +103,14 @@ jobs:
           dotnet vpk upload github --repoUrl "https://github.com/$env:GITHUB_REPOSITORY" --channel win --outputDir releases `
             --token $env:GITHUB_TOKEN --tag $env:TAG --releaseName "Image Optimizer $env:VERSION" --publish
           if ($LASTEXITCODE -ne 0) { throw 'vpk upload failed' }
+
+  virustotal:
+    needs: release
+    permissions:
+      contents: read
+    # actionlint doesn't accept the newer "$/" self-repository form yet.
+    uses: ./.github/workflows/virustotal.yml # zizmor: ignore[self-repository]
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+    secrets:
+      VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}

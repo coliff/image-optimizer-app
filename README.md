@@ -90,6 +90,12 @@ Bump `<Version>` in `Directory.Build.props`, then open **Actions > Publish > Run
 [Velopack](https://velopack.io/), and publishes them as a GitHub Release. Installed copies pick it up on their next launch.
 Pushing a `vX.Y.Z` tag yourself does the same.
 
+After publishing, the **VirusTotal** workflow uploads the installer and the app's own exe and DLL to
+[VirusTotal](https://www.virustotal.com/) and lists any antivirus engines that flag them in the run summary, so
+false positives show up before people hit them. It needs a free VirusTotal API key saved as the `VIRUSTOTAL_API_KEY`
+repository secret (without one it skips the scan), and it never fails a release. To scan an earlier release, open
+**Actions > VirusTotal > Run workflow**.
+
 ## Building
 
 ```powershell
