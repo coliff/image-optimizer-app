@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace ImageOptimizer.Core;
 
 public sealed class ToolNotFoundException(string tool)
-    : Exception($"The bundled optimizer \"{tool}\" is missing. Please reinstall Image Optimizer.")
+    : Exception(Strings.ToolMissing(tool))
 {
   public string Tool { get; } = tool;
 }

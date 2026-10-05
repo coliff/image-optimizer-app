@@ -164,7 +164,7 @@ public static class AvifInspector
 
     var info = new AvifInfo { IsValid = true, IsAnimated = animated };
     if (primaryType != "av01")
-      return info with { UnsupportedReason = primaryType == "grid" ? "Tiled (grid) AVIF is left untouched" : "Unsupported AVIF image type" };
+      return info with { UnsupportedReason = primaryType == "grid" ? Strings.AvifGrid : Strings.AvifUnsupportedType };
 
     // Find the alpha plane, and fail on any other auxiliary image (depth maps, gain maps, ...).
     uint alpha = 0;
@@ -182,7 +182,7 @@ public static class AvifInspector
           }
         }
         if (auxType is null || !AlphaAuxTypes.Contains(auxType) || alpha != 0)
-          return info with { UnsupportedReason = "AVIF with extra auxiliary images is left untouched" };
+          return info with { UnsupportedReason = Strings.AvifAuxiliaryImages };
         alpha = from;
       }
     }
@@ -200,7 +200,7 @@ public static class AvifInspector
       else if (type == "mime" && describesPrimary && xmp is null && mimeTypes.GetValueOrDefault(id) == "application/rdf+xml")
         xmp = ReadItem(data, locations, idat, id);
       else
-        return info with { UnsupportedReason = "AVIF with extra embedded items is left untouched" };
+        return info with { UnsupportedReason = Strings.AvifEmbeddedItems };
     }
 
     info = info with { HasAlpha = alpha != 0, AlphaPremultiplied = premultiplied, Exif = exif, Xmp = xmp };
@@ -265,7 +265,7 @@ public static class AvifInspector
           break;
         default:
           if (!KnownProperties.Contains(type))
-            return info with { UnsupportedReason = $"AVIF with a \"{type}\" property is left untouched" };
+            return info with { UnsupportedReason = Strings.AvifProperty(type) };
           break;
       }
     }

@@ -95,9 +95,9 @@ public static class JxlInspector
           break;
         default:
           if (!StructuralBoxes.Contains(type) && !compressed)
-            unsupported ??= type == "jhgm" ? "JPEG XL with a gain map is left untouched" : $"JPEG XL with a \"{type.Trim()}\" box is left untouched";
+            unsupported ??= type == "jhgm" ? Strings.JxlGainMap : Strings.JxlBox(type.Trim());
           else if (compressed)
-            unsupported ??= $"JPEG XL with a compressed \"{type.Trim()}\" box is left untouched";
+            unsupported ??= Strings.JxlCompressedBox(type.Trim());
           break;
       }
       offset = (int)(offset + size);
@@ -181,7 +181,7 @@ public static class JxlInspector
       info = info with { ToneMapping = ReadToneMapping(ref r) };
 
     if (r.U64() != 0)
-      info = info with { UnsupportedReason = "JPEG XL with header extensions is left untouched" };
+      info = info with { UnsupportedReason = Strings.JxlHeaderExtensions };
     return info;
   }
 

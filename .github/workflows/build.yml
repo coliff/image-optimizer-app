@@ -44,12 +44,15 @@ jobs:
       - name: Publish
         run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish
 
-      - name: Check the published app bundles every tool
+      - name: Check the published app bundles every tool and translation
         shell: pwsh
         run: |
           if (-not (Test-Path "publish/tools/svgo.browser.js")) { throw "svgo.browser.js is missing from the published app" }
           foreach ($tool in 'oxipng', 'jpegtran', 'cwebp', 'dwebp', 'webpmux', 'avifenc', 'avifdec', 'jxl/cjxl', 'jxl/djxl', 'gifsicle') {
             if (-not (Test-Path "publish/tools/$tool.exe")) { throw "$tool.exe is missing from the published app" }
+          }
+          foreach ($satellite in 'ja/ImageOptimizer.resources.dll', 'ja/ImageOptimizer.Core.resources.dll') {
+            if (-not (Test-Path "publish/$satellite")) { throw "$satellite is missing from the published app" }
           }
           Get-ChildItem publish -Recurse -File | Measure-Object Length -Sum | ForEach-Object { "Published {0:N0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
 

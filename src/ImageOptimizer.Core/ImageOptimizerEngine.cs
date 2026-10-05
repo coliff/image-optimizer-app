@@ -61,7 +61,7 @@ public sealed class ImageOptimizerEngine
     {
       original = new FileInfo(path);
       if (!original.Exists)
-        return new(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, "File not found");
+        return new(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, Strings.FileNotFound);
       format = ImageFormats.Detect(path);
     }
     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -75,11 +75,11 @@ public sealed class ImageOptimizerEngine
         new(status, format, originalSize, finalSize ?? originalSize, message);
 
     if (format == ImageFormat.Unknown || !_optimizers.TryGetValue(format, out var optimizer))
-      return Result(OptimizationStatus.Skipped, "Not an AVIF, GIF, JPEG, JPEG XL, PNG, SVG or WebP image");
+      return Result(OptimizationStatus.Skipped, Strings.NotAnImage);
     if (!settings.IsEnabled(format))
-      return Result(OptimizationStatus.Skipped, $"{ImageFormats.DisplayName(format)} optimization is turned off in Settings");
+      return Result(OptimizationStatus.Skipped, Strings.FormatTurnedOff(format));
     if (originalSize == 0)
-      return Result(OptimizationStatus.Skipped, "File is empty");
+      return Result(OptimizationStatus.Skipped, Strings.FileEmpty);
 
     var workDirectory = Path.Combine(_workRoot, Guid.NewGuid().ToString("N"));
     string? staging = null;
@@ -118,7 +118,7 @@ public sealed class ImageOptimizerEngine
       if (winner is null)
       {
         return rejected
-            ? Result(OptimizationStatus.Failed, "The optimized image didn't match the original, so it was discarded")
+            ? Result(OptimizationStatus.Failed, Strings.PixelsDiffer)
             : Result(OptimizationStatus.AlreadyOptimized);
       }
 
@@ -127,7 +127,7 @@ public sealed class ImageOptimizerEngine
       // Don't clobber edits someone made to the file while we were working on it.
       original.Refresh();
       if (!original.Exists || original.Length != originalSize || original.LastWriteTimeUtc != originalWriteTime)
-        return Result(OptimizationStatus.Failed, "The file changed while it was being optimized");
+        return Result(OptimizationStatus.Failed, Strings.FileChanged);
 
       // Stage next to the original so the final swap is a same-volume replace, not a copy.
       staging = Path.Combine(original.DirectoryName!, $".{original.Name}.{Guid.NewGuid():N}.imageoptimizer.tmp");
@@ -154,7 +154,7 @@ public sealed class ImageOptimizerEngine
     }
     catch (UnauthorizedAccessException)
     {
-      return Result(OptimizationStatus.Failed, "Couldn't write to the file (it may be read-only or in use)");
+      return Result(OptimizationStatus.Failed, Strings.CannotWrite);
     }
     catch (IOException ex)
     {

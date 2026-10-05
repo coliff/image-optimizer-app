@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="OneByte" xml:space="preserve">
+    <value>1 byte</value>
+  </data>
+  <data name="Bytes" xml:space="preserve">
+    <value>{0:N0} bytes</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Not an AVIF, GIF, JPEG, JPEG XL, PNG, SVG or WebP image</value>
+  </data>
+  <data name="FormatTurnedOff" xml:space="preserve">
+    <value>{0} optimization is turned off in Settings</value>
+    <comment>{0} is an image format such as PNG.</comment>
+  </data>
+  <data name="FileEmpty" xml:space="preserve">
+    <value>File is empty</value>
+  </data>
+  <data name="PixelsDiffer" xml:space="preserve">
+    <value>The optimized image didn't match the original, so it was discarded</value>
+  </data>
+  <data name="FileChanged" xml:space="preserve">
+    <value>The file changed while it was being optimized</value>
+  </data>
+  <data name="CannotWrite" xml:space="preserve">
+    <value>Couldn't write to the file (it may be read-only or in use)</value>
+  </data>
+  <data name="ToolMissing" xml:space="preserve">
+    <value>The bundled optimizer "{0}" is missing. Please reinstall Image Optimizer.</value>
+    <comment>{0} is a program name such as oxipng.</comment>
+  </data>
+  <data name="InvalidFile" xml:space="preserve">
+    <value>Not a valid {0} file</value>
+    <comment>{0} is an image format such as PNG.</comment>
+  </data>
+  <data name="AnimatedLeftUntouched" xml:space="preserve">
+    <value>Animated {0} is left untouched</value>
+    <comment>{0} is an image format such as PNG.</comment>
+  </data>
+  <data name="LossyCannotRecompress" xml:space="preserve">
+    <value>Lossy {0} can't be recompressed without losing quality</value>
+    <comment>{0} is an image format such as WebP.</comment>
+  </data>
+  <data name="AnimatedWebPNothingToRemove" xml:space="preserve">
+    <value>Animated WebP has nothing to remove losslessly</value>
+  </data>
+  <data name="AvifGrid" xml:space="preserve">
+    <value>Tiled (grid) AVIF is left untouched</value>
+  </data>
+  <data name="AvifUnsupportedType" xml:space="preserve">
+    <value>Unsupported AVIF image type</value>
+  </data>
+  <data name="AvifAuxiliaryImages" xml:space="preserve">
+    <value>AVIF with extra auxiliary images is left untouched</value>
+  </data>
+  <data name="AvifEmbeddedItems" xml:space="preserve">
+    <value>AVIF with extra embedded items is left untouched</value>
+  </data>
+  <data name="AvifProperty" xml:space="preserve">
+    <value>AVIF with a "{0}" property is left untouched</value>
+    <comment>{0} is a four-letter AVIF box type.</comment>
+  </data>
+  <data name="AvifPremultipliedAlpha" xml:space="preserve">
+    <value>AVIF with premultiplied alpha is left untouched</value>
+  </data>
+  <data name="JxlRotated" xml:space="preserve">
+    <value>Rotated or flipped JPEG XL is left untouched</value>
+  </data>
+  <data name="JxlHighBitDepth" xml:space="preserve">
+    <value>JPEG XL with more than 16 bits per channel is left untouched</value>
+  </data>
+  <data name="JxlExtraChannels" xml:space="preserve">
+    <value>JPEG XL with extra channels is left untouched</value>
+  </data>
+  <data name="JxlGainMap" xml:space="preserve">
+    <value>JPEG XL with a gain map is left untouched</value>
+  </data>
+  <data name="JxlBox" xml:space="preserve">
+    <value>JPEG XL with a "{0}" box is left untouched</value>
+    <comment>{0} is a four-letter JPEG XL box type.</comment>
+  </data>
+  <data name="JxlCompressedBox" xml:space="preserve">
+    <value>JPEG XL with a compressed "{0}" box is left untouched</value>
+    <comment>{0} is a four-letter JPEG XL box type.</comment>
+  </data>
+  <data name="JxlHeaderExtensions" xml:space="preserve">
+    <value>JPEG XL with header extensions is left untouched</value>
+  </data>
+</root>

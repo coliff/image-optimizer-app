@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FileColumn" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="SizeColumn" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SavingsColumn" xml:space="preserve">
+    <value>Savings</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>{0}, sorted ascending</value>
+    <comment>{0} is a column name. Read by screen readers.</comment>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>{0}, sorted descending</value>
+    <comment>{0} is a column name. Read by screen readers.</comment>
+  </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>Sort by name</value>
+  </data>
+  <data name="SortBySize" xml:space="preserve">
+    <value>Sort by size</value>
+  </data>
+  <data name="SortBySavings" xml:space="preserve">
+    <value>Sort by savings</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="RemoveFromList" xml:space="preserve">
+    <value>Remove from list</value>
+  </data>
+  <data name="ClearFinished" xml:space="preserve">
+    <value>Clear finished</value>
+  </data>
+  <data name="DropImagesHere" xml:space="preserve">
+    <value>Drop images here</value>
+  </data>
+  <data name="DropImagesHint" xml:space="preserve">
+    <value>AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files are optimized in place.</value>
+  </data>
+  <data name="AddImages" xml:space="preserve">
+    <value>Add images</value>
+  </data>
+  <data name="AddImagesToolTip" xml:space="preserve">
+    <value>Add images (Ctrl+O)</value>
+  </data>
+  <data name="OpenFileFilter" xml:space="preserve">
+    <value>Images ({0})|{0}</value>
+    <comment>File dialog filter. {0} is the list of file patterns; keep the | and both {0}.</comment>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsToolTip" xml:space="preserve">
+    <value>Settings (Ctrl+,)</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>Restart to update</value>
+  </data>
+  <data name="UpdateReady" xml:space="preserve">
+    <value>Version {0} is ready. It also installs the next time you open Image Optimizer.</value>
+  </data>
+  <data name="SettingsNotSaved" xml:space="preserve">
+    <value>Your settings couldn't be saved:
+{0}</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Optimizing {0:N0} of {1:N0}…</value>
+  </data>
+  <data name="NothingToSave" xml:space="preserve">
+    <value>Already optimized. Nothing to save.</value>
+  </data>
+  <data name="NothingOptimized" xml:space="preserve">
+    <value>Nothing was optimized.</value>
+  </data>
+  <data name="SavedTotal" xml:space="preserve">
+    <value>Saved {0} out of {1}. {2} overall (up to {3} per file).</value>
+    <comment>{0} and {1} are sizes such as 1.2 MB, {2} and {3} are percentages.</comment>
+  </data>
+  <data name="OneFileFailed" xml:space="preserve">
+    <value> 1 file couldn't be optimized.</value>
+    <comment>Added after the summary, so it starts with a space in languages that separate sentences with one.</comment>
+  </data>
+  <data name="FilesFailed" xml:space="preserve">
+    <value> {0:N0} files couldn't be optimized.</value>
+    <comment>Added after the summary, so it starts with a space in languages that separate sentences with one.</comment>
+  </data>
+  <data name="StatusWaiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="StatusOptimizing" xml:space="preserve">
+    <value>Optimizing</value>
+  </data>
+  <data name="StatusOptimized" xml:space="preserve">
+    <value>Optimized</value>
+  </data>
+  <data name="StatusAlreadyOptimized" xml:space="preserve">
+    <value>Already optimized</value>
+  </data>
+  <data name="StatusSkipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="ListSeparator" xml:space="preserve">
+    <value>, </value>
+    <comment>Joins the parts of a row's name for screen readers.</comment>
+  </data>
+  <data name="SavedPercent" xml:space="preserve">
+    <value>saved {0}</value>
+    <comment>{0} is a percentage. Read by screen readers.</comment>
+  </data>
+  <data name="ToolTipOptimizing" xml:space="preserve">
+    <value>Optimizing…</value>
+  </data>
+  <data name="ToolTipSaved" xml:space="preserve">
+    <value>Saved {0} ({1}), was {2}</value>
+    <comment>{0} and {2} are sizes, {1} is a percentage.</comment>
+  </data>
+  <data name="ToolTipAlreadyOptimized" xml:space="preserve">
+    <value>Already optimized. The file was left untouched.</value>
+  </data>
+  <data name="ToolTipLeftUntouched" xml:space="preserve">
+    <value>Left untouched</value>
+  </data>
+  <data name="ToolTipFailed" xml:space="preserve">
+    <value>{0}. The file was left untouched.</value>
+    <comment>{0} is the reason it failed.</comment>
+  </data>
+  <data name="RestoreDefaults" xml:space="preserve">
+    <value>Res_tore defaults</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EnableHeader" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="OptionsHeader" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="StripMetadata" xml:space="preserve">
+    <value>_Remove metadata (EXIF, comments, camera info)</value>
+  </data>
+  <data name="StripMetadataHint" xml:space="preserve">
+    <value>Color profiles and photo orientation are always kept, so images look the same.</value>
+  </data>
+  <data name="MaximumCompression" xml:space="preserve">
+    <value>_Maximum compression (much slower)</value>
+  </data>
+  <data name="MaximumCompressionHint" xml:space="preserve">
+    <value>Uses Zopfli for PNG, the highest effort for lossless WebP, AVIF and JPEG XL, and multipass SVGO.</value>
+  </data>
+  <data name="AllowProgressiveJpeg" xml:space="preserve">
+    <value>_Use progressive JPEG when it's smaller</value>
+  </data>
+  <data name="PreserveModifiedDate" xml:space="preserve">
+    <value>_Keep each file's original "Date modified"</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>_Check for updates when the app starts</value>
+  </data>
+  <data name="ExplorerMenu" xml:space="preserve">
+    <value>Add "Optimize with Image Optimizer" to File _Explorer</value>
+    <comment>The quoted text must match ExplorerMenuLabel.</comment>
+  </data>
+  <data name="ExplorerMenuHint" xml:space="preserve">
+    <value>Right-click images or folders to optimize them. On Windows 11 it's under "Show more options".</value>
+    <comment>Use the name Windows 11 gives "Show more options" in this language.</comment>
+  </data>
+  <data name="ExplorerMenuLabel" xml:space="preserve">
+    <value>Optimize with Image Optimizer</value>
+    <comment>The entry in File Explorer's right-click menu.</comment>
+  </data>
+  <data name="ExplorerMenuNotChanged" xml:space="preserve">
+    <value>The File Explorer menu couldn't be changed:
+{0}</value>
+  </data>
+  <data name="SafetyNote" xml:space="preserve">
+    <value>Files are replaced in place only when the result is smaller and (for bitmaps) every pixel is identical. Otherwise the original is left untouched.</value>
+  </data>
+  <data name="PoweredBy" xml:space="preserve">
+    <value>Powered by oxipng, libjpeg-turbo, libwebp, libavif, libjxl, Gifsicle and SVGO.</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="GitHubLinkName" xml:space="preserve">
+    <value>Image Optimizer on GitHub</value>
+  </data>
+</root>

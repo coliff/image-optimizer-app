@@ -128,15 +128,15 @@
         </Grid.ColumnDefinitions>
         <Button Grid.Column="1" Style="{StaticResource HeaderButton}" Content="{Binding FileHeader}"
             AutomationProperties.Name="{Binding FileHeaderName}"
-            Tag="{x:Static local:SortColumn.File}" ToolTip="Sort by name" Click="OnSortClick" />
+            Tag="{x:Static local:SortColumn.File}" ToolTip="{x:Static local:Strings.SortByName}" Click="OnSortClick" />
         <Button Grid.Column="2" Style="{StaticResource HeaderButton}" Content="{Binding SizeHeader}"
             AutomationProperties.Name="{Binding SizeHeaderName}"
             HorizontalContentAlignment="Right" Padding="0,0,12,0"
-            Tag="{x:Static local:SortColumn.Size}" ToolTip="Sort by size" Click="OnSortClick" />
+            Tag="{x:Static local:SortColumn.Size}" ToolTip="{x:Static local:Strings.SortBySize}" Click="OnSortClick" />
         <Button Grid.Column="3" Style="{StaticResource HeaderButton}" Content="{Binding SavingsHeader}"
             AutomationProperties.Name="{Binding SavingsHeaderName}"
             HorizontalContentAlignment="Right" Padding="0,0,16,0"
-            Tag="{x:Static local:SortColumn.Savings}" ToolTip="Sort by savings" Click="OnSortClick" />
+            Tag="{x:Static local:SortColumn.Savings}" ToolTip="{x:Static local:Strings.SortBySavings}" Click="OnSortClick" />
       </Grid>
     </Border>
 
@@ -172,10 +172,10 @@
       </ListBox.ItemTemplate>
       <ListBox.ContextMenu>
         <ContextMenu>
-          <MenuItem Header="Show in folder" InputGestureText="Enter" Click="OnShowInFolder" />
-          <MenuItem Header="Remove from list" InputGestureText="Del" Click="OnRemoveSelected" />
+          <MenuItem Header="{x:Static local:Strings.ShowInFolder}" InputGestureText="Enter" Click="OnShowInFolder" />
+          <MenuItem Header="{x:Static local:Strings.RemoveFromList}" InputGestureText="Del" Click="OnRemoveSelected" />
           <Separator />
-          <MenuItem Header="Clear finished" Click="OnClearFinished" />
+          <MenuItem Header="{x:Static local:Strings.ClearFinished}" Click="OnClearFinished" />
         </ContextMenu>
       </ListBox.ContextMenu>
     </ListBox>
@@ -185,8 +185,8 @@
           Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}">
       <Image Source="Assets/Logo.png" Width="64" Height="64" Opacity="0.9" Margin="0,0,0,14"
           RenderOptions.BitmapScalingMode="HighQuality" />
-      <TextBlock Text="Drop images here" FontSize="20" HorizontalAlignment="Center" />
-      <TextBlock Text="AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files are optimized in place."
+      <TextBlock Text="{x:Static local:Strings.DropImagesHere}" FontSize="20" HorizontalAlignment="Center" />
+      <TextBlock Text="{x:Static local:Strings.DropImagesHint}"
             Style="{StaticResource HintText}" HorizontalAlignment="Center" Margin="0,6,0,0" />
     </StackPanel>
 
@@ -195,13 +195,13 @@
         BorderThickness="0,1,0,0" Padding="10,8">
       <DockPanel LastChildFill="True">
         <Button DockPanel.Dock="Left" Style="{StaticResource IconButton}" Content="&#xE710;"
-            AutomationProperties.Name="Add images" AutomationProperties.AcceleratorKey="Ctrl+O"
-            ToolTip="Add images (Ctrl+O)" Click="OnAddFiles" />
+            AutomationProperties.Name="{x:Static local:Strings.AddImages}" AutomationProperties.AcceleratorKey="Ctrl+O"
+            ToolTip="{x:Static local:Strings.AddImagesToolTip}" Click="OnAddFiles" />
         <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE713;" Margin="6,0,0,0"
-            AutomationProperties.Name="Settings" AutomationProperties.AcceleratorKey="Ctrl+,"
-            ToolTip="Settings (Ctrl+,)" Click="OnOpenSettings" />
-        <Button DockPanel.Dock="Right" Style="{StaticResource FlatButton}" Content="Restart to update" Margin="0,0,6,0"
-            ToolTip="{Binding UpdateVersion, StringFormat='Version {0} is ready. It also installs the next time you open Image Optimizer.'}"
+            AutomationProperties.Name="{x:Static local:Strings.Settings}" AutomationProperties.AcceleratorKey="Ctrl+,"
+            ToolTip="{x:Static local:Strings.SettingsToolTip}" Click="OnOpenSettings" />
+        <Button DockPanel.Dock="Right" Style="{StaticResource FlatButton}" Content="{x:Static local:Strings.RestartToUpdate}" Margin="0,0,6,0"
+            ToolTip="{Binding UpdateToolTip}"
             Visibility="{Binding IsUpdateReady, Converter={StaticResource BoolToVisibility}}"
             IsEnabled="{Binding CanRestartToUpdate}" Click="OnRestartToUpdate" />
         <TextBlock x:Name="SummaryText" Text="{Binding Summary}" AutomationProperties.LiveSetting="Polite"

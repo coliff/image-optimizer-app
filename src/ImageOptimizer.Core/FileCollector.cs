@@ -53,7 +53,7 @@ public static class SizeFormatter
   public static string Format(long bytes)
   {
     if (bytes < 1024)
-      return bytes == 1 ? "1 byte" : $"{bytes:N0} bytes";
+      return bytes == 1 ? Strings.OneByte : Strings.Bytes(bytes);
 
     double value = bytes;
     var unit = 0;

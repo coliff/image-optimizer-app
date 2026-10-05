@@ -1,7 +1,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <!-- Yu Gothic UI covers the Japanese text that the Segoe fonts don't have. -->
+  <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI, Yu Gothic UI</FontFamily>
   <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
   <Style x:Key="AppWindowStyle" TargetType="Window">
