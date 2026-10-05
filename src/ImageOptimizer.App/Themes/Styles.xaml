@@ -133,6 +133,30 @@
     <Setter Property="TextWrapping" Value="Wrap" />
   </Style>
 
+  <!-- A link in hint text: subtle like the text around it, told apart by its underline, accent-colored on hover. -->
+  <Style x:Key="LinkFocusRing">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle Margin="-2" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2" RadiusX="3" RadiusY="3"
+              SnapsToDevicePixels="True" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="SubtleLink" TargetType="Hyperlink">
+    <Setter Property="Foreground" Value="{DynamicResource SubtleTextBrush}" />
+    <Setter Property="TextDecorations" Value="Underline" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource LinkFocusRing}" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource LinkHoverBrush}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
   <!--
     Minimal scroll bars that follow the theme instead of the light system ones: a rounded thumb on a
     transparent track, with no arrow buttons. Clicking the track still pages up and down.

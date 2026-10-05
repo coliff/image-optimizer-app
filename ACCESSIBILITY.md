@@ -36,6 +36,7 @@ Everything in the main window can be done without a mouse.
 
 In Settings, Enter saves and Esc cancels, and every checkbox and the **Restore defaults** button has an access key:
 hold Alt to see the underlined letters, then press Alt and that letter to use it.
+The **GitHub** link next to the version number can be reached with Tab and opened with Enter.
 
 When focus moves with the keyboard, the focused button, checkbox, column header or row gets a 2px accent-colored focus ring.
 The ring only appears for keyboard focus, not when you click.

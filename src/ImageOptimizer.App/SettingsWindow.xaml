@@ -59,8 +59,13 @@
       </TextBlock>
       <TextBlock Style="{StaticResource HintText}" Margin="0,8,0,0"
             Text="Powered by oxipng, libjpeg-turbo, libwebp, libavif, libjxl, Gifsicle and SVGO." />
-      <TextBlock x:Name="VersionLabel" Style="{StaticResource HintText}" FontSize="11"
-            HorizontalAlignment="Center" TextAlignment="Center" Margin="0,16,0,0" />
+      <TextBlock Style="{StaticResource HintText}" FontSize="11"
+            HorizontalAlignment="Center" TextAlignment="Center" Margin="0,16,0,0">
+        <Run x:Name="VersionLabel" /><Run x:Name="VersionSeparator" Text=" · " /><Hyperlink
+            Style="{StaticResource SubtleLink}" NavigateUri="https://github.com/coliff/image-optimizer-app"
+            RequestNavigate="OnRequestNavigate" ToolTip="https://github.com/coliff/image-optimizer-app"
+            AutomationProperties.Name="Image Optimizer on GitHub">GitHub</Hyperlink>
+      </TextBlock>
     </StackPanel>
   </DockPanel>
 </Window>
