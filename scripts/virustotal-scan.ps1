@@ -22,24 +22,39 @@ if (-not $env:VIRUSTOTAL_API_KEY) {
 $api = 'https://www.virustotal.com/api/v3'
 $headers = @{ 'x-apikey' = $env:VIRUSTOTAL_API_KEY }
 
-function Invoke-VirusTotal([string]$Uri, [string]$Method = 'Get', $Form = $null) {
+function Invoke-VirusTotal([string]$Uri, [string]$UploadFile) {
   for ($attempt = 1; ; $attempt++) {
     # Stay under the free key's 4 requests a minute.
     Start-Sleep -Seconds 16
-    try {
-      if ($Form) {
-        return Invoke-RestMethod -Uri $Uri -Method $Method -Headers $headers -Form $Form
+    if ($UploadFile) {
+      # Uploads go through curl: PowerShell's -Form quotes the multipart boundary, and VirusTotal's upload server
+      # rejects that as a "Malformed multipart body". The key goes in a header file so it isn't on the command line.
+      $headerFile = New-TemporaryFile
+      $responseFile = New-TemporaryFile
+      try {
+        "x-apikey: $env:VIRUSTOTAL_API_KEY" | Out-File -FilePath $headerFile -Encoding ascii
+        $status = curl --silent --show-error --header "@$headerFile" --form "file=@$UploadFile" `
+          --output $responseFile --write-out '%{http_code}' $Uri
+        if ($LASTEXITCODE -ne 0) { throw "curl couldn't upload $UploadFile (exit code $LASTEXITCODE)" }
+        $response = Get-Content -Raw $responseFile
+      } finally {
+        Remove-Item $headerFile, $responseFile -ErrorAction SilentlyContinue
       }
-      return Invoke-RestMethod -Uri $Uri -Method $Method -Headers $headers
-    } catch {
-      $status = $_.Exception.Response.StatusCode.value__
-      if ($status -eq 429 -and $attempt -lt 5) {
-        Write-Information 'Rate limited by VirusTotal; waiting a minute.'
-        Start-Sleep -Seconds 60
-        continue
+      if ($status -eq '200') { return $response | ConvertFrom-Json }
+    } else {
+      try {
+        return Invoke-RestMethod -Uri $Uri -Headers $headers
+      } catch {
+        $status = "$($_.Exception.Response.StatusCode.value__)"
+        $response = $_.ErrorDetails.Message
       }
-      throw
     }
+    if ($status -eq '429' -and $attempt -lt 5) {
+      Write-Information 'Rate limited by VirusTotal; waiting a minute.'
+      Start-Sleep -Seconds 60
+      continue
+    }
+    throw "VirusTotal returned HTTP $status for ${Uri}: $response"
   }
 }
 
@@ -52,7 +67,7 @@ $rows = foreach ($file in $Path | ForEach-Object { Get-Item $_ }) {
 
   # The upload URL works for files of any size up to 650 MB; the plain endpoint stops at 32 MB.
   $uploadUrl = (Invoke-VirusTotal -Uri "$api/files/upload_url").data
-  $analysisId = (Invoke-VirusTotal -Uri $uploadUrl -Method Post -Form @{ file = $file }).data.id
+  $analysisId = (Invoke-VirusTotal -Uri $uploadUrl -UploadFile $file.FullName).data.id
 
   $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
   do {
