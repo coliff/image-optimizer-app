@@ -1,5 +1,12 @@
 # Image Optimizer
 
+[![Build](https://github.com/coliff/image-optimizer-app/actions/workflows/build.yml/badge.svg)](https://github.com/coliff/image-optimizer-app/actions/workflows/build.yml)
+[![Lint](https://github.com/coliff/image-optimizer-app/actions/workflows/lint.yml/badge.svg)](https://github.com/coliff/image-optimizer-app/actions/workflows/lint.yml)
+[![Latest release](https://img.shields.io/github/v/release/coliff/image-optimizer-app)](https://github.com/coliff/image-optimizer-app/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/coliff/image-optimizer-app/total)](https://github.com/coliff/image-optimizer-app/releases)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/coliff/image-optimizer-app/badge)](https://scorecard.dev/viewer/?uri=github.com/coliff/image-optimizer-app)
+[![License: MIT](https://img.shields.io/github/license/coliff/image-optimizer-app)](LICENSE)
+
 A lightweight, fast, lossless image optimizer for Windows, inspired by [ImageOptim](https://imageoptim.com/) on the Mac.
 
 Drop AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files (or whole folders) onto the window. Each file is optimized and
