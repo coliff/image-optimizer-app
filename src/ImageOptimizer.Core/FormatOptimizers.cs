@@ -117,7 +117,7 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
     if (info.IsStillLossless)
       return new CandidateSet([await ReencodeLosslessAsync(context, info, cancellationToken).ConfigureAwait(false)]);
 
-    if (context.Settings.StripMetadata && (info.HasExif || info.HasXmp))
+    if (context.Settings.StripMetadata && ((info.HasExif && !info.ExifRotates) || info.HasXmp))
       return new CandidateSet([await StripMetadataAsync(context, info, cancellationToken).ConfigureAwait(false)]);
 
     return CandidateSet.Skip(info.IsAnimated
@@ -138,13 +138,10 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
     var keep = new List<string>();
     if (info.HasIccProfile)
       keep.Add("icc");
-    if (!context.Settings.StripMetadata)
-    {
-      if (info.HasExif)
-        keep.Add("exif");
-      if (info.HasXmp)
-        keep.Add("xmp");
-    }
+    if (info.HasExif && (!context.Settings.StripMetadata || info.ExifRotates))
+      keep.Add("exif");
+    if (info.HasXmp && !context.Settings.StripMetadata)
+      keep.Add("xmp");
 
     foreach (var kind in keep)
     {
@@ -160,7 +157,8 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
   private async Task<Candidate> StripMetadataAsync(OptimizationContext context, WebPInfo info, CancellationToken cancellationToken)
   {
     var current = context.InputPath;
-    foreach (var (kind, present) in new[] { ("exif", info.HasExif), ("xmp", info.HasXmp) })
+    // Like JPEGs, keep the EXIF data when it turns the image, so it isn't shown sideways.
+    foreach (var (kind, present) in new[] { ("exif", info.HasExif && !info.ExifRotates), ("xmp", info.HasXmp) })
     {
       if (!present)
         continue;

@@ -146,6 +146,27 @@ public class ToolIntegrationTests : IDisposable
     Assert.Equal(before, File.ReadAllBytes(path));
   }
 
+  [Theory]
+  [InlineData("lossy.webp")]
+  [InlineData("lossless.webp")]
+  public async Task Webp_keeps_exif_that_turns_the_image(string fixture)
+  {
+    RequireTools("cwebp", "dwebp", "webpmux");
+    var exif = _files.Write("rotate.exif", TestFiles.ExifTiff(6));
+    var xmp = _files.Write("camera.xmp", "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\"><rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"/></x:xmpmeta>"u8.ToArray());
+    var withExif = Path.Combine(_files.Directory, "with-exif.webp");
+    var path = Path.Combine(_files.Directory, "photo.webp");
+    await _tools.RunAsync("webpmux", ["-set", "exif", exif, TestFiles.FixturePath(fixture), "-o", withExif], TestContext.Current.CancellationToken);
+    await _tools.RunAsync("webpmux", ["-set", "xmp", xmp, withExif, "-o", path], TestContext.Current.CancellationToken);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var info = ImageInspector.InspectWebP(File.ReadAllBytes(path));
+    Assert.Equal(6, info.ExifOrientation);
+    Assert.False(info.HasXmp);
+  }
+
   [Fact]
   public async Task Webp_verifier_spots_different_pixels()
   {
@@ -374,6 +395,27 @@ public class ToolIntegrationTests : IDisposable
 
     Assert.Equal(OptimizationStatus.Skipped, result.Status);
     Assert.Equal(svg, File.ReadAllBytes(path));
+  }
+
+  [Fact]
+  public async Task Deeply_nested_svg_is_left_alone_without_crashing()
+  {
+    ToolRequirements.RequireFile(_tools, SvgOptimizer.ScriptName);
+    const int depth = 50_000;
+    var svg = System.Text.Encoding.UTF8.GetBytes(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\">" + string.Concat(Enumerable.Repeat("<g >", depth)) +
+        "<rect width=\"1\" height=\"1\"/>" + string.Concat(Enumerable.Repeat("</g>", depth)) + "</svg>");
+    var path = _files.Write("deep.svg", svg);
+    var engine = Engine();
+
+    var result = await engine.OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Skipped, result.Status);
+    Assert.Equal(svg, File.ReadAllBytes(path));
+
+    // The shared SVGO engine still works afterwards.
+    var next = _files.CopyFixture("drawing.svg");
+    Assert.Equal(OptimizationStatus.Optimized, (await engine.OptimizeAsync(next, new OptimizerSettings(), TestContext.Current.CancellationToken)).Status);
   }
 
   [Fact]

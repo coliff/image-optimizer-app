@@ -20,6 +20,7 @@ internal static class Strings
 
   public static string OneByte => Get();
   public static string Bytes(long count) => Format(count);
+  public static string SizeUnits => Get();
   public static string FileNotFound => Get();
   public static string NotAnImage => Get();
   public static string FormatTurnedOff(ImageFormat format) => Format(ImageFormats.DisplayName(format));
@@ -34,6 +35,7 @@ internal static class Strings
   public static string AnimatedWebPNothingToRemove => Get();
   public static string JpegTrailingData => Get();
   public static string SvgNotUtf8 => Get();
+  public static string SvgTooDeep => Get();
   public static string AvifGrid => Get();
   public static string AvifUnsupportedType => Get();
   public static string AvifAuxiliaryImages => Get();

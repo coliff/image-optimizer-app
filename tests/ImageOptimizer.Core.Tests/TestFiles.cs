@@ -88,7 +88,8 @@ public sealed class TestFiles : IDisposable
     return [.. png[..ihdrEnd], .. Chunk("eXIf", ExifTiff(orientation, littleEndian: false)), .. png[ihdrEnd..]];
   }
 
-  private static byte[] ExifTiff(ushort orientation, bool littleEndian)
+  /// <summary>EXIF data (TIFF) holding only the given orientation.</summary>
+  public static byte[] ExifTiff(ushort orientation, bool littleEndian = false)
   {
     var tiff = new byte[8 + 2 + 12 + 4];
     void U16(int at, ushort v)
