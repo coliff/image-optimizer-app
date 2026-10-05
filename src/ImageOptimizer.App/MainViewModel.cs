@@ -44,14 +44,14 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
   public bool SortDescending { get; private set; }
 
-  public string FileHeader => Header("File", SortColumn.File);
-  public string SizeHeader => Header("Size", SortColumn.Size);
-  public string SavingsHeader => Header("Savings", SortColumn.Savings);
+  public string FileHeader => Header(Strings.FileColumn, SortColumn.File);
+  public string SizeHeader => Header(Strings.SizeColumn, SortColumn.Size);
+  public string SavingsHeader => Header(Strings.SavingsColumn, SortColumn.Savings);
 
   /// <summary>Header names for screen readers, which read the sort arrows as symbols.</summary>
-  public string FileHeaderName => HeaderName("File", SortColumn.File);
-  public string SizeHeaderName => HeaderName("Size", SortColumn.Size);
-  public string SavingsHeaderName => HeaderName("Savings", SortColumn.Savings);
+  public string FileHeaderName => HeaderName(Strings.FileColumn, SortColumn.File);
+  public string SizeHeaderName => HeaderName(Strings.SizeColumn, SortColumn.Size);
+  public string SavingsHeaderName => HeaderName(Strings.SavingsColumn, SortColumn.Savings);
 
   public bool IsEmpty => Files.Count == 0;
 
@@ -66,11 +66,14 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
       _updateVersion = value;
       OnPropertyChanged();
       OnPropertyChanged(nameof(IsUpdateReady));
+      OnPropertyChanged(nameof(UpdateToolTip));
       OnPropertyChanged(nameof(CanRestartToUpdate));
     }
   }
 
   public bool IsUpdateReady => UpdateVersion is not null;
+
+  public string? UpdateToolTip => UpdateVersion is null ? null : Strings.UpdateReady(UpdateVersion);
 
   /// <summary>Restarting would cut short the files being optimized, so it waits until they're done.</summary>
   public bool CanRestartToUpdate => IsUpdateReady && !IsBusy;
@@ -84,7 +87,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
       if (IsBusy)
       {
         var done = Files.Count(f => f.IsFinished);
-        return $"Optimizing {done + 1:N0} of {Files.Count:N0}…";
+        return Strings.Progress(done + 1, Files.Count);
       }
 
       var measured = Files
@@ -92,16 +95,16 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
           .Select(f => f.Result!)
           .ToList();
       var failed = Files.Count(f => f.Status == FileStatus.Failed);
-      var failedText = failed == 0 ? "" : $" {failed:N0} {(failed == 1 ? "file" : "files")} couldn't be optimized.";
+      var failedText = failed == 0 ? "" : Strings.FilesFailed(failed);
 
       var original = measured.Sum(r => r.OriginalSize);
       var saved = measured.Sum(r => r.BytesSaved);
       if (saved <= 0)
-        return (measured.Count > 0 ? "Already optimized. Nothing to save." : "Nothing was optimized.") + failedText;
+        return (measured.Count > 0 ? Strings.NothingToSave : Strings.NothingOptimized) + failedText;
 
       var best = measured.Max(r => r.SavingsRatio);
-      return $"Saved {SizeFormatter.Format(saved)} out of {SizeFormatter.Format(original)}. " +
-             $"{SizeFormatter.Percent((double)saved / original)} overall (up to {SizeFormatter.Percent(best)} per file)." +
+      return Strings.SavedTotal(SizeFormatter.Format(saved), SizeFormatter.Format(original),
+                 SizeFormatter.Percent((double)saved / original), SizeFormatter.Percent(best)) +
              failedText;
     }
   }
@@ -233,7 +236,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     SortedBy == column ? $"{title} {(SortDescending ? "\u25BE" : "\u25B4")}" : title;
 
   private string HeaderName(string title, SortColumn column) =>
-    SortedBy == column ? $"{title}, sorted {(SortDescending ? "descending" : "ascending")}" : title;
+    SortedBy != column ? title : SortDescending ? Strings.SortedDescending(title) : Strings.SortedAscending(title);
 
   private void RaiseStateChanged()
   {

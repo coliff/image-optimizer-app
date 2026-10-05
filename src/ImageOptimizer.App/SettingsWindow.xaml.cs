@@ -25,7 +25,7 @@ public partial class SettingsWindow : Window
     if (version is null)
       VersionSeparator.Text = "";
     else
-      VersionLabel.Text = $"Version {version}";
+      VersionLabel.Text = Strings.Version(version);
   }
 
   private readonly bool _explorerMenu;
@@ -81,7 +81,7 @@ public partial class SettingsWindow : Window
     }
     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException or InvalidOperationException)
     {
-      MessageBox.Show(this, $"The File Explorer menu couldn't be changed:\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+      MessageBox.Show(this, Strings.ExplorerMenuNotChanged(ex.Message), Title, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
   }
 

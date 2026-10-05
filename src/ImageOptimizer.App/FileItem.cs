@@ -76,12 +76,12 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
   /// <summary>What the status icon shows, in words.</summary>
   public string StatusText => Status switch
   {
-    FileStatus.Queued => "Waiting",
-    FileStatus.Working => "Optimizing",
-    FileStatus.Optimized => "Optimized",
-    FileStatus.AlreadyOptimized => "Already optimized",
-    FileStatus.Skipped => "Skipped",
-    _ => "Failed",
+    FileStatus.Queued => Strings.StatusWaiting,
+    FileStatus.Working => Strings.StatusOptimizing,
+    FileStatus.Optimized => Strings.StatusOptimized,
+    FileStatus.AlreadyOptimized => Strings.StatusAlreadyOptimized,
+    FileStatus.Skipped => Strings.StatusSkipped,
+    _ => Strings.StatusFailed,
   };
 
   /// <summary>The whole row as one phrase for screen readers, which can't see the status icon.</summary>
@@ -93,8 +93,8 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
       if (SizeText.Length > 0)
         parts.Add(SizeText);
       if (Status == FileStatus.Optimized && SavingsText.Length > 0)
-        parts.Add($"saved {SavingsText}");
-      return string.Join(", ", parts);
+        parts.Add(Strings.SavedPercent(SavingsText));
+      return string.Join(Strings.ListSeparator, parts);
     }
   }
 
@@ -104,12 +104,13 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
     {
       var detail = Status switch
       {
-        FileStatus.Queued => "Waiting",
-        FileStatus.Working => "Optimizing…",
+        FileStatus.Queued => Strings.StatusWaiting,
+        FileStatus.Working => Strings.ToolTipOptimizing,
         FileStatus.Optimized when Result is { } r =>
-            $"Saved {SizeFormatter.Format(r.BytesSaved)} ({SizeFormatter.Percent(r.SavingsRatio)}), was {SizeFormatter.Format(r.OriginalSize)}",
-        FileStatus.AlreadyOptimized => "Already optimized. The file was left untouched.",
-        _ => (Result?.Message?.TrimEnd('.') ?? "Left untouched") + (Status == FileStatus.Failed ? ". The file was left untouched." : ""),
+            Strings.ToolTipSaved(SizeFormatter.Format(r.BytesSaved), SizeFormatter.Percent(r.SavingsRatio), SizeFormatter.Format(r.OriginalSize)),
+        FileStatus.AlreadyOptimized => Strings.ToolTipAlreadyOptimized,
+        FileStatus.Failed => Strings.ToolTipFailed(Result?.Message?.TrimEnd('.', '。') ?? Strings.StatusFailed),
+        _ => Result?.Message?.TrimEnd('.') ?? Strings.ToolTipLeftUntouched,
       };
       return $"{Path}\n{detail}";
     }

@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Windows;
+using System.Windows.Markup;
 using ImageOptimizer.Core;
 
 namespace ImageOptimizer.App;
@@ -16,6 +18,11 @@ public partial class App : Application
 
   protected override void OnStartup(StartupEventArgs e)
   {
+    // The text follows the Windows display language (see Strings). Telling WPF the language too makes it
+    // pick that language's fonts and character forms, such as Japanese kanji rather than Chinese ones.
+    FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
+        new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag)));
+
     base.OnStartup(e);
     ThemeManager.Initialize(this);
 

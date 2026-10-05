@@ -16,7 +16,8 @@ namespace ImageOptimizer.App;
 /// </remarks>
 public static class ExplorerContextMenu
 {
-  public const string Label = "Optimize with Image Optimizer";
+  /// <summary>In the display language at the time it's registered (install, update or a change in Settings).</summary>
+  public static string Label => Strings.ExplorerMenuLabel;
   private const string VerbName = "ImageOptimizer";
   private const string ClassesPath = @"Software\Classes";
 

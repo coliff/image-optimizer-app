@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FileColumn" xml:space="preserve">
+    <value>ファイル</value>
+  </data>
+  <data name="SizeColumn" xml:space="preserve">
+    <value>サイズ</value>
+  </data>
+  <data name="SavingsColumn" xml:space="preserve">
+    <value>削減率</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>{0}、昇順で並べ替え済み</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>{0}、降順で並べ替え済み</value>
+  </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>名前で並べ替え</value>
+  </data>
+  <data name="SortBySize" xml:space="preserve">
+    <value>サイズで並べ替え</value>
+  </data>
+  <data name="SortBySavings" xml:space="preserve">
+    <value>削減率で並べ替え</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>フォルダーに表示</value>
+  </data>
+  <data name="RemoveFromList" xml:space="preserve">
+    <value>一覧から削除</value>
+  </data>
+  <data name="ClearFinished" xml:space="preserve">
+    <value>完了した項目をクリア</value>
+  </data>
+  <data name="DropImagesHere" xml:space="preserve">
+    <value>ここに画像をドロップ</value>
+  </data>
+  <data name="DropImagesHint" xml:space="preserve">
+    <value>AVIF、GIF、JPEG、JPEG XL、PNG、SVG、WebP ファイルをその場で最適化します。</value>
+  </data>
+  <data name="AddImages" xml:space="preserve">
+    <value>画像を追加</value>
+  </data>
+  <data name="AddImagesToolTip" xml:space="preserve">
+    <value>画像を追加 (Ctrl+O)</value>
+  </data>
+  <data name="OpenFileFilter" xml:space="preserve">
+    <value>画像 ({0})|{0}</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="SettingsToolTip" xml:space="preserve">
+    <value>設定 (Ctrl+,)</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>再起動して更新</value>
+  </data>
+  <data name="UpdateReady" xml:space="preserve">
+    <value>バージョン {0} の準備ができました。次回 Image Optimizer を開いたときにもインストールされます。</value>
+  </data>
+  <data name="SettingsNotSaved" xml:space="preserve">
+    <value>設定を保存できませんでした:
+{0}</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>{1:N0} 件中 {0:N0} 件目を最適化中…</value>
+  </data>
+  <data name="NothingToSave" xml:space="preserve">
+    <value>すでに最適化されています。削減できる部分はありません。</value>
+  </data>
+  <data name="NothingOptimized" xml:space="preserve">
+    <value>最適化されたファイルはありません。</value>
+  </data>
+  <data name="SavedTotal" xml:space="preserve">
+    <value>{1} のうち {0} を削減しました。全体で {2} (ファイルごとに最大 {3}) です。</value>
+  </data>
+  <data name="OneFileFailed" xml:space="preserve">
+    <value>1 件のファイルを最適化できませんでした。</value>
+  </data>
+  <data name="FilesFailed" xml:space="preserve">
+    <value>{0:N0} 件のファイルを最適化できませんでした。</value>
+  </data>
+  <data name="StatusWaiting" xml:space="preserve">
+    <value>待機中</value>
+  </data>
+  <data name="StatusOptimizing" xml:space="preserve">
+    <value>最適化中</value>
+  </data>
+  <data name="StatusOptimized" xml:space="preserve">
+    <value>最適化済み</value>
+  </data>
+  <data name="StatusAlreadyOptimized" xml:space="preserve">
+    <value>最適化不要</value>
+  </data>
+  <data name="StatusSkipped" xml:space="preserve">
+    <value>スキップ</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>失敗</value>
+  </data>
+  <data name="ListSeparator" xml:space="preserve">
+    <value>、</value>
+  </data>
+  <data name="SavedPercent" xml:space="preserve">
+    <value>{0} 削減</value>
+  </data>
+  <data name="ToolTipOptimizing" xml:space="preserve">
+    <value>最適化中…</value>
+  </data>
+  <data name="ToolTipSaved" xml:space="preserve">
+    <value>{0} 削減しました ({1})。元のサイズは {2} です</value>
+  </data>
+  <data name="ToolTipAlreadyOptimized" xml:space="preserve">
+    <value>すでに最適化されています。ファイルは変更されていません。</value>
+  </data>
+  <data name="ToolTipLeftUntouched" xml:space="preserve">
+    <value>変更されていません</value>
+  </data>
+  <data name="ToolTipFailed" xml:space="preserve">
+    <value>{0}。ファイルは変更されていません。</value>
+  </data>
+  <data name="RestoreDefaults" xml:space="preserve">
+    <value>既定値に戻す(_T)</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="EnableHeader" xml:space="preserve">
+    <value>有効にする形式</value>
+  </data>
+  <data name="OptionsHeader" xml:space="preserve">
+    <value>オプション</value>
+  </data>
+  <data name="StripMetadata" xml:space="preserve">
+    <value>メタデータを削除 (EXIF、コメント、カメラ情報)(_R)</value>
+  </data>
+  <data name="StripMetadataHint" xml:space="preserve">
+    <value>カラー プロファイルと写真の向きは常に保持されるため、見た目は変わりません。</value>
+  </data>
+  <data name="MaximumCompression" xml:space="preserve">
+    <value>最大圧縮 (大幅に遅くなります)(_M)</value>
+  </data>
+  <data name="MaximumCompressionHint" xml:space="preserve">
+    <value>PNG には Zopfli を使い、ロスレスの WebP、AVIF、JPEG XL は最も高い圧縮レベルで、SVGO は複数回実行します。</value>
+  </data>
+  <data name="AllowProgressiveJpeg" xml:space="preserve">
+    <value>小さくなる場合はプログレッシブ JPEG を使用(_U)</value>
+  </data>
+  <data name="PreserveModifiedDate" xml:space="preserve">
+    <value>ファイルの元の「更新日時」を保持(_K)</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>起動時に更新を確認(_C)</value>
+  </data>
+  <data name="ExplorerMenu" xml:space="preserve">
+    <value>エクスプローラーに「Image Optimizer で最適化」を追加(_E)</value>
+  </data>
+  <data name="ExplorerMenuHint" xml:space="preserve">
+    <value>画像やフォルダーを右クリックして最適化できます。Windows 11 では「その他のオプションを確認」の中にあります。</value>
+  </data>
+  <data name="ExplorerMenuLabel" xml:space="preserve">
+    <value>Image Optimizer で最適化</value>
+  </data>
+  <data name="ExplorerMenuNotChanged" xml:space="preserve">
+    <value>エクスプローラーのメニューを変更できませんでした:
+{0}</value>
+  </data>
+  <data name="SafetyNote" xml:space="preserve">
+    <value>ファイルは、結果が小さくなり、(ビットマップ画像の場合は) すべてのピクセルが同一のときだけ、その場で置き換えられます。それ以外の場合、元のファイルは変更されません。</value>
+  </data>
+  <data name="PoweredBy" xml:space="preserve">
+    <value>oxipng、libjpeg-turbo、libwebp、libavif、libjxl、Gifsicle、SVGO を使用しています。</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>バージョン {0}</value>
+  </data>
+  <data name="GitHubLinkName" xml:space="preserve">
+    <value>GitHub の Image Optimizer</value>
+  </data>
+</root>

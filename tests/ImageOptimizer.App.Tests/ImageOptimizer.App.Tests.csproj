@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Compile Include="..\ImageOptimizer.Core.Tests\ToolRequirements.cs" Link="ToolRequirements.cs" />
+    <Compile Include="..\ImageOptimizer.Core.Tests\Translations.cs" Link="Translations.cs" />
     <None Include="..\ImageOptimizer.Core.Tests\Fixtures\**" Link="Fixtures\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

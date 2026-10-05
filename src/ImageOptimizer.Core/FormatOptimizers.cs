@@ -37,7 +37,7 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
   public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
   {
     if (ImageInspector.IsAnimatedPng(await ReadHeadAsync(context.InputPath, cancellationToken)))
-      return CandidateSet.Skip("Animated PNGs are left untouched");
+      return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.Png));
 
     var output = context.WorkFile("oxipng.png");
     var args = new List<string> { "--quiet", "--interlace", "keep" };
@@ -114,7 +114,7 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
   {
     var info = ImageInspector.InspectWebP(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
     if (!info.IsValid)
-      return CandidateSet.Skip("Not a valid WebP file");
+      return CandidateSet.Skip(Strings.InvalidFile(ImageFormat.WebP));
 
     if (info.IsStillLossless)
       return new CandidateSet([await ReencodeLosslessAsync(context, info, cancellationToken).ConfigureAwait(false)]);
@@ -123,8 +123,8 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
       return new CandidateSet([await StripMetadataAsync(context, info, cancellationToken).ConfigureAwait(false)]);
 
     return CandidateSet.Skip(info.IsAnimated
-        ? "Animated WebP has nothing to remove losslessly"
-        : "Lossy WebP can't be recompressed without losing quality");
+        ? Strings.AnimatedWebPNothingToRemove
+        : Strings.LossyCannotRecompress(ImageFormat.WebP));
   }
 
   private async Task<Candidate> ReencodeLosslessAsync(OptimizationContext context, WebPInfo info, CancellationToken cancellationToken)
@@ -205,15 +205,15 @@ public sealed class AvifOptimizer(IToolRunner tools) : IFormatOptimizer
   {
     var info = AvifInspector.Inspect(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
     if (!info.IsValid)
-      return CandidateSet.Skip("Not a valid AVIF file");
+      return CandidateSet.Skip(Strings.InvalidFile(ImageFormat.Avif));
     if (info.IsAnimated)
-      return CandidateSet.Skip("Animated AVIF is left untouched");
+      return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.Avif));
     if (info.UnsupportedReason is not null)
       return CandidateSet.Skip(info.UnsupportedReason);
     if (info.AlphaPremultiplied)
-      return CandidateSet.Skip("AVIF with premultiplied alpha is left untouched");
+      return CandidateSet.Skip(Strings.AvifPremultipliedAlpha);
     if (!info.IsLikelyLossless)
-      return CandidateSet.Skip("Lossy AVIF can't be recompressed without losing quality");
+      return CandidateSet.Skip(Strings.LossyCannotRecompress(ImageFormat.Avif));
 
     // y4m keeps the decoded planes exactly as stored (depth, range and alpha included), with no RGB conversion.
     var planes = context.WorkFile("planes.y4m");
@@ -280,22 +280,22 @@ public sealed class JxlOptimizer(IToolRunner tools) : IFormatOptimizer
   {
     var info = JxlInspector.Inspect(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
     if (!info.IsValid)
-      return CandidateSet.Skip("Not a valid JPEG XL file");
+      return CandidateSet.Skip(Strings.InvalidFile(ImageFormat.JpegXl));
     if (info.IsAnimated)
-      return CandidateSet.Skip("Animated JPEG XL is left untouched");
+      return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.JpegXl));
     if (info.UnsupportedReason is not null)
       return CandidateSet.Skip(info.UnsupportedReason);
     if (info.HasJpegReconstruction)
       return await RecompressJpegAsync(context, info, cancellationToken).ConfigureAwait(false);
     if (info.XybEncoded)
-      return CandidateSet.Skip("Lossy JPEG XL can't be recompressed without losing quality");
+      return CandidateSet.Skip(Strings.LossyCannotRecompress(ImageFormat.JpegXl));
     // cjxl applies the orientation to the pixels when it reads a JPEG XL file, so it can't be kept as a flag.
     if (info.Orientation != 1)
-      return CandidateSet.Skip("Rotated or flipped JPEG XL is left untouched");
+      return CandidateSet.Skip(Strings.JxlRotated);
     if (info.ExponentBitsPerSample != 0 || info.BitsPerSample > 16)
-      return CandidateSet.Skip("JPEG XL with more than 16 bits per channel is left untouched");
+      return CandidateSet.Skip(Strings.JxlHighBitDepth);
     if (info.ExtraChannels.Count > 1 || info.ExtraChannels.Any(c => c.Type != 0))
-      return CandidateSet.Skip("JPEG XL with extra channels is left untouched");
+      return CandidateSet.Skip(Strings.JxlExtraChannels);
 
     var args = new List<string> { "--distance", "0", "--quiet" };
     if (context.Settings.StripMetadata)

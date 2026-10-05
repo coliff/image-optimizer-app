@@ -79,9 +79,9 @@ public partial class MainWindow : Window
     var patterns = string.Join(";", ImageFormats.SupportedExtensions.Select(x => "*" + x));
     var dialog = new OpenFileDialog
     {
-      Title = "Add images",
+      Title = Strings.AddImages,
       Multiselect = true,
-      Filter = $"Images ({patterns})|{patterns}",
+      Filter = Strings.OpenFileFilter(patterns),
     };
     if (dialog.ShowDialog(this) == true)
       _viewModel.Add(dialog.FileNames);
@@ -112,7 +112,7 @@ public partial class MainWindow : Window
     }
     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
     {
-      MessageBox.Show(this, $"Your settings couldn't be saved:\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
+      MessageBox.Show(this, Strings.SettingsNotSaved(ex.Message), Title, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
   }
 
