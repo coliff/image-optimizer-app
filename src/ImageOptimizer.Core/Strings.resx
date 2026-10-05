@@ -59,6 +59,12 @@
   <data name="AnimatedWebPNothingToRemove" xml:space="preserve">
     <value>Animated WebP has nothing to remove losslessly</value>
   </data>
+  <data name="JpegTrailingData" xml:space="preserve">
+    <value>JPEG with extra data after the image (such as a motion photo's video or an HDR gain map) is left untouched</value>
+  </data>
+  <data name="SvgNotUtf8" xml:space="preserve">
+    <value>SVG that isn't UTF-8 encoded is left untouched</value>
+  </data>
   <data name="AvifGrid" xml:space="preserve">
     <value>Tiled (grid) AVIF is left untouched</value>
   </data>

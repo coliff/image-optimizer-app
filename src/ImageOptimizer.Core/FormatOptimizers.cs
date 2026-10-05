@@ -36,7 +36,8 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
 
   public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
   {
-    if (ImageInspector.IsAnimatedPng(await ReadHeadAsync(context.InputPath, cancellationToken)))
+    var data = await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
+    if (ImageInspector.IsAnimatedPng(data))
       return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.Png));
 
     var output = context.WorkFile("oxipng.png");
@@ -46,20 +47,15 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
     else
       args.AddRange(["--opt", "4"]);
     if (context.Settings.StripMetadata)
-      args.AddRange(["--keep", DisplayChunks]);
+    {
+      // Like JPEGs, keep the EXIF data when it turns the image, so it isn't shown sideways.
+      var keep = ImageInspector.GetPngExifOrientation(data) is > 1 ? DisplayChunks + ",eXIf" : DisplayChunks;
+      args.AddRange(["--keep", keep]);
+    }
     args.AddRange(["--out", output, context.InputPath]);
 
     await tools.RunAsync("oxipng", args, cancellationToken).ConfigureAwait(false);
     return new CandidateSet([new Candidate(output)]);
-  }
-
-  private static async Task<byte[]> ReadHeadAsync(string path, CancellationToken cancellationToken)
-  {
-    // acTL has to appear before IDAT, which is almost always within the first few KB.
-    await using var stream = File.OpenRead(path);
-    var buffer = new byte[Math.Min(stream.Length, 1 << 20)];
-    var read = await stream.ReadAtLeastAsync(buffer, buffer.Length, throwOnEndOfStream: false, cancellationToken).ConfigureAwait(false);
-    return buffer[..read];
   }
 }
 
@@ -70,7 +66,10 @@ public sealed class JpegOptimizer(IToolRunner tools) : IFormatOptimizer
 
   public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
   {
-    var copy = await ChooseCopyModeAsync(context, cancellationToken).ConfigureAwait(false);
+    var data = await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
+    if (ImageInspector.HasJpegTrailingData(data))
+      return CandidateSet.Skip(Strings.JpegTrailingData);
+    var copy = ChooseCopyMode(context.Settings, data);
 
     var baseline = context.WorkFile("baseline.jpg");
     var tasks = new List<Task>
@@ -90,14 +89,13 @@ public sealed class JpegOptimizer(IToolRunner tools) : IFormatOptimizer
     return new CandidateSet(candidates);
   }
 
-  private static async Task<string> ChooseCopyModeAsync(OptimizationContext context, CancellationToken cancellationToken)
+  private static string ChooseCopyMode(OptimizerSettings settings, byte[] data)
   {
-    if (!context.Settings.StripMetadata)
+    if (!settings.StripMetadata)
       return "all";
 
     // Dropping EXIF would also drop the orientation tag and turn photos sideways, so keep it when it matters.
-    var bytes = await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
-    var orientation = ImageInspector.GetJpegExifOrientation(bytes);
+    var orientation = ImageInspector.GetJpegExifOrientation(data);
     return orientation is > 1 ? "all" : "icc";
   }
 }

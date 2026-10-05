@@ -30,6 +30,91 @@ public static class ImageInspector
   }
 
   /// <summary>
+  /// Returns the EXIF orientation stored in a PNG's eXIf chunk (1–8), or null when there is none.
+  /// </summary>
+  public static int? GetPngExifOrientation(ReadOnlySpan<byte> data)
+  {
+    if (data.Length < 8 || !data[..8].SequenceEqual(ImageFormats.PngSignature))
+      return null;
+
+    var offset = 8;
+    while (offset + 8 <= data.Length)
+    {
+      var length = BinaryPrimitives.ReadUInt32BigEndian(data[offset..]);
+      var type = data.Slice(offset + 4, 4);
+      if (type.SequenceEqual("IEND"u8) || (long)offset + 8 + length > data.Length)
+        return null;
+      if (type.SequenceEqual("eXIf"u8))
+        return ReadTiffOrientation(data.Slice(offset + 8, (int)length));
+      offset = (int)Math.Min((long)offset + 12 + length, data.Length);
+    }
+    return null;
+  }
+
+  /// <summary>
+  /// True when something other than padding follows a JPEG's end-of-image marker, such as a motion photo's
+  /// video or the extra images (HDR gain maps, stereo pairs) that an MPF segment points to. Lossless JPEG
+  /// tools stop at the end-of-image marker, so that data would be lost.
+  /// </summary>
+  public static bool HasJpegTrailingData(ReadOnlySpan<byte> data)
+  {
+    var end = FindJpegEnd(data);
+    return end >= 0 && data[end..].IndexOfAnyExcept((byte)0x00, (byte)0xFF) >= 0;
+  }
+
+  /// <summary>The offset just past the JPEG's end-of-image marker, or -1 if the file ends before it.</summary>
+  private static int FindJpegEnd(ReadOnlySpan<byte> data)
+  {
+    if (data.Length < 4 || data[0] != 0xFF || data[1] != 0xD8)
+      return -1;
+
+    var offset = 2;
+    while (offset + 2 <= data.Length)
+    {
+      if (data[offset] != 0xFF)
+        return -1;
+      var marker = data[offset + 1];
+      if (marker == 0xFF)
+      {
+        offset++;
+        continue;
+      }
+      if (marker == 0xD9)
+        return offset + 2;
+      if (marker is >= 0xD0 and <= 0xD7 or 0x01)
+      {
+        offset += 2;
+        continue;
+      }
+
+      if (offset + 4 > data.Length)
+        return -1;
+      var segmentLength = BinaryPrimitives.ReadUInt16BigEndian(data[(offset + 2)..]);
+      if (segmentLength < 2)
+        return -1;
+      offset += 2 + segmentLength;
+      if (marker != 0xDA)
+        continue;
+
+      // Entropy-coded data follows a start of scan, up to the next marker that isn't a stuffed zero byte,
+      // a restart marker or fill.
+      while (true)
+      {
+        if (offset >= data.Length)
+          return -1;
+        var next = data[offset..].IndexOf((byte)0xFF);
+        if (next < 0 || offset + next + 1 >= data.Length)
+          return -1;
+        offset += next;
+        if (data[offset + 1] is not (0x00 or 0xFF or (>= 0xD0 and <= 0xD7)))
+          break;
+        offset++;
+      }
+    }
+    return -1;
+  }
+
+  /// <summary>
   /// Returns the EXIF orientation of a JPEG (1–8), or null when the file has no orientation tag.
   /// </summary>
   public static int? GetJpegExifOrientation(ReadOnlySpan<byte> data)
