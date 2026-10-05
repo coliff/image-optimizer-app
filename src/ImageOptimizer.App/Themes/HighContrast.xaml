@@ -4,7 +4,7 @@
     Used instead of Light.xaml or Dark.xaml while Windows High Contrast is on. Every brush follows the
     user's chosen contrast theme through SystemColors, so it updates when they switch themes too.
     Only color pairs Windows guarantees to contrast are combined: WindowText on Window and
-    HighlightText on Highlight.
+    HighlightText on Highlight. Links use HotTrack, Windows' own hyperlink color.
   -->
   <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
   <SolidColorBrush x:Key="ListBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
@@ -32,4 +32,5 @@
   <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
   <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
   <SolidColorBrush x:Key="ScrollBarThumbPressedBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+  <SolidColorBrush x:Key="LinkHoverBrush" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}" />
 </ResourceDictionary>

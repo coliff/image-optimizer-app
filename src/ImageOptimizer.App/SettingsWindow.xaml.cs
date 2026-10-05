@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Security;
 using System.Windows;
+using System.Windows.Navigation;
 using ImageOptimizer.Core;
 
 namespace ImageOptimizer.App;
@@ -20,7 +22,10 @@ public partial class SettingsWindow : Window
     // The release workflow builds with -p:Version from the vX.Y.Z tag, so this matches the installer.
     // Local builds show the <Version> from Directory.Build.props.
     var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
-    VersionLabel.Text = version is null ? "" : $"Version {version}";
+    if (version is null)
+      VersionSeparator.Text = "";
+    else
+      VersionLabel.Text = $"Version {version}";
   }
 
   private readonly bool _explorerMenu;
@@ -78,6 +83,12 @@ public partial class SettingsWindow : Window
     {
       MessageBox.Show(this, $"The File Explorer menu couldn't be changed:\n{ex.Message}", Title, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
+  }
+
+  private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+  {
+    Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+    e.Handled = true;
   }
 
   private void OnSave(object sender, RoutedEventArgs e)
