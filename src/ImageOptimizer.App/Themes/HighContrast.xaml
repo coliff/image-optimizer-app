@@ -29,4 +29,7 @@
   <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
   <SolidColorBrush x:Key="ButtonBorderBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
   <SolidColorBrush x:Key="DropHighlightBrush" Color="Transparent" />
+  <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+  <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+  <SolidColorBrush x:Key="ScrollBarThumbPressedBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
 </ResourceDictionary>
