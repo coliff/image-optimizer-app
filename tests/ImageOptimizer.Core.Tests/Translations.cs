@@ -9,7 +9,7 @@ namespace ImageOptimizer.Core.Tests;
 /// <summary>Checks for the Strings.resx translations, shared by the Core and App tests.</summary>
 internal static partial class Translations
 {
-  public static TheoryData<string> Languages => ["ja"];
+  public static TheoryData<string> Languages => ["de", "es", "fr", "it", "ja"];
 
   /// <summary>The translation has every English string with the same placeholders, and nothing else.</summary>
   public static void AssertComplete(ResourceManager resources, string language)

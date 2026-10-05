@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FileColumn" xml:space="preserve">
+    <value>Fichier</value>
+  </data>
+  <data name="SizeColumn" xml:space="preserve">
+    <value>Taille</value>
+  </data>
+  <data name="SavingsColumn" xml:space="preserve">
+    <value>Gain</value>
+  </data>
+  <data name="SortedAscending" xml:space="preserve">
+    <value>{0}, tri croissant</value>
+  </data>
+  <data name="SortedDescending" xml:space="preserve">
+    <value>{0}, tri décroissant</value>
+  </data>
+  <data name="SortByName" xml:space="preserve">
+    <value>Trier par nom</value>
+  </data>
+  <data name="SortBySize" xml:space="preserve">
+    <value>Trier par taille</value>
+  </data>
+  <data name="SortBySavings" xml:space="preserve">
+    <value>Trier par gain</value>
+  </data>
+  <data name="ShowInFolder" xml:space="preserve">
+    <value>Afficher dans le dossier</value>
+  </data>
+  <data name="RemoveFromList" xml:space="preserve">
+    <value>Retirer de la liste</value>
+  </data>
+  <data name="ClearFinished" xml:space="preserve">
+    <value>Effacer les terminés</value>
+  </data>
+  <data name="DropImagesHere" xml:space="preserve">
+    <value>Déposez des images ici</value>
+  </data>
+  <data name="DropImagesHint" xml:space="preserve">
+    <value>Les fichiers AVIF, GIF, JPEG, JPEG XL, PNG, SVG et WebP sont optimisés sur place.</value>
+  </data>
+  <data name="AddImages" xml:space="preserve">
+    <value>Ajouter des images</value>
+  </data>
+  <data name="AddImagesToolTip" xml:space="preserve">
+    <value>Ajouter des images (Ctrl+O)</value>
+  </data>
+  <data name="OpenFileFilter" xml:space="preserve">
+    <value>Images ({0})|{0}</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="SettingsToolTip" xml:space="preserve">
+    <value>Paramètres (Ctrl+,)</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>Redémarrer pour mettre à jour</value>
+  </data>
+  <data name="UpdateReady" xml:space="preserve">
+    <value>La version {0} est prête. Elle s'installera aussi à la prochaine ouverture d'Image Optimizer.</value>
+  </data>
+  <data name="SettingsNotSaved" xml:space="preserve">
+    <value>Impossible d'enregistrer vos paramètres :
+{0}</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Optimisation de {0:N0} sur {1:N0}…</value>
+  </data>
+  <data name="NothingToSave" xml:space="preserve">
+    <value>Déjà optimisé. Rien à gagner.</value>
+  </data>
+  <data name="NothingOptimized" xml:space="preserve">
+    <value>Rien n'a été optimisé.</value>
+  </data>
+  <data name="SavedTotal" xml:space="preserve">
+    <value>{0} gagnés sur {1}. {2} au total (jusqu'à {3} par fichier).</value>
+  </data>
+  <data name="OneFileFailed" xml:space="preserve">
+    <value> 1 fichier n'a pas pu être optimisé.</value>
+  </data>
+  <data name="FilesFailed" xml:space="preserve">
+    <value> {0:N0} fichiers n'ont pas pu être optimisés.</value>
+  </data>
+  <data name="StatusWaiting" xml:space="preserve">
+    <value>En attente</value>
+  </data>
+  <data name="StatusOptimizing" xml:space="preserve">
+    <value>Optimisation</value>
+  </data>
+  <data name="StatusOptimized" xml:space="preserve">
+    <value>Optimisé</value>
+  </data>
+  <data name="StatusAlreadyOptimized" xml:space="preserve">
+    <value>Déjà optimisé</value>
+  </data>
+  <data name="StatusSkipped" xml:space="preserve">
+    <value>Ignoré</value>
+  </data>
+  <data name="StatusFailed" xml:space="preserve">
+    <value>Échec</value>
+  </data>
+  <data name="ListSeparator" xml:space="preserve">
+    <value>, </value>
+  </data>
+  <data name="SavedPercent" xml:space="preserve">
+    <value>{0} gagnés</value>
+  </data>
+  <data name="ToolTipOptimizing" xml:space="preserve">
+    <value>Optimisation…</value>
+  </data>
+  <data name="ToolTipSaved" xml:space="preserve">
+    <value>{0} gagnés ({1}), taille d'origine {2}</value>
+  </data>
+  <data name="ToolTipAlreadyOptimized" xml:space="preserve">
+    <value>Déjà optimisé. Le fichier n'a pas été modifié.</value>
+  </data>
+  <data name="ToolTipLeftUntouched" xml:space="preserve">
+    <value>Non modifié</value>
+  </data>
+  <data name="ToolTipFailed" xml:space="preserve">
+    <value>{0}. Le fichier n'a pas été modifié.</value>
+  </data>
+  <data name="RestoreDefaults" xml:space="preserve">
+    <value>Rétablir les valeurs par _défaut</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="EnableHeader" xml:space="preserve">
+    <value>Activer</value>
+  </data>
+  <data name="OptionsHeader" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="StripMetadata" xml:space="preserve">
+    <value>Supprimer les _métadonnées (EXIF, commentaires, infos de l'appareil)</value>
+  </data>
+  <data name="StripMetadataHint" xml:space="preserve">
+    <value>Les profils de couleur et l'orientation des photos sont toujours conservés, l'aspect des images ne change donc pas.</value>
+  </data>
+  <data name="MaximumCompression" xml:space="preserve">
+    <value>C_ompression maximale (beaucoup plus lente)</value>
+  </data>
+  <data name="MaximumCompressionHint" xml:space="preserve">
+    <value>Utilise Zopfli pour le PNG, l'effort maximal pour le WebP, l'AVIF et le JPEG XL sans perte, et SVGO en plusieurs passes.</value>
+  </data>
+  <data name="AllowProgressiveJpeg" xml:space="preserve">
+    <value>_Utiliser le JPEG progressif s'il est plus petit</value>
+  </data>
+  <data name="PreserveModifiedDate" xml:space="preserve">
+    <value>_Conserver la date « Modifié le » d'origine de chaque fichier</value>
+  </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>_Rechercher les mises à jour au démarrage</value>
+  </data>
+  <data name="ExplorerMenu" xml:space="preserve">
+    <value>Ajouter « Optimiser avec Image Optimizer » à l'_Explorateur de fichiers</value>
+  </data>
+  <data name="ExplorerMenuHint" xml:space="preserve">
+    <value>Cliquez avec le bouton droit sur des images ou des dossiers pour les optimiser. Sous Windows 11, l'option se trouve dans « Afficher d'autres options ».</value>
+  </data>
+  <data name="ExplorerMenuLabel" xml:space="preserve">
+    <value>Optimiser avec Image Optimizer</value>
+  </data>
+  <data name="ExplorerMenuNotChanged" xml:space="preserve">
+    <value>Impossible de modifier le menu de l'Explorateur de fichiers :
+{0}</value>
+  </data>
+  <data name="SafetyNote" xml:space="preserve">
+    <value>Un fichier n'est remplacé que si le résultat est plus petit et (pour les images matricielles) que chaque pixel est identique. Sinon, l'original n'est pas modifié.</value>
+  </data>
+  <data name="PoweredBy" xml:space="preserve">
+    <value>Basé sur oxipng, libjpeg-turbo, libwebp, libavif, libjxl, Gifsicle et SVGO.</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="GitHubLinkName" xml:space="preserve">
+    <value>Image Optimizer sur GitHub</value>
+  </data>
+</root>

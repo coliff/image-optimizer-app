@@ -95,6 +95,12 @@
     <Setter Property="Margin" Value="0,4" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
+    <!-- Long labels in some languages wrap instead of being cut off by the fixed-width Settings window. -->
+    <Style.Resources>
+      <Style TargetType="AccessText">
+        <Setter Property="TextWrapping" Value="Wrap" />
+      </Style>
+    </Style.Resources>
   </Style>
 
   <!-- Clickable column header: plain text that sorts the list. -->
