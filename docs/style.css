@@ -162,6 +162,7 @@ figcaption {
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);
+  opacity: 0.7;
 }
 
 .features strong {
