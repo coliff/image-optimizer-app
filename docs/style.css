@@ -10,13 +10,34 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1117;
+    --bg: transparent;
     --fg: #e6edf3;
     --muted: #9198a1;
     --card: #151b23;
     --border: #3d444d;
     --accent: #4493f8;
     --accent-fg: #0d1117;
+  }
+
+  /* Blurred green, purple, indigo and navy mesh under the body waves. */
+  html {
+    min-height: 100%;
+    background-color: #080d1a;
+    background-image:
+      radial-gradient(60% 55% at 8% 12%, rgb(6 78 59 / 22%), transparent 72%),
+      radial-gradient(
+        55% 50% at 92% 18%,
+        rgb(88 28 135 / 34%),
+        transparent 72%
+      ),
+      radial-gradient(
+        65% 60% at 78% 88%,
+        rgb(49 46 129 / 45%),
+        transparent 72%
+      ),
+      radial-gradient(70% 60% at 12% 92%, rgb(23 37 84 / 75%), transparent 72%),
+      linear-gradient(160deg, #03100c, #0d0a22 50%, #060c1f);
+    background-attachment: fixed;
   }
 }
 
