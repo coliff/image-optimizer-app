@@ -30,7 +30,8 @@ It's in English, French, German, Italian, Japanese and Spanish, and follows the 
 2. The format's optimizer writes one or more candidates (for JPEG, both baseline and progressive).
 3. Candidates that aren't **strictly smaller** than the original are thrown away.
 4. The smallest candidate is decoded and compared **pixel by pixel** with the original
-   (Windows imaging for PNG/JPEG, `dwebp` for WebP, `avifdec` for AVIF, `djxl` for JPEG XL). Any difference and it's discarded.
+   (Windows imaging for PNG/JPEG, `dwebp` for WebP, `avifdec` for AVIF, `djxl` for JPEG XL, and every frame of a GIF as browsers
+   draw it, along with its timing and loop count). Any difference and it's discarded.
 5. If the file changed on disk in the meantime, nothing is written.
 6. Only then is the original swapped for the candidate in a single `File.Replace` step.
 
@@ -39,7 +40,7 @@ If anything fails along the way, the original file is left exactly as it was.
 | Format  | Tool                                                                          | What it does                                                                                                                                                                                                                                                  |
 | ------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AVIF    | `avifenc` / `avifdec` from [libavif](https://github.com/AOMediaCodec/libavif) | Lossless AVIFs are re-encoded losslessly at a higher effort (typically a few percent smaller). Lossy AVIFs are left untouched.                                                                                                                                |
-| GIF     | [Gifsicle](https://www.lcdf.org/gifsicle/)                                    | `-O3` lossless frame and LZW optimization.                                                                                                                                                                                                                    |
+| GIF     | [Gifsicle](https://www.lcdf.org/gifsicle/)                                    | `-O3` lossless frame and LZW optimization. Removing metadata also drops other programs' data, such as XMP, unless the GIF has a color profile.                                                                                                                |
 | JPEG    | `jpegtran` from [libjpeg-turbo](https://libjpeg-turbo.org/)                   | Optimized Huffman tables and progressive encoding, without touching the image data.                                                                                                                                                                           |
 | JPEG XL | `cjxl` / `djxl` from [libjxl](https://github.com/libjxl/libjxl)               | Lossless JPEG XLs are re-encoded losslessly at a higher effort (typically a few percent smaller). Recompressed JPEGs are rebuilt and recompressed, and still turn back into the exact original JPEG. Lossy, animated and rotated JPEG XLs are left untouched. |
 | PNG     | [oxipng](https://github.com/oxipng/oxipng)                                    | Lossless filter, bit depth, palette and deflate optimization. Animated PNGs are left untouched.                                                                                                                                                               |

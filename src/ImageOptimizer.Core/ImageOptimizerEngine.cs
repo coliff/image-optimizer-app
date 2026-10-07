@@ -51,7 +51,7 @@ public sealed class ImageOptimizerEngine
             new GifOptimizer(tools),
             new SvgOptimizer(() => (tools as ToolRunner)?.LocateFile(SvgOptimizer.ScriptName)),
           ],
-          new CompositeVerifier([.. extraVerifiers, new WebPPixelVerifier(tools), new AvifPixelVerifier(tools), new JxlPixelVerifier(tools)]));
+          new CompositeVerifier([.. extraVerifiers, new WebPPixelVerifier(tools), new AvifPixelVerifier(tools), new JxlPixelVerifier(tools), new GifPixelVerifier()]));
 
   public async Task<OptimizationResult> OptimizeAsync(string path, OptimizerSettings settings, CancellationToken cancellationToken = default)
   {

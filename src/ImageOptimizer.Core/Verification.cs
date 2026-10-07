@@ -141,3 +141,49 @@ public sealed class JxlPixelVerifier(IToolRunner tools) : IPixelVerifier
     return VerificationResult.Identical;
   }
 }
+
+/// <summary>
+/// Draws every frame of both GIFs the way browsers show them and compares the canvases, frame delays and loop
+/// count. Frames themselves may differ, because gifsicle crops them and changes how they're layered.
+/// </summary>
+public sealed class GifPixelVerifier : IPixelVerifier
+{
+  public async Task<VerificationResult> VerifyAsync(ImageFormat format, string originalPath, string candidatePath, string workDirectory, CancellationToken cancellationToken)
+  {
+    if (format != ImageFormat.Gif)
+      return VerificationResult.NotSupported;
+
+    var original = await File.ReadAllBytesAsync(originalPath, cancellationToken).ConfigureAwait(false);
+    var candidate = await File.ReadAllBytesAsync(candidatePath, cancellationToken).ConfigureAwait(false);
+    return await Task.Run(() => Compare(original, candidate, cancellationToken), cancellationToken).ConfigureAwait(false);
+  }
+
+  internal static VerificationResult Compare(byte[] originalData, byte[] candidateData, CancellationToken cancellationToken)
+  {
+    // A GIF that can't be read (damaged, or too large to draw) can't be shown to be unchanged, so it's kept as it is.
+    try
+    {
+      var original = new GifDecoder(originalData);
+      var candidate = new GifDecoder(candidateData);
+      if (original.Width != candidate.Width || original.Height != candidate.Height)
+        return VerificationResult.Different;
+
+      while (true)
+      {
+        cancellationToken.ThrowIfCancellationRequested();
+        var more = original.ReadFrame();
+        if (candidate.ReadFrame() != more)
+          return VerificationResult.Different;
+        if (!more)
+          break;
+        if (original.Delay != candidate.Delay || !original.Canvas.AsSpan().SequenceEqual(candidate.Canvas))
+          return VerificationResult.Different;
+      }
+      return original.LoopCount == candidate.LoopCount ? VerificationResult.Identical : VerificationResult.Different;
+    }
+    catch (InvalidDataException)
+    {
+      return VerificationResult.Different;
+    }
+  }
+}

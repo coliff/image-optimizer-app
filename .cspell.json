@@ -1,6 +1,7 @@
 {
   "version": "0.2",
   "words": [
+    "ANIMEXTS",
     "ANMF",
     "apikey",
     "APNG",
@@ -38,6 +39,7 @@
     "grayscale",
     "HKCU",
     "ICCP",
+    "ICCRGBG",
     "idat",
     "IEND",
     "IHDR",
@@ -103,6 +105,7 @@
     "Subfolders",
     "Subsampled",
     "tagname",
+    "unoptimize",
     "vcruntime",
     "Velopack",
     "vswhere",
