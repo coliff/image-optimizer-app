@@ -101,7 +101,7 @@ repository secret (without one it skips the scan), and it never fails a release.
 ```powershell
 ./scripts/fetch-tools.ps1          # downloads the pinned optimizer binaries into ./tools
 dotnet build ImageOptimizer.sln
-dotnet test ImageOptimizer.sln
+dotnet test --solution ImageOptimizer.sln
 dotnet publish src/ImageOptimizer.App -c Release -r win-x64 --self-contained false -o publish
 ```
 
