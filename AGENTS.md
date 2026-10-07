@@ -21,7 +21,7 @@ Image Optimizer is a lossless image optimizer for Windows: a WPF app on .NET 10,
 ```powershell
 ./scripts/fetch-tools.ps1
 dotnet build ImageOptimizer.sln
-dotnet test ImageOptimizer.sln
+dotnet test --solution ImageOptimizer.sln
 ```
 
 ## Git

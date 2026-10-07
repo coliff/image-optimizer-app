@@ -75,7 +75,7 @@ jobs:
         env:
           IMAGEOPTIMIZER_REQUIRE_TOOLS: "1"
           IMAGEOPTIMIZER_TOOLS: ${{ github.workspace }}\tools
-        run: dotnet test ImageOptimizer.sln --configuration Release --no-build
+        run: dotnet test --solution ImageOptimizer.sln --configuration Release --no-build
 
       - name: Publish
         run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish -p:Version=$env:VERSION
