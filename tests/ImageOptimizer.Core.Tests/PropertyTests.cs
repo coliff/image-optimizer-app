@@ -104,6 +104,14 @@ public class PropertyTests
     AvifInspector.Inspect(data);
     JxlInspector.HasSignature(data);
     JxlInspector.Inspect(data);
+    try
+    {
+      GifDecoder.ReadApplicationExtensions(data);
+    }
+    catch (InvalidDataException)
+    {
+    }
+    GifPixelVerifier.Compare(data, data, CancellationToken.None);
   }
 
   [Property(MaxTest = 1000)]

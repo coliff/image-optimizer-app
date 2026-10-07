@@ -87,7 +87,14 @@ public partial class SettingsWindow : Window
 
   private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
   {
-    Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+    // Without a default browser (or with it blocked) this throws, which would otherwise close the app.
+    try
+    {
+      Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+    }
+    catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+    {
+    }
     e.Handled = true;
   }
 

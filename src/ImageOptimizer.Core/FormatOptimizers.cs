@@ -177,15 +177,35 @@ public sealed class GifOptimizer(IToolRunner tools) : IFormatOptimizer
 
   public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
   {
+    // A damaged GIF can't be checked frame by frame afterwards, so it's left alone.
+    IReadOnlyList<string> extensions;
+    try
+    {
+      extensions = GifDecoder.ReadApplicationExtensions(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
+    }
+    catch (InvalidDataException)
+    {
+      return CandidateSet.Skip(Strings.InvalidFile(ImageFormat.Gif));
+    }
+
     var output = context.WorkFile("gifsicle.gif");
     var args = new List<string> { "--no-warnings", "-O3" };
     if (context.Settings.StripMetadata)
+    {
       args.AddRange(["--no-comments", "--no-names"]);
+      // Application extensions hold XMP and other programs' data. gifsicle keeps the loop count either way, but
+      // a color profile is stored the same way, so they're all kept when there is one.
+      if (!HasColorProfile(extensions))
+        args.Add("--no-extensions");
+    }
     args.AddRange([context.InputPath, "-o", output]);
 
     await tools.RunAsync("gifsicle", args, cancellationToken).ConfigureAwait(false);
     return new CandidateSet([new Candidate(output)]);
   }
+
+  internal static bool HasColorProfile(IEnumerable<string> applicationExtensions) =>
+      applicationExtensions.Any(name => name.StartsWith("ICCRGBG1", StringComparison.Ordinal));
 }
 
 /// <summary>
