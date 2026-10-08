@@ -14,6 +14,7 @@ Image Optimizer is a lossless image optimizer for Windows: a WPF app on .NET 10,
 - Never replace an image unless the result is strictly smaller and (for bitmaps) pixel-identical. Otherwise leave the original untouched.
 - Keep the main window free of options; settings belong in the Settings panel.
 - Text people see lives in `Strings.resx` (English) with translations in `Strings.de.resx`, `Strings.es.resx`, `Strings.fr.resx`, `Strings.it.resx` and `Strings.ja.resx`, in both `src` projects. Add every new string to all of them, and read it through the project's `Strings` class.
+- The app version lives only in `Directory.Build.props`. Keep `version` in `package.json` at `0.0.0` and never change it.
 - Follow `.editorconfig` (2-space indent) and keep `dotnet format whitespace --verify-no-changes` clean.
 
 ## Build and test
