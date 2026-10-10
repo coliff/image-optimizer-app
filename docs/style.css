@@ -161,8 +161,7 @@ figcaption {
   padding: 1rem 1.25rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--card);
-  opacity: 0.7;
+  background: color-mix(in srgb, var(--card) 50%, transparent);
 }
 
 .features strong {
