@@ -28,6 +28,7 @@
   "meta-charset-require": true,
   "meta-description-require": true,
   "meta-viewport-require": true,
+  "script-disabled": true,
   "space-tab-mixed-disabled": "space",
   "spec-char-escape": true,
   "src-not-empty": true,
