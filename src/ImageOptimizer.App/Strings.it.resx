@@ -66,12 +66,6 @@
   <data name="SettingsToolTip" xml:space="preserve">
     <value>Impostazioni (Ctrl+,)</value>
   </data>
-  <data name="RestartToUpdate" xml:space="preserve">
-    <value>Riavvia per aggiornare</value>
-  </data>
-  <data name="UpdateReady" xml:space="preserve">
-    <value>La versione {0} è pronta. Verrà installata anche alla prossima apertura di Image Optimizer.</value>
-  </data>
   <data name="SettingsNotSaved" xml:space="preserve">
     <value>Impossibile salvare le impostazioni:
 {0}</value>
@@ -166,14 +160,11 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>_Conserva la data di "Ultima modifica" originale di ogni file</value>
   </data>
-  <data name="CheckForUpdates" xml:space="preserve">
-    <value>Cerca aggi_ornamenti all'avvio dell'app</value>
-  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Aggiungi "Ottimizza con Image Optimizer" a _Esplora file</value>
   </data>
   <data name="ExplorerMenuHint" xml:space="preserve">
-    <value>Fai clic con il pulsante destro del mouse su immagini o cartelle per ottimizzarle. In Windows 11 si trova in "Mostra altre opzioni".</value>
+    <value>Fai clic con il pulsante destro del mouse su immagini o cartelle per ottimizzarle.</value>
   </data>
   <data name="ExplorerMenuLabel" xml:space="preserve">
     <value>Ottimizza con Image Optimizer</value>

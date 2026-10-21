@@ -7,7 +7,6 @@ namespace ImageOptimizer.App;
 
 public partial class App : Application
 {
-  private readonly UpdateChecker _updates = new();
   private readonly SingleInstance? _instance;
 
   /// <param name="instance">Receives files from later launches, or null if another copy already has that job.</param>
@@ -28,7 +27,7 @@ public partial class App : Application
 
     var engine = ImageOptimizerEngine.CreateDefault(new ToolRunner(), new WpfPixelVerifier());
     var viewModel = new MainViewModel(engine, OptimizerSettings.Load(OptimizerSettings.DefaultPath));
-    var window = new MainWindow(viewModel, _updates);
+    var window = new MainWindow(viewModel);
     MainWindow = window;
     window.Show();
 
@@ -44,16 +43,5 @@ public partial class App : Application
         viewModel.Add(paths);
       window.BringToFront();
     }));
-
-    if (viewModel.Settings.CheckForUpdates)
-      _ = DownloadUpdateAsync(viewModel);
-  }
-
-  /// <summary>Quietly downloads a newer release in the background and offers it in the footer when it's ready.</summary>
-  private async Task DownloadUpdateAsync(MainViewModel viewModel)
-  {
-    var version = await Task.Run(_updates.DownloadLatestAsync);
-    if (version is not null)
-      viewModel.UpdateVersion = version;
   }
 }

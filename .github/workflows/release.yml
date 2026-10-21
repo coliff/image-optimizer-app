@@ -1,8 +1,9 @@
 name: Publish
 
-# Builds, tests and publishes a GitHub Release with the installer. Run it from the Actions tab
-# ("Publish" > "Run workflow"), or push a version tag such as v0.2.0.
-# Installed copies of the app find the release the next time they start and update themselves.
+# Builds, tests and packs the Microsoft Store package, and publishes a GitHub Release with it. Run it from the
+# Actions tab ("Publish" > "Run workflow"), or push a version tag such as v0.2.0.
+# Then upload the release's .msix as a new submission in Partner Center; the Store signs it and updates
+# everyone's copy once it passes certification.
 on:
   push:
     tags: ["v*.*.*"]
@@ -78,13 +79,11 @@ jobs:
         run: dotnet test --solution ImageOptimizer.sln --configuration Release --no-build
 
       - name: Publish
-        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish -p:Version=$env:VERSION
+        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish -p:Version=$env:VERSION
 
-      - name: Pack the installer and update packages
+      - name: Pack the Microsoft Store package
         shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: ./scripts/pack-installer.ps1 -Version $env:VERSION -WithDeltas
+        run: ./scripts/pack-msix.ps1 -Version $env:VERSION
 
       - name: Create the tag
         if: github.event_name == 'workflow_dispatch'
@@ -98,11 +97,11 @@ jobs:
       - name: Publish the GitHub Release
         shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          dotnet vpk upload github --repoUrl "https://github.com/$env:GITHUB_REPOSITORY" --channel win --outputDir releases `
-            --token $env:GITHUB_TOKEN --tag $env:TAG --releaseName "Image Optimizer $env:VERSION" --publish
-          if ($LASTEXITCODE -ne 0) { throw 'vpk upload failed' }
+          gh release create $env:TAG (Get-ChildItem msix -Filter *.msix).FullName --repo $env:GITHUB_REPOSITORY `
+            --title "Image Optimizer $env:VERSION" --generate-notes --verify-tag
+          if ($LASTEXITCODE -ne 0) { throw "Couldn't publish the GitHub Release" }
 
   virustotal:
     needs: release

@@ -66,12 +66,6 @@
   <data name="SettingsToolTip" xml:space="preserve">
     <value>Einstellungen (Strg+,)</value>
   </data>
-  <data name="RestartToUpdate" xml:space="preserve">
-    <value>Zum Aktualisieren neu starten</value>
-  </data>
-  <data name="UpdateReady" xml:space="preserve">
-    <value>Version {0} ist bereit. Sie wird auch beim nächsten Öffnen von Image Optimizer installiert.</value>
-  </data>
   <data name="SettingsNotSaved" xml:space="preserve">
     <value>Die Einstellungen konnten nicht gespeichert werden:
 {0}</value>
@@ -166,14 +160,11 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>_Ursprüngliches „Änderungsdatum“ jeder Datei beibehalten</value>
   </data>
-  <data name="CheckForUpdates" xml:space="preserve">
-    <value>_Beim Start nach Updates suchen</value>
-  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>„Mit Image Optimizer optimieren“ zum Datei-_Explorer hinzufügen</value>
   </data>
   <data name="ExplorerMenuHint" xml:space="preserve">
-    <value>Klicken Sie mit der rechten Maustaste auf Bilder oder Ordner, um sie zu optimieren. Unter Windows 11 finden Sie den Eintrag unter „Weitere Optionen anzeigen“.</value>
+    <value>Klicken Sie mit der rechten Maustaste auf Bilder oder Ordner, um sie zu optimieren.</value>
   </data>
   <data name="ExplorerMenuLabel" xml:space="preserve">
     <value>Mit Image Optimizer optimieren</value>
