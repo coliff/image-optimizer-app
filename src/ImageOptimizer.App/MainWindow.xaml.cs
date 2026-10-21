@@ -12,14 +12,12 @@ namespace ImageOptimizer.App;
 public partial class MainWindow : Window
 {
   private readonly MainViewModel _viewModel;
-  private readonly UpdateChecker _updates;
   private bool _announcedBusy;
 
-  public MainWindow(MainViewModel viewModel, UpdateChecker updates)
+  public MainWindow(MainViewModel viewModel)
   {
     InitializeComponent();
     _viewModel = viewModel;
-    _updates = updates;
     DataContext = viewModel;
     SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
     Closed += (_, _) => _viewModel.Dispose();
@@ -91,12 +89,6 @@ public partial class MainWindow : Window
   {
     if (sender is FrameworkElement { Tag: SortColumn column })
       _viewModel.SortBy(column);
-  }
-
-  private void OnRestartToUpdate(object sender, RoutedEventArgs e)
-  {
-    if (!_viewModel.IsBusy)
-      _updates.RestartToUpdate();
   }
 
   private void OnOpenSettings(object sender, RoutedEventArgs e)

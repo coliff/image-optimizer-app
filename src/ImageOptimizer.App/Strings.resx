@@ -69,12 +69,6 @@
   <data name="SettingsToolTip" xml:space="preserve">
     <value>Settings (Ctrl+,)</value>
   </data>
-  <data name="RestartToUpdate" xml:space="preserve">
-    <value>Restart to update</value>
-  </data>
-  <data name="UpdateReady" xml:space="preserve">
-    <value>Version {0} is ready. It also installs the next time you open Image Optimizer.</value>
-  </data>
   <data name="SettingsNotSaved" xml:space="preserve">
     <value>Your settings couldn't be saved:
 {0}</value>
@@ -176,16 +170,12 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>_Keep each file's original "Date modified"</value>
   </data>
-  <data name="CheckForUpdates" xml:space="preserve">
-    <value>_Check for updates when the app starts</value>
-  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Add "Optimize with Image Optimizer" to File _Explorer</value>
     <comment>The quoted text must match ExplorerMenuLabel.</comment>
   </data>
   <data name="ExplorerMenuHint" xml:space="preserve">
-    <value>Right-click images or folders to optimize them. On Windows 11 it's under "Show more options".</value>
-    <comment>Use the name Windows 11 gives "Show more options" in this language.</comment>
+    <value>Right-click images or folders to optimize them.</value>
   </data>
   <data name="ExplorerMenuLabel" xml:space="preserve">
     <value>Optimize with Image Optimizer</value>

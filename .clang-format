@@ -1,0 +1,10 @@
+# C++ style for src/ImageOptimizer.ShellMenu, checked by Super-Linter. Matches .editorconfig's 2-space indent.
+BasedOnStyle: Microsoft
+IndentWidth: 2
+ColumnLimit: 120
+NamespaceIndentation: All
+AllowShortFunctionsOnASingleLine: Inline
+SortIncludes: Never
+DerivePointerAlignment: false
+PointerAlignment: Left
+StatementMacros: [CoCreatableClass]

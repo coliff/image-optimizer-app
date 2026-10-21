@@ -40,8 +40,6 @@ public static class Strings
   public static string OpenFileFilter(string patterns) => Format(patterns);
   public static string Settings => Get();
   public static string SettingsToolTip => Get();
-  public static string RestartToUpdate => Get();
-  public static string UpdateReady(string version) => Format(version);
   public static string SettingsNotSaved(string error) => Format(error);
 
   // Footer summary
@@ -80,7 +78,6 @@ public static class Strings
   public static string MaximumCompressionHint => Get();
   public static string AllowProgressiveJpeg => Get();
   public static string PreserveModifiedDate => Get();
-  public static string CheckForUpdates => Get();
   public static string ExplorerMenu => Get();
   public static string ExplorerMenuHint => Get();
   public static string ExplorerMenuLabel => Get();

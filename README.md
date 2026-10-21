@@ -13,8 +13,8 @@ Drop AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files (or whole folders) onto t
 **replaced in place**. There's nothing to configure: the defaults are safe, and a small Settings panel
 (gear button) is there if you want it.
 
-You can also right-click images or folders in File Explorer and choose **Optimize with Image Optimizer**
-(on Windows 11 it's under **Show more options**). Selecting many files at once opens them all in one window.
+You can also right-click images or folders in File Explorer and choose **Optimize with Image Optimizer**.
+Selecting many files at once opens them all in one window.
 
 Click the File, Size or Savings header to sort the list (click again to reverse it).
 The app follows the Windows light or dark app mode automatically, and uses your High Contrast colors when a contrast theme is on.
@@ -57,41 +57,39 @@ orientation are always kept so images look exactly the same.
 - Maximum compression: Zopfli for PNG, maximum effort for WebP, AVIF and JPEG XL, multipass SVGO (off by default; much slower)
 - Use progressive JPEG when it's smaller (on by default)
 - Keep each file's original "Date modified" (on by default)
-- Check for updates when the app starts (on by default)
-- Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default when installed)
+- Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default)
 
 Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 
 ## Install
 
-Download `ImageOptimizer-win-Setup.exe` from the [latest release](https://github.com/coliff/image-optimizer-app/releases/latest)
-and run it. It installs for your user account only (no admin prompt), adds Start menu and desktop shortcuts,
-and installs the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) first if it's missing.
-It also adds the File Explorer right-click entry for your account. Uninstall it from Windows Settings > Apps, which
-removes the entry too.
+Get it from the [Microsoft Store](https://apps.microsoft.com/detail/STORE_ID). The Store keeps it up to date, and
+uninstalling it from Windows Settings > Apps removes everything, including the File Explorer entry.
 
-When the app starts it quietly checks for a newer release and downloads it in the background. Once it's ready,
-a **Restart to update** button appears in the footer; if you'd rather carry on, the update installs the next
-time you open the app. You can turn this off in Settings.
+Requires Windows 10 (version 2004 or later) or Windows 11, x64.
 
-Requires Windows 10 or 11 (x64).
+If you installed an earlier version with `ImageOptimizer-win-Setup.exe`, uninstall that from Windows Settings > Apps
+too. It no longer receives updates.
 
 ### If your antivirus blocks it
 
-The installer and app aren't code-signed yet, and the app rewrites many image files in quick succession and runs
-bundled command-line tools, which some antivirus behavior checks mistake for ransomware. If yours blocks or closes it,
-add the install folder (`%LocalAppData%\ImageOptimizer`) to its exceptions and report the false positive to the vendor
+The app rewrites many image files in quick succession and runs bundled command-line tools, which some antivirus
+behavior checks mistake for ransomware. If yours blocks or closes it, report the false positive to the vendor
 (for Trend Micro, [submit the file for analysis](https://helpcenter.trendlife.com/en-us/article/tmka-14388); on a work
 PC, ask your IT team).
 
 ## Releasing
 
 Bump `<Version>` in `Directory.Build.props`, then open **Actions > Publish > Run workflow**. It uses that version
-(or the one you type in), tags the commit `vX.Y.Z`, builds and tests it, packs the installer and update packages with
-[Velopack](https://velopack.io/), and publishes them as a GitHub Release. Installed copies pick it up on their next launch.
+(or the one you type in), tags the commit `vX.Y.Z`, builds and tests it, packs the Microsoft Store package
+(`ImageOptimizer-X.Y.Z-x64.msix`, made by `scripts/pack-msix.ps1`) and attaches it to a GitHub Release.
 Pushing a `vX.Y.Z` tag yourself does the same.
 
-After publishing, the **VirusTotal** workflow uploads the installer and the app's own exe and DLL to
+Then, in [Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview), start a new submission
+for Image Optimizer, upload the `.msix` under **Packages** and submit it. The Store signs it, and once it passes
+certification everyone's copy updates itself.
+
+After publishing, the **VirusTotal** workflow uploads the package and the app's own exe and DLLs to
 [VirusTotal](https://www.virustotal.com/) and lists any antivirus engines that flag them in the run summary, so
 false positives show up before people hit them. It needs a free VirusTotal API key saved as the `VIRUSTOTAL_API_KEY`
 repository secret (without one it skips the scan), and it never fails a release. To scan an earlier release, open
@@ -103,11 +101,15 @@ repository secret (without one it skips the scan), and it never fails a release.
 ./scripts/fetch-tools.ps1          # downloads the pinned optimizer binaries into ./tools
 dotnet build ImageOptimizer.sln
 dotnet test --solution ImageOptimizer.sln
-dotnet publish src/ImageOptimizer.App -c Release -r win-x64 --self-contained false -o publish
+dotnet publish src/ImageOptimizer.App -c Release -r win-x64 --self-contained true -o publish
+./scripts/pack-msix.ps1 -Version 1.2.3 -Register  # optional: packs and installs it (needs Developer Mode)
 ```
 
-Every push is built and tested on Windows by GitHub Actions, and the ready-to-run app and its installer
-are attached to the workflow run as the `ImageOptimizer-win-x64` and `ImageOptimizer-win-Setup` artifacts.
+Every push is built and tested on Windows by GitHub Actions, and the ready-to-run app and its Store package
+are attached to the workflow run as the `ImageOptimizer-win-x64` and `ImageOptimizer-msix` artifacts.
+
+The File Explorer entry (`src/ImageOptimizer.ShellMenu`) is a small C++ COM DLL that only works inside the
+MSIX package; `pack-msix.ps1` builds it with CMake and Visual Studio's C++ tools.
 
 The engine (`src/ImageOptimizer.Core`) is cross-platform, so its tests also run on Linux or macOS
 with `oxipng`, `jpegtran`, `cwebp`/`dwebp`/`webpmux`, `avifenc`/`avifdec`, `cjxl`/`djxl` and `gifsicle` on the `PATH`.
