@@ -55,8 +55,14 @@ jobs:
           if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "'$version' isn't a version like 1.2.3" }
           if ($env:EVENT -ne 'push') {
             # A manual run creates the tag itself, so stop early if that version was already released.
-            gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/v$version" --silent 2>$null
-            if ($LASTEXITCODE -eq 0) { throw "Tag v$version already exists. Bump the version first." }
+            # A run that failed after tagging this same commit can be run again: it finishes the release.
+            $tagSha = gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/v$version" --jq .object.sha 2>$null
+            if ($LASTEXITCODE -eq 0) {
+              if ($tagSha -ne $env:GITHUB_SHA) { throw "Tag v$version already exists on another commit. Bump the version first." }
+              $draft = gh release view "v$version" --repo $env:GITHUB_REPOSITORY --json isDraft --jq .isDraft 2>$null
+              if ($LASTEXITCODE -eq 0 -and $draft -ne 'true') { throw "v$version is already released. Bump the version first." }
+              "Tag v$version is already on this commit, so this run finishes its release."
+            }
             $global:LASTEXITCODE = 0
           }
           "VERSION=$version" >> $env:GITHUB_ENV
@@ -91,6 +97,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/$env:TAG" --silent 2>$null
+          if ($LASTEXITCODE -eq 0) { "Tag $env:TAG already exists"; exit 0 }
           gh api "repos/$env:GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$env:TAG" -f "sha=$env:GITHUB_SHA" --silent
           if ($LASTEXITCODE -ne 0) { throw "Couldn't create tag $env:TAG" }
 
@@ -99,8 +107,22 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create $env:TAG (Get-ChildItem msix -Filter *.msix).FullName --repo $env:GITHUB_REPOSITORY `
-            --title "Image Optimizer $env:VERSION" --generate-notes --verify-tag
+          # Drafts the release (or reuses the draft a failed run left), uploads the package with a few retries,
+          # since GitHub's upload service sometimes returns a 500 for large files, then publishes it.
+          gh release view $env:TAG --repo $env:GITHUB_REPOSITORY --json isDraft 2>$null | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:TAG --repo $env:GITHUB_REPOSITORY --title "Image Optimizer $env:VERSION" `
+              --generate-notes --verify-tag --draft
+            if ($LASTEXITCODE -ne 0) { throw "Couldn't create the GitHub Release" }
+          }
+          $package = (Get-ChildItem msix -Filter *.msix).FullName
+          foreach ($attempt in 1..4) {
+            gh release upload $env:TAG $package --repo $env:GITHUB_REPOSITORY --clobber
+            if ($LASTEXITCODE -eq 0) { break }
+            if ($attempt -eq 4) { throw "Couldn't upload $package" }
+            Start-Sleep -Seconds (15 * $attempt)
+          }
+          gh release edit $env:TAG --repo $env:GITHUB_REPOSITORY --draft=false
           if ($LASTEXITCODE -ne 0) { throw "Couldn't publish the GitHub Release" }
 
   virustotal:
