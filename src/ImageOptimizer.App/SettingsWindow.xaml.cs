@@ -45,7 +45,6 @@ public partial class SettingsWindow : Window
     MaximumCompression.IsChecked = settings.MaximumCompression;
     AllowProgressiveJpeg.IsChecked = settings.AllowProgressiveJpeg;
     PreserveModifiedDate.IsChecked = settings.PreserveModifiedDate;
-    CheckForUpdates.IsChecked = settings.CheckForUpdates;
   }
 
   private void OnRestoreDefaults(object sender, RoutedEventArgs e)
@@ -58,15 +57,15 @@ public partial class SettingsWindow : Window
   {
     try
     {
-      return ExplorerContextMenu.IsRegistered();
+      return ExplorerContextMenu.IsEnabled();
     }
     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException)
     {
-      return false;
+      return true;
     }
   }
 
-  /// <summary>The Explorer menu lives in the registry rather than settings.json, so it's applied straight away.</summary>
+  /// <summary>The Explorer menu reads its own flag rather than settings.json, so it's applied straight away.</summary>
   private void ApplyExplorerMenu()
   {
     var wanted = ExplorerMenu.IsChecked == true;
@@ -74,12 +73,9 @@ public partial class SettingsWindow : Window
       return;
     try
     {
-      if (wanted)
-        ExplorerContextMenu.Register();
-      else
-        ExplorerContextMenu.Unregister();
+      ExplorerContextMenu.SetEnabled(wanted);
     }
-    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException or InvalidOperationException)
+    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException)
     {
       MessageBox.Show(this, Strings.ExplorerMenuNotChanged(ex.Message), Title, MessageBoxButton.OK, MessageBoxImage.Warning);
     }
@@ -113,7 +109,6 @@ public partial class SettingsWindow : Window
       MaximumCompression = MaximumCompression.IsChecked == true,
       AllowProgressiveJpeg = AllowProgressiveJpeg.IsChecked == true,
       PreserveModifiedDate = PreserveModifiedDate.IsChecked == true,
-      CheckForUpdates = CheckForUpdates.IsChecked == true,
     };
     ApplyExplorerMenu();
     DialogResult = true;

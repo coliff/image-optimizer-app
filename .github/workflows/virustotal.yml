@@ -42,15 +42,15 @@ jobs:
           if (-not $env:TAG) {
             $env:TAG = gh release view --repo $env:GITHUB_REPOSITORY --json tagName --jq .tagName
           }
-          gh release download $env:TAG --repo $env:GITHUB_REPOSITORY --dir release --pattern '*Setup.exe' --pattern '*-full.nupkg'
+          gh release download $env:TAG --repo $env:GITHUB_REPOSITORY --dir release --pattern '*.msix'
           if ($LASTEXITCODE -ne 0) { throw "Couldn't download release $env:TAG" }
-          # The app's own exe and DLL are what antivirus watches at run time, so scan them on their own too.
-          $package = Get-ChildItem release -Filter '*-full.nupkg' | Select-Object -First 1
+          # The app's own exe and DLLs are what antivirus watches at run time, so scan them on their own too.
+          $package = Get-ChildItem release -Filter '*.msix' | Select-Object -First 1
           unzip -q $package.FullName -d package
           if ($LASTEXITCODE -ne 0) { throw "Couldn't unpack $($package.Name)" }
           New-Item -ItemType Directory -Path scan | Out-Null
-          Copy-Item (Get-ChildItem release -Filter '*Setup.exe').FullName scan
-          foreach ($name in 'ImageOptimizer.exe', 'ImageOptimizer.dll') {
+          Copy-Item $package.FullName scan
+          foreach ($name in 'ImageOptimizer.exe', 'ImageOptimizer.dll', 'ImageOptimizer.ShellMenu.dll') {
             $file = Get-ChildItem package -Recurse -File -Filter $name | Select-Object -First 1
             if (-not $file) { throw "$name isn't in $($package.Name)" }
             Copy-Item $file.FullName scan

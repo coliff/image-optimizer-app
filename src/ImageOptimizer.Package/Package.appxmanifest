@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The MSIX package manifest for the Microsoft Store. scripts/pack-msix.ps1 copies it into the package as
+  AppxManifest.xml and fills in the version.
+  Identity Name and Publisher, and PublisherDisplayName, must match Partner Center's
+  Product management > Product identity page exactly.
+-->
+<Package
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+    xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+    xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+    xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5"
+    IgnorableNamespaces="uap rescap com desktop4 desktop5">
+
+  <!-- TODO: placeholders until the Store name is reserved. -->
+  <Identity Name="ChristianOliff.ImageOptimizer" Publisher="CN=00000000-0000-0000-0000-000000000000"
+      Version="0.0.0.0" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Image Optimizer</DisplayName>
+    <PublisherDisplayName>Christian Oliff</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <!-- The languages the app is translated into. The Store listing is offered in each of them. -->
+  <Resources>
+    <Resource Language="en-US" />
+    <Resource Language="de-DE" />
+    <Resource Language="es-ES" />
+    <Resource Language="fr-FR" />
+    <Resource Language="it-IT" />
+    <Resource Language="ja-JP" />
+  </Resources>
+
+  <Capabilities>
+    <!-- A desktop app: it runs the bundled optimizers and replaces the files people choose in place. -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+  <Applications>
+    <Application Id="ImageOptimizer" Executable="ImageOptimizer.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="Image Optimizer" Description="Lossless image optimizer"
+          BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png"
+          Square44x44Logo="Images\Square44x44Logo.png" />
+      <Extensions>
+        <!-- "Optimize with Image Optimizer" in File Explorer's right-click menu (src/ImageOptimizer.ShellMenu). -->
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:SurrogateServer DisplayName="Image Optimizer">
+              <com:Class Id="4D4A160B-D5FA-4133-BFB2-449803C652EF" Path="ImageOptimizer.ShellMenu.dll"
+                  ThreadingModel="STA" />
+            </com:SurrogateServer>
+          </com:ComServer>
+        </com:Extension>
+        <!-- One entry per extension in ImageFormats.SupportedExtensions, plus folders. -->
+        <desktop4:Extension Category="windows.fileExplorerContextMenus">
+          <desktop4:FileExplorerContextMenus>
+            <desktop5:ItemType Type=".avif">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".gif">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jfif">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jpe">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jpeg">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jpg">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".jxl">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".png">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".svg">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".webp">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type="Directory">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+          </desktop4:FileExplorerContextMenus>
+        </desktop4:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+</Package>

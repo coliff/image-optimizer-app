@@ -41,8 +41,9 @@ jobs:
           IMAGEOPTIMIZER_TOOLS: ${{ github.workspace }}\tools
         run: dotnet test --solution ImageOptimizer.sln --configuration Release --no-build
 
+      # Self-contained, because the Store can't install the .NET Desktop Runtime alongside the app.
       - name: Publish
-        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained false --output publish
+        run: dotnet publish src/ImageOptimizer.App/ImageOptimizer.App.csproj --configuration Release --runtime win-x64 --self-contained true --output publish
 
       - name: Check the published app bundles every tool and translation
         shell: pwsh
@@ -71,14 +72,14 @@ jobs:
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-settings-light.png -Theme Light -Settings
           ./scripts/screenshot.ps1 -App publish/ImageOptimizer.exe -Images tests/ImageOptimizer.Core.Tests/Fixtures -Output screenshot-settings-dark.png -Theme Dark -Settings
 
-      - name: Pack the installer
+      - name: Pack the Microsoft Store package
         shell: pwsh
-        run: ./scripts/pack-installer.ps1 -Version (dotnet msbuild src/ImageOptimizer.App/ImageOptimizer.App.csproj -getProperty:Version)
+        run: ./scripts/pack-msix.ps1 -Version (dotnet msbuild src/ImageOptimizer.App/ImageOptimizer.App.csproj -getProperty:Version)
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ImageOptimizer-win-Setup
-          path: releases/ImageOptimizer-win-Setup.exe
+          name: ImageOptimizer-msix
+          path: msix/*.msix
           if-no-files-found: error
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

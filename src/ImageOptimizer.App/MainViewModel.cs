@@ -16,7 +16,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   private readonly Dictionary<string, FileItem> _byPath = new(StringComparer.OrdinalIgnoreCase);
   private readonly HashSet<Task> _running = [];
   private int _pending;
-  private string? _updateVersion;
 
   public MainViewModel(ImageOptimizerEngine engine, OptimizerSettings settings)
   {
@@ -57,27 +56,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   public bool IsEmpty => Files.Count == 0;
 
   public bool IsBusy => _pending > 0;
-
-  /// <summary>The version of a downloaded update that installs on restart, or null when there's none.</summary>
-  public string? UpdateVersion
-  {
-    get => _updateVersion;
-    set
-    {
-      _updateVersion = value;
-      OnPropertyChanged();
-      OnPropertyChanged(nameof(IsUpdateReady));
-      OnPropertyChanged(nameof(UpdateToolTip));
-      OnPropertyChanged(nameof(CanRestartToUpdate));
-    }
-  }
-
-  public bool IsUpdateReady => UpdateVersion is not null;
-
-  public string? UpdateToolTip => UpdateVersion is null ? null : Strings.UpdateReady(UpdateVersion);
-
-  /// <summary>Restarting would cut short the files being optimized, so it waits until they're done.</summary>
-  public bool CanRestartToUpdate => IsUpdateReady && !IsBusy;
 
   public string Summary
   {
@@ -251,7 +229,6 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   {
     OnPropertyChanged(nameof(IsEmpty));
     OnPropertyChanged(nameof(IsBusy));
-    OnPropertyChanged(nameof(CanRestartToUpdate));
     OnPropertyChanged(nameof(Summary));
   }
 

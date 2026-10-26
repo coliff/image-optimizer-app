@@ -200,10 +200,6 @@
         <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Content="&#xE713;" Margin="6,0,0,0"
             AutomationProperties.Name="{x:Static local:Strings.Settings}" AutomationProperties.AcceleratorKey="Ctrl+,"
             ToolTip="{x:Static local:Strings.SettingsToolTip}" Click="OnOpenSettings" />
-        <Button DockPanel.Dock="Right" Style="{StaticResource FlatButton}" Content="{x:Static local:Strings.RestartToUpdate}" Margin="0,0,6,0"
-            ToolTip="{Binding UpdateToolTip}"
-            Visibility="{Binding IsUpdateReady, Converter={StaticResource BoolToVisibility}}"
-            IsEnabled="{Binding CanRestartToUpdate}" Click="OnRestartToUpdate" />
         <TextBlock x:Name="SummaryText" Text="{Binding Summary}" AutomationProperties.LiveSetting="Polite"
               VerticalAlignment="Center" HorizontalAlignment="Center"
               TextTrimming="CharacterEllipsis" Margin="12,0" Foreground="{DynamicResource SubtleTextBrush}" />

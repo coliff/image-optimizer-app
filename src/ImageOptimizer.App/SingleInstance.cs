@@ -7,8 +7,8 @@ using System.Text;
 namespace ImageOptimizer.App;
 
 /// <summary>
-/// Keeps one window per user session. Later launches (opening the app again, or Explorer starting it once per
-/// selected file) send their files to the first one over a named pipe and exit.
+/// Keeps one window per user session. Later launches (opening the app again, or Explorer's menu with more files
+/// than fit on one command line) send their files to the first one over a named pipe and exit.
 /// </summary>
 public sealed class SingleInstance : IDisposable
 {
