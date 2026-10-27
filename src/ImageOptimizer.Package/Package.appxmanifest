@@ -18,7 +18,7 @@
       Version="0.0.0.0" ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>Image Optimizer+</DisplayName>
+    <DisplayName>Image Optimizer Plus</DisplayName>
     <PublisherDisplayName>coliff</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -44,14 +44,14 @@
 
   <Applications>
     <Application Id="ImageOptimizer" Executable="ImageOptimizer.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Image Optimizer+" Description="Lossless image optimizer"
+      <uap:VisualElements DisplayName="Image Optimizer Plus" Description="Lossless image optimizer"
           BackgroundColor="transparent" Square150x150Logo="Images\Square150x150Logo.png"
           Square44x44Logo="Images\Square44x44Logo.png" />
       <Extensions>
         <!-- "Optimize with Image Optimizer" in File Explorer's right-click menu (src/ImageOptimizer.ShellMenu). -->
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:SurrogateServer DisplayName="Image Optimizer+">
+            <com:SurrogateServer DisplayName="Image Optimizer Plus">
               <com:Class Id="4D4A160B-D5FA-4133-BFB2-449803C652EF" Path="ImageOptimizer.ShellMenu.dll"
                   ThreadingModel="STA" />
             </com:SurrogateServer>
