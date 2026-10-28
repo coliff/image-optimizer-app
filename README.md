@@ -1,9 +1,9 @@
-# Image Optimizer
+# Image Optimizer Plus for Windows
 
 [![Build](https://github.com/coliff/image-optimizer-app/actions/workflows/build.yml/badge.svg)](https://github.com/coliff/image-optimizer-app/actions/workflows/build.yml)
 [![Lint](https://github.com/coliff/image-optimizer-app/actions/workflows/lint.yml/badge.svg)](https://github.com/coliff/image-optimizer-app/actions/workflows/lint.yml)
-[![Latest release](https://img.shields.io/github/v/release/coliff/image-optimizer-app)](https://github.com/coliff/image-optimizer-app/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/coliff/image-optimizer-app/total)](https://github.com/coliff/image-optimizer-app/releases)
+[![Version](https://img.shields.io/github/v/release/coliff/image-optimizer-app?label=version)](https://github.com/coliff/image-optimizer-app/releases/latest)
+[![Microsoft Store](https://img.shields.io/badge/Microsoft_Store-Get_it-0078D4?logo=microsoftstore&logoColor=white)](https://apps.microsoft.com/detail/9pg9rcdcgp9x)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/coliff/image-optimizer-app/badge)](https://scorecard.dev/viewer/?uri=github.com/coliff/image-optimizer-app)
 [![License: MIT](https://img.shields.io/github/license/coliff/image-optimizer-app)](LICENSE)
 
@@ -63,7 +63,7 @@ Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
 
 ## Install
 
-Get it from the [Microsoft Store](https://apps.microsoft.com/detail/STORE_ID). The Store keeps it up to date, and
+Get it from the [Microsoft Store](https://apps.microsoft.com/detail/9pg9rcdcgp9x). The Store keeps it up to date, and
 uninstalling it from Windows Settings > Apps removes everything, including the File Explorer entry.
 
 Requires Windows 10 (version 2004 or later) or Windows 11, x64.
