@@ -56,6 +56,7 @@
                   Style="{StaticResource HintText}" Margin="22,0,0,6" />
             <CheckBox x:Name="AllowProgressiveJpeg" Content="{x:Static local:Strings.AllowProgressiveJpeg}" />
             <CheckBox x:Name="PreserveModifiedDate" Content="{x:Static local:Strings.PreserveModifiedDate}" />
+            <CheckBox x:Name="SkipNodeModules" Content="{x:Static local:Strings.SkipNodeModules}" />
             <CheckBox x:Name="ExplorerMenu" Content="{x:Static local:Strings.ExplorerMenu}" Margin="0,6,0,0"
                 AutomationProperties.HelpText="{Binding Text, ElementName=ExplorerMenuHint}" />
             <TextBlock x:Name="ExplorerMenuHint" Text="{x:Static local:Strings.ExplorerMenuHint}"
