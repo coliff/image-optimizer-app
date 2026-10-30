@@ -92,7 +92,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   public int Add(IEnumerable<string> paths)
   {
     var added = 0;
-    foreach (var path in FileCollector.Collect(paths))
+    foreach (var path in FileCollector.Collect(paths, Settings.SkipNodeModules))
     {
       if (_byPath.TryGetValue(path, out var existing))
       {

@@ -160,6 +160,9 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>ファイルの元の「更新日時」を保持(_K)</value>
   </data>
+  <data name="SkipNodeModules" xml:space="preserve">
+    <value>node__modules フォルダーを無視(_N)</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>エクスプローラーに「Image Optimizer で最適化」を追加(_E)</value>
   </data>

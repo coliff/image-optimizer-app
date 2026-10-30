@@ -170,6 +170,9 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>_Keep each file's original "Date modified"</value>
   </data>
+  <data name="SkipNodeModules" xml:space="preserve">
+    <value>Ig_nore node__modules folders</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Add "Optimize with Image Optimizer" to File _Explorer</value>
     <comment>The quoted text must match ExplorerMenuLabel.</comment>

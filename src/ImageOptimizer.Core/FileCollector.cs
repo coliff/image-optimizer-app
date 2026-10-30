@@ -4,8 +4,11 @@ namespace ImageOptimizer.Core;
 
 public static class FileCollector
 {
-  /// <summary>Expands dropped files and folders (recursively) into the image files they contain.</summary>
-  public static IEnumerable<string> Collect(IEnumerable<string> paths)
+  /// <summary>
+  /// Expands dropped files and folders (recursively) into the image files they contain. With
+  /// <paramref name="skipNodeModules"/>, node_modules folders inside them are left out, though one dropped itself isn't.
+  /// </summary>
+  public static IEnumerable<string> Collect(IEnumerable<string> paths, bool skipNodeModules = false)
   {
     var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     foreach (var path in paths)
@@ -13,7 +16,7 @@ public static class FileCollector
       IEnumerable<string> files;
       if (Directory.Exists(path))
       {
-        files = EnumerateImages(path);
+        files = EnumerateImages(path, skipNodeModules);
       }
       else if (File.Exists(path) && ImageFormats.HasSupportedExtension(path) && !ImageOptimizerEngine.IsStagingFile(path))
       {
@@ -33,7 +36,7 @@ public static class FileCollector
     }
   }
 
-  private static IEnumerable<string> EnumerateImages(string directory)
+  private static IEnumerable<string> EnumerateImages(string directory, bool skipNodeModules)
   {
     var options = new EnumerationOptions
     {
@@ -46,7 +49,8 @@ public static class FileCollector
       ShouldIncludePredicate = (ref entry) =>
           !entry.IsDirectory && !IsLink(ref entry) && ImageFormats.HasSupportedExtension(entry.FileName.ToString()) &&
           !ImageOptimizerEngine.IsStagingFile(entry.FileName.ToString()),
-      ShouldRecursePredicate = (ref entry) => !IsLink(ref entry),
+      ShouldRecursePredicate = (ref entry) =>
+          !IsLink(ref entry) && !(skipNodeModules && entry.FileName.Equals("node_modules", StringComparison.OrdinalIgnoreCase)),
     }.Order(StringComparer.OrdinalIgnoreCase);
   }
 

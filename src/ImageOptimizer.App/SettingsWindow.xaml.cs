@@ -45,6 +45,7 @@ public partial class SettingsWindow : Window
     MaximumCompression.IsChecked = settings.MaximumCompression;
     AllowProgressiveJpeg.IsChecked = settings.AllowProgressiveJpeg;
     PreserveModifiedDate.IsChecked = settings.PreserveModifiedDate;
+    SkipNodeModules.IsChecked = settings.SkipNodeModules;
   }
 
   private void OnRestoreDefaults(object sender, RoutedEventArgs e)
@@ -109,6 +110,7 @@ public partial class SettingsWindow : Window
       MaximumCompression = MaximumCompression.IsChecked == true,
       AllowProgressiveJpeg = AllowProgressiveJpeg.IsChecked == true,
       PreserveModifiedDate = PreserveModifiedDate.IsChecked == true,
+      SkipNodeModules = SkipNodeModules.IsChecked == true,
     };
     ApplyExplorerMenu();
     DialogResult = true;
