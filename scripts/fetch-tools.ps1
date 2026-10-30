@@ -21,7 +21,7 @@ $InformationPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
 
 $OxipngVersion = '10.2.1'
-$LibjpegTurboVersion = '3.2.0'
+$LibjpegTurboVersion = '3.2.1'
 $LibwebpVersion = '1.6.0'
 $LibavifVersion = '1.4.2'
 # The codec versions the libavif release links in (its ext/aom.cmd and ext/dav1d.cmd), for their license texts.
