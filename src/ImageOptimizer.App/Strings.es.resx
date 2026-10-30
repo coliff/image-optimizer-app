@@ -160,6 +160,9 @@
   <data name="PreserveModifiedDate" xml:space="preserve">
     <value>C_onservar la "Fecha de modificación" original de cada archivo</value>
   </data>
+  <data name="SkipNodeModules" xml:space="preserve">
+    <value>_Ignorar carpetas node__modules</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Agregar "Optimizar con Image Optimizer" al _Explorador de archivos</value>
   </data>

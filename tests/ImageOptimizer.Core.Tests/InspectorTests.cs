@@ -242,6 +242,21 @@ public class InspectorTests
   }
 
   [Fact]
+  public void Skips_node_modules_folders_when_asked()
+  {
+    using var files = new TestFiles();
+    Directory.CreateDirectory(Path.Combine(files.Directory, "node_modules", "pkg"));
+    var a = files.CopyFixture("photo.jpg");
+    var b = files.CopyFixture("unoptimized.png", Path.Combine("node_modules", "pkg", "b.png"));
+    var nodeModules = Path.Combine(files.Directory, "node_modules");
+
+    Assert.Equal([Path.GetFullPath(a)], FileCollector.Collect([files.Directory], skipNodeModules: true));
+    Assert.Equal(2, FileCollector.Collect([files.Directory]).Count());
+    // A node_modules folder dropped on its own is still optimized.
+    Assert.Equal([Path.GetFullPath(b)], FileCollector.Collect([nodeModules], skipNodeModules: true));
+  }
+
+  [Fact]
   public void Skips_linked_files_and_folders_but_not_their_targets()
   {
     using var files = new TestFiles();
@@ -271,6 +286,10 @@ public class InspectorTests
     var settings = new OptimizerSettings { OptimizeGif = false, MaximumCompression = true };
     settings.Save(path);
     Assert.Equal(settings, OptimizerSettings.Load(path));
+
+    // Settings saved by an older version get the defaults for newer options.
+    File.WriteAllText(path, """{ "OptimizeGif": false }""");
+    Assert.True(OptimizerSettings.Load(path).SkipNodeModules);
 
     File.WriteAllText(path, "{ not json");
     Assert.Equal(new OptimizerSettings(), OptimizerSettings.Load(path));

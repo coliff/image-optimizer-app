@@ -57,6 +57,7 @@ orientation are always kept so images look exactly the same.
 - Maximum compression: Zopfli for PNG, maximum effort for WebP, AVIF and JPEG XL, multipass SVGO (off by default; much slower)
 - Use progressive JPEG when it's smaller (on by default)
 - Keep each file's original "Date modified" (on by default)
+- Ignore `node_modules` folders when adding a folder (on by default)
 - Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default)
 
 Settings are stored in `%AppData%\ImageOptimizer\settings.json`.

@@ -25,6 +25,9 @@ public sealed record OptimizerSettings
   /// <summary>Keeps each file's original "date modified" after it is replaced.</summary>
   public bool PreserveModifiedDate { get; init; } = true;
 
+  /// <summary>Leaves out node_modules folders inside a folder that's added, since their images belong to packages.</summary>
+  public bool SkipNodeModules { get; init; } = true;
+
   public bool IsEnabled(ImageFormat format) => format switch
   {
     ImageFormat.Png => OptimizePng,
