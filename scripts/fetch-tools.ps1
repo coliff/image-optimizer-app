@@ -28,7 +28,7 @@ $LibavifVersion = '1.4.2'
 $LibaomVersion = '3.14.1'
 $Dav1dVersion = '1.5.3'
 $LibjxlVersion = '0.12.0'
-$GifsicleVersion = '1.95'
+$GifsicleVersion = '1.97'
 $SvgoVersion = '4.1.0'
 
 $work = Join-Path ([System.IO.Path]::GetTempPath()) ("imageoptimizer-tools-" + [guid]::NewGuid().ToString('N'))
