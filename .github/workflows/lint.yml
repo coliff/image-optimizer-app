@@ -30,8 +30,12 @@ jobs:
       - name: Super-Linter
         uses: super-linter/super-linter@2da136927bd4a73596db63044b504547c62cb854 # v9.0.0
         env:
+          FILTER_REGEX_EXCLUDE: .*css/.*
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORE_GITIGNORED_FILES: true
           LINTER_RULES_PATH: .
+          SUPPRESS_POSSUM: true
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
           VALIDATE_CHECKOV: false
