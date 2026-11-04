@@ -105,4 +105,7 @@
   <data name="JxlHeaderExtensions" xml:space="preserve">
     <value>JPEG XL-Bilder mit Header-Erweiterungen werden nicht verändert</value>
   </data>
+  <data name="IcoNoPngImages" xml:space="preserve">
+    <value>Das Symbol enthält keine PNG-Bilder zum Optimieren</value>
+  </data>
 </root>

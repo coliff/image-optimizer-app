@@ -114,4 +114,8 @@
   <data name="JxlHeaderExtensions" xml:space="preserve">
     <value>JPEG XL with header extensions is left untouched</value>
   </data>
+  <data name="IcoNoPngImages" xml:space="preserve">
+    <value>Icon has no PNG images to optimize</value>
+    <comment>An icon (.ico) file can hold PNG and BMP images; only PNG images can be recompressed.</comment>
+  </data>
 </root>

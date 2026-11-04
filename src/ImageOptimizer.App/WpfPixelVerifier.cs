@@ -7,8 +7,8 @@ using ImageOptimizer.Core;
 namespace ImageOptimizer.App;
 
 /// <summary>
-/// Decodes PNG and JPEG files with Windows' own codecs and checks every pixel of the optimized file
-/// against the original, as a final guard that an optimization really was lossless.
+/// Decodes PNG and JPEG files, and the PNG images inside icons, with Windows' own codecs and checks every pixel
+/// of the optimized file against the original, as a final guard that an optimization really was lossless.
 /// </summary>
 public sealed class WpfPixelVerifier : IPixelVerifier
 {
@@ -16,16 +16,61 @@ public sealed class WpfPixelVerifier : IPixelVerifier
 
   public Task<VerificationResult> VerifyAsync(ImageFormat format, string originalPath, string candidatePath, string workDirectory, CancellationToken cancellationToken)
   {
-    if (format is not (ImageFormat.Png or ImageFormat.Jpeg))
-      return Task.FromResult(VerificationResult.NotSupported);
-    return Task.Run(() => Compare(originalPath, candidatePath, cancellationToken), cancellationToken);
+    return format switch
+    {
+      ImageFormat.Png or ImageFormat.Jpeg => Task.Run(() => CompareFiles(originalPath, candidatePath, cancellationToken), cancellationToken),
+      ImageFormat.Ico => Task.Run(() => CompareIcons(originalPath, candidatePath, cancellationToken), cancellationToken),
+      _ => Task.FromResult(VerificationResult.NotSupported),
+    };
   }
 
-  private static VerificationResult Compare(string originalPath, string candidatePath, CancellationToken cancellationToken)
+  private static VerificationResult CompareFiles(string originalPath, string candidatePath, CancellationToken cancellationToken)
   {
     using var originalStream = File.OpenRead(originalPath);
     using var candidateStream = File.OpenRead(candidatePath);
+    return Compare(originalStream, candidateStream, cancellationToken);
+  }
 
+  /// <summary>
+  /// Every image must still be there in the same order with the same directory entry; BMP images must be byte for
+  /// byte the same, and PNG images must decode to the same pixels.
+  /// </summary>
+  private static VerificationResult CompareIcons(string originalPath, string candidatePath, CancellationToken cancellationToken)
+  {
+    var original = IcoFile.Parse(File.ReadAllBytes(originalPath));
+    if (original is null)
+      return VerificationResult.NotSupported;
+    var candidate = IcoFile.Parse(File.ReadAllBytes(candidatePath));
+    if (candidate is null || candidate.Type != original.Type || candidate.Entries.Count != original.Entries.Count)
+      return VerificationResult.Different;
+
+    for (var i = 0; i < original.Entries.Count; i++)
+    {
+      var a = original.Entries[i];
+      var b = candidate.Entries[i];
+      // The first 8 bytes are the size, color count, planes or hotspot and bit count; the rest is size and offset.
+      if (a.IsPng != b.IsPng || !a.Header.AsSpan(0, 8).SequenceEqual(b.Header.AsSpan(0, 8)))
+        return VerificationResult.Different;
+      if (!a.IsPng)
+      {
+        if (!a.Data.AsSpan().SequenceEqual(b.Data))
+          return VerificationResult.Different;
+        continue;
+      }
+      if (a.Data.AsSpan().SequenceEqual(b.Data))
+        continue;
+
+      using var originalStream = new MemoryStream(a.Data, writable: false);
+      using var candidateStream = new MemoryStream(b.Data, writable: false);
+      // Like a PNG file, an image Windows can't read in the original is left to the lossless tool.
+      if (Compare(originalStream, candidateStream, cancellationToken) == VerificationResult.Different)
+        return VerificationResult.Different;
+    }
+    return VerificationResult.Identical;
+  }
+
+  private static VerificationResult Compare(Stream originalStream, Stream candidateStream, CancellationToken cancellationToken)
+  {
     BitmapSource original;
     try
     {

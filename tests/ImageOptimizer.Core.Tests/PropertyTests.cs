@@ -104,6 +104,7 @@ public class PropertyTests
     AvifInspector.Inspect(data);
     JxlInspector.HasSignature(data);
     JxlInspector.Inspect(data);
+    IcoFile.Parse(data)?.ToBytes();
     try
     {
       GifDecoder.ReadApplicationExtensions(data);

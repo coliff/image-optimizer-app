@@ -41,21 +41,84 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
       return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.Png));
 
     var output = context.WorkFile("oxipng.png");
+    await tools.RunAsync("oxipng", Arguments(context.Settings, data, context.InputPath, output), cancellationToken).ConfigureAwait(false);
+    return new CandidateSet([new Candidate(output)]);
+  }
+
+  /// <param name="keepPixelFormat">Only recompress, never change the color type or bit depth.</param>
+  internal static List<string> Arguments(OptimizerSettings settings, byte[] data, string input, string output, bool keepPixelFormat = false)
+  {
     var args = new List<string> { "--quiet", "--interlace", "keep" };
-    if (context.Settings.MaximumCompression)
+    if (settings.MaximumCompression)
       args.AddRange(["--opt", "max", "--zopfli", "--fast"]);
     else
       args.AddRange(["--opt", "4"]);
-    if (context.Settings.StripMetadata)
+    if (keepPixelFormat)
+      args.AddRange(["--nb", "--nc", "--np"]);
+    if (settings.StripMetadata)
     {
       // Like JPEGs, keep the EXIF data when it turns the image, so it isn't shown sideways.
       var keep = ImageInspector.GetPngExifOrientation(data) is > 1 ? DisplayChunks + ",eXIf" : DisplayChunks;
       args.AddRange(["--keep", keep]);
     }
-    args.AddRange(["--out", output, context.InputPath]);
+    args.AddRange(["--out", output, input]);
+    return args;
+  }
+}
 
-    await tools.RunAsync("oxipng", args, cancellationToken).ConfigureAwait(false);
-    return new CandidateSet([new Candidate(output)]);
+/// <summary>
+/// ICO and CUR: each PNG image inside is recompressed with oxipng. BMP images are kept byte for byte, and so are
+/// every image's size and bit depth, because Windows expects the PNGs in an icon to stay 32-bit RGBA.
+/// </summary>
+public sealed class IcoOptimizer(IToolRunner tools) : IFormatOptimizer
+{
+  public ImageFormat Format => ImageFormat.Ico;
+
+  public async Task<CandidateSet> CreateCandidatesAsync(OptimizationContext context, CancellationToken cancellationToken)
+  {
+    var icon = IcoFile.Parse(await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false));
+    if (icon is null)
+      return CandidateSet.Skip(Strings.InvalidFile(ImageFormat.Ico));
+
+    var entries = icon.Entries.ToArray();
+    var pngs = Enumerable.Range(0, entries.Length)
+        .Where(i => entries[i].IsPng && !ImageInspector.IsAnimatedPng(entries[i].Data))
+        .ToList();
+    if (pngs.Count == 0)
+      return CandidateSet.Skip(Strings.IcoNoPngImages);
+
+    var changed = false;
+    foreach (var i in pngs)
+    {
+      var data = entries[i].Data;
+      var input = context.WorkFile($"entry-{i}.png");
+      var output = context.WorkFile($"entry-{i}-oxipng.png");
+      await File.WriteAllBytesAsync(input, data, cancellationToken).ConfigureAwait(false);
+      await tools.RunAsync("oxipng", PngOptimizer.Arguments(context.Settings, data, input, output, keepPixelFormat: true), cancellationToken)
+          .ConfigureAwait(false);
+
+      var optimized = await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false);
+      if (optimized.Length < data.Length && SamePixelFormat(data, optimized))
+      {
+        entries[i] = entries[i] with { Data = optimized };
+        changed = true;
+      }
+    }
+    if (!changed)
+      return new CandidateSet([]);
+
+    var candidate = context.WorkFile("icon" + Path.GetExtension(context.InputPath));
+    await File.WriteAllBytesAsync(candidate, (icon with { Entries = entries }).ToBytes(), cancellationToken).ConfigureAwait(false);
+    return new CandidateSet([new Candidate(candidate)]);
+  }
+
+  /// <summary>Same width, height, bit depth, color type and interlacing in the IHDR chunk.</summary>
+  internal static bool SamePixelFormat(byte[] a, byte[] b)
+  {
+    const int ihdrStart = 16, ihdrLength = 13;
+    return a.Length >= ihdrStart + ihdrLength && b.Length >= ihdrStart + ihdrLength &&
+        a.AsSpan(12, 4).SequenceEqual("IHDR"u8) && b.AsSpan(12, 4).SequenceEqual("IHDR"u8) &&
+        a.AsSpan(ihdrStart, ihdrLength).SequenceEqual(b.AsSpan(ihdrStart, ihdrLength));
   }
 }
 

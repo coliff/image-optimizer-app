@@ -37,6 +37,7 @@
           <StackPanel>
             <CheckBox x:Name="Avif" Content="_AVIF" />
             <CheckBox x:Name="Gif" Content="_GIF" />
+            <CheckBox x:Name="Ico" Content="_ICO" />
             <CheckBox x:Name="Jpeg" Content="_JPEG" />
             <CheckBox x:Name="JpegXl" Content="JPEG _XL" />
             <CheckBox x:Name="Png" Content="_PNG" />

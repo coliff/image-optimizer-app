@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- ICO and CUR support: the PNG images inside icons and cursors are recompressed losslessly with oxipng,
+  keeping their color type and bit depth. BMP images are left exactly as they are.
+
 ## vl.0.0 - 2026-11-03
 
 - Updated gifsicle to 1.97.

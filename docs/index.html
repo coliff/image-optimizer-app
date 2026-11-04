@@ -7,7 +7,7 @@
     <title>Image Optimizer: lossless image optimizer for Windows</title>
     <meta
       name="description"
-      content="A lightweight, fast, lossless image optimizer for Windows, inspired by ImageOptim. Drop AVIF, GIF, JPEG, JPEG XL, PNG, SVG and WebP files onto the window and they're optimized in place."
+      content="A lightweight, fast, lossless image optimizer for Windows, inspired by ImageOptim. Drop AVIF, GIF, ICO, JPEG, JPEG XL, PNG, SVG and WebP files onto the window and they're optimized in place."
     />
     <meta name="author" content="Christian Oliff" />
     <meta name="last-modified" content="2026-10-10" />
@@ -85,8 +85,8 @@
             original is left untouched.
           </li>
           <li>
-            <strong>Seven formats</strong> AVIF, GIF, JPEG, JPEG XL, PNG, SVG
-            and WebP.
+            <strong>Eight formats</strong> AVIF, GIF, ICO, JPEG, JPEG XL, PNG,
+            SVG and WebP.
           </li>
           <li>
             <strong>Nothing to configure</strong> The defaults are safe, and a
@@ -141,6 +141,14 @@
               <td>GIF</td>
               <td><a href="https://www.lcdf.org/gifsicle/">Gifsicle</a></td>
               <td>Lossless frame and LZW optimization.</td>
+            </tr>
+            <tr>
+              <td>ICO</td>
+              <td><a href="https://github.com/oxipng/oxipng">oxipng</a></td>
+              <td>
+                The PNG images inside icons and cursors are recompressed
+                losslessly. BMP images are kept exactly.
+              </td>
             </tr>
             <tr>
               <td>JPEG</td>

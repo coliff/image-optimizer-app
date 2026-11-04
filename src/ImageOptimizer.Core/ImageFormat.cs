@@ -10,6 +10,8 @@ public enum ImageFormat
   Gif,
   Svg,
   JpegXl,
+  /// <summary>Windows icons (.ico) and cursors (.cur).</summary>
+  Ico,
 }
 
 public static class ImageFormats
@@ -26,6 +28,8 @@ public static class ImageFormats
     [".gif"] = ImageFormat.Gif,
     [".svg"] = ImageFormat.Svg,
     [".jxl"] = ImageFormat.JpegXl,
+    [".ico"] = ImageFormat.Ico,
+    [".cur"] = ImageFormat.Ico,
   };
 
   public static IReadOnlyCollection<string> SupportedExtensions => ExtensionMap.Keys;
@@ -61,7 +65,13 @@ public static class ImageFormats
     using var stream = File.OpenRead(path);
     var read = stream.ReadAtLeast(header, header.Length, throwOnEndOfStream: false);
     var format = Detect(header[..read]);
-    if (format != ImageFormat.Unknown || !Path.GetExtension(path).Equals(".svg", StringComparison.OrdinalIgnoreCase))
+    if (format != ImageFormat.Unknown)
+      return format;
+
+    // An icon's header is too short to recognize on its own, so it's only trusted with an icon or cursor extension.
+    if (IcoFile.IsIcoExtension(path))
+      return IcoFile.HasSignature(header[..read]) ? ImageFormat.Ico : ImageFormat.Unknown;
+    if (!Path.GetExtension(path).Equals(".svg", StringComparison.OrdinalIgnoreCase))
       return format;
 
     // SVG is text, so look for the root element near the start (after any XML declaration, comments or DOCTYPE).
@@ -83,6 +93,7 @@ public static class ImageFormats
     ImageFormat.Gif => "GIF",
     ImageFormat.Svg => "SVG",
     ImageFormat.JpegXl => "JPEG XL",
+    ImageFormat.Ico => "ICO",
     _ => "Unknown",
   };
 

@@ -105,4 +105,7 @@
   <data name="JxlHeaderExtensions" xml:space="preserve">
     <value>I JPEG XL con estensioni dell'intestazione non vengono modificati</value>
   </data>
+  <data name="IcoNoPngImages" xml:space="preserve">
+    <value>L'icona non contiene immagini PNG da ottimizzare</value>
+  </data>
 </root>

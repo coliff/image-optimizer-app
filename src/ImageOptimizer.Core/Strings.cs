@@ -49,4 +49,5 @@ internal static class Strings
   public static string JxlBox(string type) => Format(type);
   public static string JxlCompressedBox(string type) => Format(type);
   public static string JxlHeaderExtensions => Get();
+  public static string IcoNoPngImages => Get();
 }

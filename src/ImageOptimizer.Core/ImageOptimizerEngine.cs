@@ -49,6 +49,7 @@ public sealed class ImageOptimizerEngine
             new AvifOptimizer(tools),
             new JxlOptimizer(tools),
             new GifOptimizer(tools),
+            new IcoOptimizer(tools),
             new SvgOptimizer(() => (tools as ToolRunner)?.LocateFile(SvgOptimizer.ScriptName)),
           ],
           new CompositeVerifier([.. extraVerifiers, new WebPPixelVerifier(tools), new AvifPixelVerifier(tools), new JxlPixelVerifier(tools), new GifPixelVerifier()]));
@@ -218,6 +219,7 @@ public sealed class ImageOptimizerEngine
     ImageFormat.Gif => ".gif",
     ImageFormat.Svg => ".svg",
     ImageFormat.JpegXl => ".jxl",
+    ImageFormat.Ico => ".ico",
     _ => ".bin",
   };
 }

@@ -63,7 +63,13 @@
             <desktop5:ItemType Type=".avif">
               <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
             </desktop5:ItemType>
+            <desktop5:ItemType Type=".cur">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
             <desktop5:ItemType Type=".gif">
+              <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
+            </desktop5:ItemType>
+            <desktop5:ItemType Type=".ico">
               <desktop5:Verb Id="Optimize" Clsid="4D4A160B-D5FA-4133-BFB2-449803C652EF" />
             </desktop5:ItemType>
             <desktop5:ItemType Type=".jfif">
