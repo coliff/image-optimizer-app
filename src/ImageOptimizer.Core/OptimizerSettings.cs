@@ -12,6 +12,7 @@ public sealed record OptimizerSettings
   public bool OptimizeAvif { get; init; } = true;
   public bool OptimizeGif { get; init; } = true;
   public bool OptimizeSvg { get; init; } = true;
+  public bool OptimizeIco { get; init; } = true;
 
   /// <summary>Removes comments, camera data and other metadata. Color profiles and orientation are always kept.</summary>
   public bool StripMetadata { get; init; } = true;
@@ -37,6 +38,7 @@ public sealed record OptimizerSettings
     ImageFormat.Avif => OptimizeAvif,
     ImageFormat.Gif => OptimizeGif,
     ImageFormat.Svg => OptimizeSvg,
+    ImageFormat.Ico => OptimizeIco,
     _ => false,
   };
 

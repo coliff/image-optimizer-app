@@ -105,4 +105,7 @@
   <data name="JxlHeaderExtensions" xml:space="preserve">
     <value>ヘッダー拡張を含む JPEG XL は変更しません</value>
   </data>
+  <data name="IcoNoPngImages" xml:space="preserve">
+    <value>アイコンに最適化できる PNG 画像がありません</value>
+  </data>
 </root>

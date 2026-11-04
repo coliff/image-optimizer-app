@@ -41,6 +41,7 @@ public partial class SettingsWindow : Window
     Avif.IsChecked = settings.OptimizeAvif;
     Gif.IsChecked = settings.OptimizeGif;
     Svg.IsChecked = settings.OptimizeSvg;
+    Ico.IsChecked = settings.OptimizeIco;
     StripMetadata.IsChecked = settings.StripMetadata;
     MaximumCompression.IsChecked = settings.MaximumCompression;
     AllowProgressiveJpeg.IsChecked = settings.AllowProgressiveJpeg;
@@ -106,6 +107,7 @@ public partial class SettingsWindow : Window
       OptimizeAvif = Avif.IsChecked == true,
       OptimizeGif = Gif.IsChecked == true,
       OptimizeSvg = Svg.IsChecked == true,
+      OptimizeIco = Ico.IsChecked == true,
       StripMetadata = StripMetadata.IsChecked == true,
       MaximumCompression = MaximumCompression.IsChecked == true,
       AllowProgressiveJpeg = AllowProgressiveJpeg.IsChecked == true,

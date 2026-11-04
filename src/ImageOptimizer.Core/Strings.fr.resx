@@ -105,4 +105,7 @@
   <data name="JxlHeaderExtensions" xml:space="preserve">
     <value>Les JPEG XL avec des extensions d'en-tête ne sont pas modifiés</value>
   </data>
+  <data name="IcoNoPngImages" xml:space="preserve">
+    <value>L'icône ne contient aucune image PNG à optimiser</value>
+  </data>
 </root>
