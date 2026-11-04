@@ -55,6 +55,16 @@ public class IcoTests : IDisposable
     Assert.Null(IcoFile.Parse([0, 0, 1, 0, 0, 0]));
   }
 
+  [Fact]
+  public void Rejects_images_that_share_bytes()
+  {
+    var bytes = Icon(1, Bmp, Bmp);
+    // Point the second image at the first one's data.
+    bytes.AsSpan(6 + 12, 4).CopyTo(bytes.AsSpan(6 + 16 + 12, 4));
+
+    Assert.Null(IcoFile.Parse(bytes));
+  }
+
   [Theory]
   [InlineData("icon.ico", ImageFormat.Ico)]
   [InlineData("cursor.CUR", ImageFormat.Ico)]

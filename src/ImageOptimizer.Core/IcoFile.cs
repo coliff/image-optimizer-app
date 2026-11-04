@@ -41,7 +41,7 @@ public sealed record IcoFile(ushort Type, IReadOnlyList<IcoEntry> Entries)
     if (data.Length < directoryEnd)
       return null;
 
-    var entries = new List<IcoEntry>(count);
+    var ranges = new (long Offset, long Size)[count];
     for (var i = 0; i < count; i++)
     {
       var header = data.Slice(HeaderSize + (i * EntrySize), EntrySize);
@@ -49,7 +49,23 @@ public sealed record IcoFile(ushort Type, IReadOnlyList<IcoEntry> Entries)
       long offset = BinaryPrimitives.ReadUInt32LittleEndian(header[12..]);
       if (size == 0 || offset < directoryEnd || offset + size > data.Length)
         return null;
-      entries.Add(new IcoEntry(header.ToArray(), data.Slice((int)offset, (int)size).ToArray()));
+      ranges[i] = (offset, size);
+    }
+
+    // Images that share or overlap bytes would each be copied in full, so a small crafted file could ask for
+    // gigabytes. Real icons never overlap, which also keeps the copies no bigger than the file itself.
+    var sorted = ranges.OrderBy(r => r.Offset).ToArray();
+    for (var i = 1; i < sorted.Length; i++)
+    {
+      if (sorted[i].Offset < sorted[i - 1].Offset + sorted[i - 1].Size)
+        return null;
+    }
+
+    var entries = new List<IcoEntry>(count);
+    for (var i = 0; i < count; i++)
+    {
+      var header = data.Slice(HeaderSize + (i * EntrySize), EntrySize);
+      entries.Add(new IcoEntry(header.ToArray(), data.Slice((int)ranges[i].Offset, (int)ranges[i].Size).ToArray()));
     }
     return new IcoFile(type, entries);
   }
