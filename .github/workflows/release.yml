@@ -25,8 +25,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
-    outputs:
-      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -124,14 +122,3 @@ jobs:
           }
           gh release edit $env:TAG --repo $env:GITHUB_REPOSITORY --draft=false
           if ($LASTEXITCODE -ne 0) { throw "Couldn't publish the GitHub Release" }
-
-  virustotal:
-    needs: release
-    permissions:
-      contents: read
-    # actionlint doesn't accept the newer "$/" self-repository form yet.
-    uses: ./.github/workflows/virustotal.yml # zizmor: ignore[self-repository]
-    with:
-      tag: ${{ needs.release.outputs.tag }}
-    secrets:
-      VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}

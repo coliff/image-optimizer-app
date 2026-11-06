@@ -33,9 +33,3 @@ Pushing a `vX.Y.Z` tag yourself does the same.
 Then, in [Partner Center](https://partner.microsoft.com/dashboard/apps-and-games/overview), start a new submission
 for Image Optimizer, upload the `.msix` under **Packages** and submit it. The Store signs it, and once it passes
 certification everyone's copy updates itself.
-
-After publishing, the **VirusTotal** workflow uploads the package and the app's own exe and DLLs to
-[VirusTotal](https://www.virustotal.com/) and lists any antivirus engines that flag them in the run summary, so
-false positives show up before people hit them. It needs a free VirusTotal API key saved as the `VIRUSTOTAL_API_KEY`
-repository secret (without one it skips the scan), and it never fails a release. To scan an earlier release, open
-**Actions > VirusTotal > Run workflow**.
