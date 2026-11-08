@@ -173,6 +173,12 @@
   <data name="SkipNodeModules" xml:space="preserve">
     <value>Ig_nore node__modules folders</value>
   </data>
+  <data name="SkipOnlineOnlyFiles" xml:space="preserve">
+    <value>Skip _online-only cloud files</value>
+  </data>
+  <data name="SkipOnlineOnlyFilesHint" xml:space="preserve">
+    <value>Leaves out OneDrive and other cloud files that aren't downloaded, so they aren't downloaded and uploaded again.</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Add "Optimize with Image Optimizer" to File _Explorer</value>
     <comment>The quoted text must match ExplorerMenuLabel.</comment>

@@ -290,8 +290,28 @@ public class InspectorTests
     // Settings saved by an older version get the defaults for newer options.
     File.WriteAllText(path, """{ "OptimizeGif": false }""");
     Assert.True(OptimizerSettings.Load(path).SkipNodeModules);
+    Assert.False(OptimizerSettings.Load(path).SkipOnlineOnlyFiles);
 
     File.WriteAllText(path, "{ not json");
     Assert.Equal(new OptimizerSettings(), OptimizerSettings.Load(path));
+  }
+
+  [Theory]
+  [InlineData(FileAttributes.Normal, false)]
+  [InlineData(FileAttributes.Archive | FileAttributes.ReparsePoint, false)]
+  [InlineData(FileAttributes.Offline, true)]
+  [InlineData((FileAttributes)0x400000, true)]
+  [InlineData((FileAttributes)0x40000, true)]
+  public void Cloud_files_that_are_not_downloaded_are_online_only(FileAttributes attributes, bool onlineOnly) =>
+      Assert.Equal(onlineOnly, FileCollector.IsOnlineOnly(attributes));
+
+  [Fact]
+  public void Local_files_are_still_collected_when_skipping_online_only_files()
+  {
+    using var files = new TestFiles();
+    var a = files.CopyFixture("unoptimized.png");
+
+    Assert.Equal([Path.GetFullPath(a)], FileCollector.Collect([files.Directory], skipOnlineOnly: true));
+    Assert.Equal([Path.GetFullPath(a)], FileCollector.Collect([a], skipOnlineOnly: true));
   }
 }

@@ -163,6 +163,12 @@
   <data name="SkipNodeModules" xml:space="preserve">
     <value>Ig_nora le cartelle node__modules</value>
   </data>
+  <data name="SkipOnlineOnlyFiles" xml:space="preserve">
+    <value>Salta i file cloud disponibili solo _online</value>
+  </data>
+  <data name="SkipOnlineOnlyFilesHint" xml:space="preserve">
+    <value>Esclude i file di OneDrive e di altri servizi cloud non scaricati, così non vengono scaricati e caricati di nuovo.</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Aggiungi "Ottimizza con Image Optimizer" a _Esplora file</value>
   </data>

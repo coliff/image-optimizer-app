@@ -47,6 +47,7 @@ public partial class SettingsWindow : Window
     AllowProgressiveJpeg.IsChecked = settings.AllowProgressiveJpeg;
     PreserveModifiedDate.IsChecked = settings.PreserveModifiedDate;
     SkipNodeModules.IsChecked = settings.SkipNodeModules;
+    SkipOnlineOnlyFiles.IsChecked = settings.SkipOnlineOnlyFiles;
   }
 
   private void OnRestoreDefaults(object sender, RoutedEventArgs e)
@@ -113,6 +114,7 @@ public partial class SettingsWindow : Window
       AllowProgressiveJpeg = AllowProgressiveJpeg.IsChecked == true,
       PreserveModifiedDate = PreserveModifiedDate.IsChecked == true,
       SkipNodeModules = SkipNodeModules.IsChecked == true,
+      SkipOnlineOnlyFiles = SkipOnlineOnlyFiles.IsChecked == true,
     };
     ApplyExplorerMenu();
     DialogResult = true;

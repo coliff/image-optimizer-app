@@ -26,6 +26,8 @@ public partial class App : Application
     ThemeManager.Initialize(this);
 
     var engine = ImageOptimizerEngine.CreateDefault(new ToolRunner(), new WpfPixelVerifier());
+    // Clears out temporary files and staging copies left by a crash, on the side so the window opens straight away.
+    _ = Task.Run(() => engine.CleanUpLeftovers(TimeSpan.FromDays(1)));
     var viewModel = new MainViewModel(engine, OptimizerSettings.Load(OptimizerSettings.DefaultPath));
     var window = new MainWindow(viewModel);
     MainWindow = window;
