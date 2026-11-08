@@ -13,7 +13,8 @@ Drop AVIF, GIF, ICO, JPEG, JPEG XL, PNG, SVG and WebP files (or whole folders) o
 **replaced in place**. There's nothing to configure: the defaults are safe, and a small Settings panel
 (gear button) is there if you want it.
 
-You can also right-click images or folders in File Explorer and choose **Optimize with Image Optimizer**.
+You can also right-click images or folders in File Explorer and choose **Optimize with Image Optimizer**, or copy them
+in File Explorer and press Ctrl+V in the app.
 Selecting many files at once opens them all in one window.
 
 Click the File, Size or Savings header to sort the list (click again to reverse it).
