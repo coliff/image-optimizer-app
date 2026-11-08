@@ -29,6 +29,12 @@ public sealed record OptimizerSettings
   /// <summary>Leaves out node_modules folders inside a folder that's added, since their images belong to packages.</summary>
   public bool SkipNodeModules { get; init; } = true;
 
+  /// <summary>
+  /// Leaves out OneDrive and other cloud files that are only online, because reading them downloads them and
+  /// replacing them uploads them again.
+  /// </summary>
+  public bool SkipOnlineOnlyFiles { get; init; }
+
   public bool IsEnabled(ImageFormat format) => format switch
   {
     ImageFormat.Png => OptimizePng,

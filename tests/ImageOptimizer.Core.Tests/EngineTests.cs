@@ -179,4 +179,67 @@ public class EngineTests : IDisposable
 
     Assert.NotEqual(date, File.GetLastWriteTimeUtc(path));
   }
+
+  [Fact]
+  public void A_modified_date_that_cannot_be_restored_is_not_an_error()
+  {
+    var missing = Path.Combine(_files.Directory, "gone.png");
+
+    Assert.False(ImageOptimizerEngine.TryRestoreModifiedDate(missing, new DateTime(2020, 1, 2, 3, 4, 5, DateTimeKind.Utc)));
+  }
+
+  [Fact]
+  public void Leftovers_from_a_crash_are_cleaned_up_but_recent_ones_are_kept()
+  {
+    var workRoot = Path.Combine(_files.Directory, "work");
+    var engine = Engine(ctx => new([]));
+    var old = DateTime.UtcNow.AddDays(-2);
+
+    var oldFolder = Directory.CreateDirectory(Path.Combine(workRoot, "old")).FullName;
+    File.WriteAllText(Path.Combine(oldFolder, "input.png"), "x");
+    Directory.SetLastWriteTimeUtc(oldFolder, old);
+    var newFolder = Directory.CreateDirectory(Path.Combine(workRoot, "new")).FullName;
+
+    var original = new FileInfo(_files.CopyFixture("unoptimized.png"));
+    var staging = ImageOptimizerEngine.StagingPath(original);
+    File.WriteAllText(staging, "half-written");
+    var pending = Directory.CreateDirectory(Path.Combine(workRoot, "pending")).FullName;
+    var record = Path.Combine(pending, "a.txt");
+    File.WriteAllText(record, staging);
+    File.SetLastWriteTimeUtc(record, old);
+
+    // A note that points at something other than a staging copy must never delete it.
+    var bogus = Path.Combine(pending, "b.txt");
+    File.WriteAllText(bogus, original.FullName);
+    File.SetLastWriteTimeUtc(bogus, old);
+
+    engine.CleanUpLeftovers(TimeSpan.FromDays(1));
+
+    Assert.False(Directory.Exists(oldFolder));
+    Assert.True(Directory.Exists(newFolder));
+    Assert.False(File.Exists(staging));
+    Assert.False(File.Exists(record));
+    Assert.True(File.Exists(original.FullName));
+    Assert.False(File.Exists(bogus));
+  }
+
+  [Fact]
+  public async Task Optimizing_leaves_no_staging_notes_behind()
+  {
+    var path = _files.CopyFixture("unoptimized.png");
+    var engine = Engine(ctx => new([WriteCandidate(ctx, "a.png", 100)]));
+
+    await engine.OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    var pending = Path.Combine(_files.Directory, "work", "pending");
+    Assert.Empty(Directory.Exists(pending) ? Directory.GetFiles(pending) : []);
+  }
+
+  [Theory]
+  [InlineData(ImageFormat.Avif, true, true)]
+  [InlineData(ImageFormat.JpegXl, true, true)]
+  [InlineData(ImageFormat.Png, true, false)]
+  [InlineData(ImageFormat.Avif, false, false)]
+  public void Only_maximum_compression_avif_and_jpeg_xl_take_turns(ImageFormat format, bool maximum, bool heavy) =>
+      Assert.Equal(heavy, ImageOptimizerEngine.IsHeavy(format, new OptimizerSettings { MaximumCompression = maximum }));
 }

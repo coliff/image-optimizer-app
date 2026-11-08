@@ -62,7 +62,9 @@ public sealed class SvgOptimizer(Func<string?> locateScript) : IFormatOptimizer
 
   internal static string BuildConfig(OptimizerSettings settings)
   {
-    var overrides = new Dictionary<string, bool>();
+    // cleanupIds renames and removes ids that nothing inside the file points at, but web pages often do: sprite
+    // references like icons.svg#home, CSS and scripts that target an id, and #fragment links.
+    var overrides = new Dictionary<string, bool> { ["cleanupIds"] = false };
     if (!settings.StripMetadata)
     {
       overrides["removeComments"] = false;

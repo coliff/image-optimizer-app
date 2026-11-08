@@ -163,6 +163,12 @@
   <data name="SkipNodeModules" xml:space="preserve">
     <value>_Ignorer les dossiers node__modules</value>
   </data>
+  <data name="SkipOnlineOnlyFiles" xml:space="preserve">
+    <value>Ignorer les fichiers cloud disponibles en _ligne uniquement</value>
+  </data>
+  <data name="SkipOnlineOnlyFilesHint" xml:space="preserve">
+    <value>Laisse de côté les fichiers OneDrive et d'autres services cloud qui ne sont pas téléchargés, pour qu'ils ne soient pas téléchargés puis renvoyés.</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>Ajouter « Optimiser avec Image Optimizer » à l'_Explorateur de fichiers</value>
   </data>

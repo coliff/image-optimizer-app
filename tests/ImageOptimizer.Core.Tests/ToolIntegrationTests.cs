@@ -360,6 +360,26 @@ public class ToolIntegrationTests : IDisposable
   }
 
   [Fact]
+  public async Task Svg_keeps_ids_that_other_files_may_point_at()
+  {
+    ToolRequirements.RequireFile(_tools, SvgOptimizer.ScriptName);
+    // Nothing in the file uses these ids, but a page could (icons.svg#home, CSS or a #fragment link).
+    var path = _files.Write("icons.svg", """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
+          <!-- comment -->
+          <g id="home-icon"><rect id="background" width="10" height="10" fill="#ff0000"/></g>
+        </svg>
+        """u8.ToArray());
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var svg = File.ReadAllText(path);
+    Assert.Contains("id=\"home-icon\"", svg);
+    Assert.Contains("id=\"background\"", svg);
+  }
+
+  [Fact]
   public async Task Svg_keeps_metadata_when_asked()
   {
     ToolRequirements.RequireFile(_tools, SvgOptimizer.ScriptName);

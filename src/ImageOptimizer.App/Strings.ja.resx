@@ -163,6 +163,12 @@
   <data name="SkipNodeModules" xml:space="preserve">
     <value>node__modules フォルダーを無視(_N)</value>
   </data>
+  <data name="SkipOnlineOnlyFiles" xml:space="preserve">
+    <value>オンラインのみのクラウド ファイルをスキップ(_O)</value>
+  </data>
+  <data name="SkipOnlineOnlyFilesHint" xml:space="preserve">
+    <value>ダウンロードされていない OneDrive などのクラウド ファイルを除外し、ダウンロードと再アップロードを防ぎます。</value>
+  </data>
   <data name="ExplorerMenu" xml:space="preserve">
     <value>エクスプローラーに「Image Optimizer で最適化」を追加(_E)</value>
   </data>

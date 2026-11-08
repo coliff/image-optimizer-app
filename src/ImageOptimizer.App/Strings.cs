@@ -79,6 +79,8 @@ public static class Strings
   public static string AllowProgressiveJpeg => Get();
   public static string PreserveModifiedDate => Get();
   public static string SkipNodeModules => Get();
+  public static string SkipOnlineOnlyFiles => Get();
+  public static string SkipOnlineOnlyFilesHint => Get();
   public static string ExplorerMenu => Get();
   public static string ExplorerMenuHint => Get();
   public static string ExplorerMenuLabel => Get();
