@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Press Ctrl+V to add images and folders copied in File Explorer, the same as dragging them onto the window.
 - A setting to skip OneDrive and other cloud files that are online-only, so they aren't downloaded and uploaded
   again. It's off by default.
 - Temporary work folders and half-finished copies left behind by a crash, or by ending the app from Task Manager,

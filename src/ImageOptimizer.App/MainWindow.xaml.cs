@@ -72,6 +72,28 @@ public partial class MainWindow : Window
     e.Handled = true;
   }
 
+  /// <summary>
+  /// Adds the files and folders copied (or cut) in File Explorer, the same way as dropping them on
+  /// the window. Anything else on the clipboard, such as text or a bitmap, is ignored.
+  /// </summary>
+  private void PasteFiles()
+  {
+    string[] paths;
+    try
+    {
+      if (!Clipboard.ContainsFileDropList())
+        return;
+      paths = Clipboard.GetFileDropList().Cast<string>().ToArray();
+    }
+    catch (System.Runtime.InteropServices.ExternalException)
+    {
+      // Another program has the clipboard open; the person can just press Ctrl+V again.
+      return;
+    }
+    if (paths.Length > 0)
+      _viewModel.Add(paths);
+  }
+
   private void OnAddFiles(object sender, RoutedEventArgs e)
   {
     var patterns = string.Join(";", ImageFormats.SupportedExtensions.Select(x => "*" + x));
@@ -151,6 +173,10 @@ public partial class MainWindow : Window
         break;
       case Key.O when ctrl:
         OnAddFiles(sender, e);
+        e.Handled = true;
+        break;
+      case Key.V when ctrl:
+        PasteFiles();
         e.Handled = true;
         break;
       case Key.OemComma when ctrl:

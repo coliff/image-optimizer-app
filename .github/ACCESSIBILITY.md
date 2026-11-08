@@ -24,6 +24,7 @@ Everything in the main window can be done without a mouse.
 | Key               | Action                                                    |
 | ----------------- | --------------------------------------------------------- |
 | Ctrl+O            | Add images                                                |
+| Ctrl+V            | Add the files and folders copied in File Explorer         |
 | Ctrl+,            | Open Settings                                             |
 | Tab / Shift+Tab   | Move between the column headers, file list and buttons    |
 | Space or Enter    | Activate the focused button or sort by the focused column |
