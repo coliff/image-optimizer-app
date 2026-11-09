@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.0.1 - 2026-11-09
 
 - Press Ctrl+V to add images and folders copied in File Explorer, the same as dragging them onto the window.
 - A setting to skip OneDrive and other cloud files that are online-only, so they aren't downloaded and uploaded
