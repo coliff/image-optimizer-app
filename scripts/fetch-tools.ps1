@@ -27,7 +27,7 @@ $LibavifVersion = '1.4.2'
 # The codec versions the libavif release links in (its ext/aom.cmd and ext/dav1d.cmd), for their license texts.
 $LibaomVersion = '3.14.1'
 $Dav1dVersion = '1.5.3'
-$LibjxlVersion = '0.12.0'
+$LibjxlVersion = '0.13.0'
 $GifsicleVersion = '1.97'
 $SvgoVersion = '4.1.0'
 
