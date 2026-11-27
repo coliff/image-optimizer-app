@@ -68,7 +68,7 @@ public partial class MainWindow : Window
   {
     DropHighlight.Visibility = Visibility.Collapsed;
     if (e.Data.GetData(DataFormats.FileDrop) is string[] paths)
-      _viewModel.Add(paths);
+      _ = _viewModel.AddAsync(paths);
     e.Handled = true;
   }
 
@@ -91,7 +91,7 @@ public partial class MainWindow : Window
       return;
     }
     if (paths.Length > 0)
-      _viewModel.Add(paths);
+      _ = _viewModel.AddAsync(paths);
   }
 
   private void OnAddFiles(object sender, RoutedEventArgs e)
@@ -104,7 +104,7 @@ public partial class MainWindow : Window
       Filter = Strings.OpenFileFilter(patterns),
     };
     if (dialog.ShowDialog(this) == true)
-      _viewModel.Add(dialog.FileNames);
+      _ = _viewModel.AddAsync(dialog.FileNames);
   }
 
   private void OnSortClick(object sender, RoutedEventArgs e)

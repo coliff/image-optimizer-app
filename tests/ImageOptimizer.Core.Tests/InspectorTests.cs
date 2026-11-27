@@ -242,6 +242,24 @@ public class InspectorTests
   }
 
   [Fact]
+  public void Collects_each_folders_images_in_name_order_before_its_subfolders()
+  {
+    using var files = new TestFiles();
+    Directory.CreateDirectory(Path.Combine(files.Directory, "b", "inner"));
+    Directory.CreateDirectory(Path.Combine(files.Directory, "A"));
+    var expected = new[]
+    {
+      files.CopyFixture("photo.jpg", "a.jpg"),
+      files.CopyFixture("photo.jpg", "Z.jpg"),
+      files.CopyFixture("photo.jpg", Path.Combine("A", "one.jpg")),
+      files.CopyFixture("photo.jpg", Path.Combine("b", "two.jpg")),
+      files.CopyFixture("photo.jpg", Path.Combine("b", "inner", "three.jpg")),
+    }.Select(Path.GetFullPath);
+
+    Assert.Equal(expected, FileCollector.Collect([files.Directory]));
+  }
+
+  [Fact]
   public void Skips_node_modules_folders_when_asked()
   {
     using var files = new TestFiles();

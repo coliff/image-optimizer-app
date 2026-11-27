@@ -38,23 +38,53 @@ public static class FileCollector
     }
   }
 
-  private static IEnumerable<string> EnumerateImages(string directory, bool skipNodeModules, bool skipOnlineOnly)
+  /// <summary>
+  /// Walks the folder one level at a time: each folder's images in name order, then its subfolders in name order.
+  /// The first images turn up straight away, rather than after the whole tree has been listed and sorted, so a large
+  /// folder or a slow network share starts filling the list at once.
+  /// </summary>
+  private static IEnumerable<string> EnumerateImages(string root, bool skipNodeModules, bool skipOnlineOnly)
   {
     var options = new EnumerationOptions
     {
-      RecurseSubdirectories = true,
       IgnoreInaccessible = true,
       AttributesToSkip = FileAttributes.System,
     };
-    return new FileSystemEnumerable<string>(directory, (ref entry) => entry.ToFullPath(), options)
+    var folders = new Stack<string>();
+    folders.Push(root);
+    while (folders.TryPop(out var folder))
     {
-      ShouldIncludePredicate = (ref entry) =>
-          !entry.IsDirectory && !IsLink(ref entry) && ImageFormats.HasSupportedExtension(entry.FileName.ToString()) &&
-          !ImageOptimizerEngine.IsStagingFile(entry.FileName.ToString()) &&
-          !(skipOnlineOnly && IsOnlineOnly(entry.Attributes)),
-      ShouldRecursePredicate = (ref entry) =>
-          !IsLink(ref entry) && !(skipNodeModules && entry.FileName.Equals("node_modules", StringComparison.OrdinalIgnoreCase)),
-    }.Order(StringComparer.OrdinalIgnoreCase);
+      List<(string Path, bool IsDirectory)> entries;
+      try
+      {
+        entries = [.. new FileSystemEnumerable<(string Path, bool IsDirectory)>(folder, (ref entry) => (entry.ToFullPath(), entry.IsDirectory), options)
+        {
+          ShouldIncludePredicate = (ref entry) => entry.IsDirectory
+              ? !IsLink(ref entry) && !(skipNodeModules && entry.FileName.Equals("node_modules", StringComparison.OrdinalIgnoreCase))
+              : !IsLink(ref entry) && ImageFormats.HasSupportedExtension(entry.FileName.ToString()) &&
+                !ImageOptimizerEngine.IsStagingFile(entry.FileName.ToString()) &&
+                !(skipOnlineOnly && IsOnlineOnly(entry.Attributes)),
+        }];
+      }
+      catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+      {
+        // Deleted, moved or locked since its parent was listed; the rest of the tree is still collected.
+        continue;
+      }
+      entries.Sort((a, b) => StringComparer.OrdinalIgnoreCase.Compare(a.Path, b.Path));
+
+      foreach (var (path, isDirectory) in entries)
+      {
+        if (!isDirectory)
+          yield return path;
+      }
+      // Pushed last to first, so they come off the stack in name order.
+      for (var i = entries.Count - 1; i >= 0; i--)
+      {
+        if (entries[i].IsDirectory)
+          folders.Push(entries[i].Path);
+      }
+    }
   }
 
   // Windows marks cloud files whose contents are fetched when they're read (OneDrive's "online-only" files, and other

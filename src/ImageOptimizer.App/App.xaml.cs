@@ -35,14 +35,14 @@ public partial class App : Application
 
     // Files passed on the command line (e.g. dropped onto the .exe or a shortcut) start right away.
     if (e.Args.Length > 0)
-      viewModel.Add(e.Args);
+      _ = viewModel.AddAsync(e.Args);
 
     // Files opened from Explorer's right-click menu (or the app opened again) arrive from the other copies,
     // including any that arrived while the window was opening.
     _instance?.OnReceived(paths => Dispatcher.BeginInvoke(() =>
     {
       if (paths.Length > 0)
-        viewModel.Add(paths);
+        _ = viewModel.AddAsync(paths);
       window.BringToFront();
     }));
   }
