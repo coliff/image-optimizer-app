@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Adding a large folder no longer freezes the window. Folders are searched in the background, images appear in
+  the list as they're found and start optimizing straight away, and the footer shows how many have been found so far.
+- A folder that's deleted or locked while it's being searched is skipped, instead of stopping the search.
+- The README now gives the right place for the settings file in the Microsoft Store version.
+
 ## v1.0.1 - 2026-11-09
 
 - Press Ctrl+V to add images and folders copied in File Explorer, the same as dragging them onto the window.

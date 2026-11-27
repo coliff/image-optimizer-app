@@ -70,6 +70,9 @@
     <value>設定を保存できませんでした:
 {0}</value>
   </data>
+  <data name="FindingImages" xml:space="preserve">
+    <value>画像を検索中… これまでに {0:N0} 件</value>
+  </data>
   <data name="Progress" xml:space="preserve">
     <value>{1:N0} 件中 {0:N0} 件目を最適化中…</value>
   </data>

@@ -60,9 +60,12 @@ orientation are always kept so images look exactly the same.
 - Use progressive JPEG when it's smaller (on by default)
 - Keep each file's original "Date modified" (on by default)
 - Ignore `node_modules` folders when adding a folder (on by default)
+- Skip OneDrive and other cloud files that are online-only (off by default)
 - Add "Optimize with Image Optimizer" to File Explorer's right-click menu (on by default)
 
-Settings are stored in `%AppData%\ImageOptimizer\settings.json`.
+Settings are stored in
+`%LocalAppData%\Packages\1915coliff.ImageOptimizerPlus_yk8d2007an6n6\LocalCache\Roaming\ImageOptimizer\settings.json`.
+Windows keeps a Store app's `%AppData%` inside its package folder, so the file is removed when the app is uninstalled.
 
 ## Install
 

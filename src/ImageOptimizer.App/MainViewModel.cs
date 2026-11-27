@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using System.Windows.Data;
@@ -16,6 +18,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   private readonly Dictionary<string, FileItem> _byPath = new(StringComparer.OrdinalIgnoreCase);
   private readonly HashSet<Task> _running = [];
   private int _pending;
+  private int _scanning;
+  private int _found;
 
   public MainViewModel(ImageOptimizerEngine engine, OptimizerSettings settings)
   {
@@ -55,12 +59,17 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
   public bool IsEmpty => Files.Count == 0;
 
-  public bool IsBusy => _pending > 0;
+  public bool IsBusy => _pending > 0 || _scanning > 0;
+
+  /// <summary>True while dropped folders are still being searched for images.</summary>
+  public bool IsScanning => _scanning > 0;
 
   public string Summary
   {
     get
     {
+      if (IsScanning)
+        return Strings.FindingImages(_found);
       if (Files.Count == 0)
         return "";
       if (IsBusy)
@@ -88,28 +97,88 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     }
   }
 
-  /// <summary>Adds dropped files or folders and queues every image found in them.</summary>
-  public int Add(IEnumerable<string> paths)
-  {
-    var added = 0;
-    foreach (var path in FileCollector.Collect(paths, Settings.SkipNodeModules, Settings.SkipOnlineOnlyFiles))
-    {
-      if (_byPath.TryGetValue(path, out var existing))
-      {
-        // Dropping a finished file again runs it again, like ImageOptim does.
-        if (existing.IsFinished)
-          Enqueue(existing);
-        continue;
-      }
+  // How long the list takes in found images before the window gets a moment to draw them and handle input.
+  private static readonly TimeSpan BatchTime = TimeSpan.FromMilliseconds(50);
+  private static readonly TimeSpan BatchPause = TimeSpan.FromMilliseconds(15);
 
-      var item = new FileItem(path);
-      _byPath[path] = item;
-      Files.Add(item);
-      Enqueue(item);
-      added++;
-    }
+  /// <summary>
+  /// Adds dropped files or folders and queues every image found in them. Folders are searched in the background
+  /// and their images are added as they're found, so a large folder or a slow network share never freezes the window.
+  /// Must be called on the UI thread.
+  /// </summary>
+  public async Task AddAsync(IEnumerable<string> paths)
+  {
+    var dropped = paths.ToArray();
+    var settings = Settings;
+    var token = _shutdown.Token;
+    var found = Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
+
+    if (_scanning++ == 0)
+      _found = 0;
     RaiseStateChanged();
-    return added;
+
+    _ = Task.Run(() =>
+    {
+      try
+      {
+        foreach (var path in FileCollector.Collect(dropped, settings.SkipNodeModules, settings.SkipOnlineOnlyFiles))
+        {
+          if (token.IsCancellationRequested)
+            break;
+          found.Writer.TryWrite(path);
+        }
+        found.Writer.TryComplete();
+      }
+      catch (Exception ex)
+      {
+        found.Writer.TryComplete(ex);
+      }
+    }, CancellationToken.None);
+
+    try
+    {
+      while (await found.Reader.WaitToReadAsync(token))
+      {
+        var batch = Stopwatch.StartNew();
+        while (batch.Elapsed < BatchTime && found.Reader.TryRead(out var path))
+          AddFile(path);
+        RaiseStateChanged();
+
+        // More are waiting, so let the window draw the new rows and respond to clicks before taking the next batch.
+        if (found.Reader.TryPeek(out _))
+          await Task.Delay(BatchPause, token);
+      }
+    }
+    catch (OperationCanceledException)
+    {
+      // The app is closing.
+    }
+    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+    {
+      // The search stopped partway (a path Windows can't open, for example); the images found so far stay in the list.
+    }
+    finally
+    {
+      _scanning--;
+      RaiseStateChanged();
+    }
+  }
+
+  private void AddFile(string path)
+  {
+    if (_byPath.TryGetValue(path, out var existing))
+    {
+      // Dropping a finished file again runs it again, like ImageOptim does.
+      if (existing.IsFinished)
+        Enqueue(existing);
+      return;
+    }
+
+    var item = new FileItem(path);
+    _byPath[path] = item;
+    Files.Add(item);
+    Enqueue(item);
+    _found++;
   }
 
   public void Remove(IEnumerable<FileItem> items)
@@ -229,6 +298,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   {
     OnPropertyChanged(nameof(IsEmpty));
     OnPropertyChanged(nameof(IsBusy));
+    OnPropertyChanged(nameof(IsScanning));
     OnPropertyChanged(nameof(Summary));
   }
 

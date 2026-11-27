@@ -70,6 +70,9 @@
     <value>Die Einstellungen konnten nicht gespeichert werden:
 {0}</value>
   </data>
+  <data name="FindingImages" xml:space="preserve">
+    <value>Bilder werden gesucht… bisher {0:N0}</value>
+  </data>
   <data name="Progress" xml:space="preserve">
     <value>{0:N0} von {1:N0} wird optimiert…</value>
   </data>

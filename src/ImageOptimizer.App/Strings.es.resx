@@ -70,6 +70,9 @@
     <value>No se pudo guardar la configuración:
 {0}</value>
   </data>
+  <data name="FindingImages" xml:space="preserve">
+    <value>Buscando imágenes… {0:N0} hasta ahora</value>
+  </data>
   <data name="Progress" xml:space="preserve">
     <value>Optimizando {0:N0} de {1:N0}…</value>
   </data>

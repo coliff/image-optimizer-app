@@ -43,6 +43,7 @@ public static class Strings
   public static string SettingsNotSaved(string error) => Format(error);
 
   // Footer summary
+  public static string FindingImages(int found) => Format(found);
   public static string Progress(int current, int total) => Format(current, total);
   public static string NothingToSave => Get();
   public static string NothingOptimized => Get();
