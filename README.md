@@ -49,8 +49,9 @@ If anything fails along the way, the original file is left exactly as it was.
 | SVG     | [SVGO](https://github.com/svg/svgo)                                           | SVGO's default preset, run in the built-in [Jint](https://github.com/sebastienros/jint) engine (no Node.js needed). SVGs are text, so they aren't pixel-compared.                                                                                             |
 | WebP    | `cwebp` / `webpmux` from [libwebp](https://developers.google.com/speed/webp)  | Lossless WebPs are re-encoded losslessly. Lossy WebPs are never re-encoded, only stripped of metadata.                                                                                                                                                        |
 
-By default metadata (EXIF, comments, camera info) is removed, but color profiles and JPEG
-orientation are always kept so images look exactly the same.
+By default metadata (EXIF, comments, camera info, GPS location) is removed, but color profiles and
+orientation are always kept so images look exactly the same. A photo that's turned by its EXIF data keeps
+only its orientation tag.
 
 ## Settings
 

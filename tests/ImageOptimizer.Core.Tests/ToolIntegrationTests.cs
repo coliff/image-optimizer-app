@@ -77,6 +77,34 @@ public class ToolIntegrationTests : IDisposable
   }
 
   [Fact]
+  public async Task Png_keeps_only_the_orientation_of_a_rotated_photo()
+  {
+    RequireTools("oxipng");
+    var png = TestFiles.WithPngExif(File.ReadAllBytes(TestFiles.FixturePath("unoptimized.png")), TestFiles.CameraExifTiff(6));
+    var path = _files.Write("phone.png", png);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var optimized = File.ReadAllBytes(path);
+    Assert.Equal(6, ImageInspector.GetPngExifOrientation(optimized));
+    Assert.False(TestFiles.HasCameraExif(optimized));
+  }
+
+  [Fact]
+  public async Task Png_keeps_all_exif_when_metadata_is_kept()
+  {
+    RequireTools("oxipng");
+    var png = TestFiles.WithPngExif(File.ReadAllBytes(TestFiles.FixturePath("unoptimized.png")), TestFiles.CameraExifTiff(6));
+    var path = _files.Write("phone.png", png);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings { StripMetadata = false }, TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.True(TestFiles.HasCameraExif(File.ReadAllBytes(path)));
+  }
+
+  [Fact]
   public async Task Animated_png_is_left_alone()
   {
     var path = _files.Write("anim.png", TestFiles.MakeAnimatedPng(File.ReadAllBytes(TestFiles.FixturePath("unoptimized.png"))));
@@ -113,6 +141,37 @@ public class ToolIntegrationTests : IDisposable
 
     Assert.Equal(OptimizationStatus.Optimized, result.Status);
     Assert.Equal(6, ImageInspector.GetJpegExifOrientation(File.ReadAllBytes(path)));
+  }
+
+  [Theory]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task Jpeg_keeps_only_the_orientation_of_a_rotated_photo(bool progressive)
+  {
+    RequireTools("jpegtran");
+    var jpeg = TestFiles.WithJpegExif(File.ReadAllBytes(TestFiles.FixturePath("photo.jpg")), TestFiles.CameraExifTiff(6));
+    var path = _files.Write("phone.jpg", jpeg);
+
+    var settings = new OptimizerSettings { AllowProgressiveJpeg = progressive };
+    var result = await Engine().OptimizeAsync(path, settings, TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var optimized = File.ReadAllBytes(path);
+    Assert.Equal(6, ImageInspector.GetJpegExifOrientation(optimized));
+    Assert.False(TestFiles.HasCameraExif(optimized));
+  }
+
+  [Fact]
+  public async Task Jpeg_keeps_all_exif_when_metadata_is_kept()
+  {
+    RequireTools("jpegtran");
+    var jpeg = TestFiles.WithJpegExif(File.ReadAllBytes(TestFiles.FixturePath("photo.jpg")), TestFiles.CameraExifTiff(6));
+    var path = _files.Write("phone.jpg", jpeg);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings { StripMetadata = false }, TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    Assert.True(TestFiles.HasCameraExif(File.ReadAllBytes(path)));
   }
 
   [Fact]
@@ -165,6 +224,24 @@ public class ToolIntegrationTests : IDisposable
     var info = ImageInspector.InspectWebP(File.ReadAllBytes(path));
     Assert.Equal(6, info.ExifOrientation);
     Assert.False(info.HasXmp);
+  }
+
+  [Theory]
+  [InlineData("lossy.webp")]
+  [InlineData("lossless.webp")]
+  public async Task Webp_keeps_only_the_orientation_of_a_rotated_photo(string fixture)
+  {
+    RequireTools("cwebp", "dwebp", "webpmux");
+    var exif = _files.Write("camera.exif", TestFiles.CameraExifTiff(6));
+    var path = Path.Combine(_files.Directory, "phone.webp");
+    await _tools.RunAsync("webpmux", ["-set", "exif", exif, TestFiles.FixturePath(fixture), "-o", path], TestContext.Current.CancellationToken);
+
+    var result = await Engine().OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
+
+    Assert.Equal(OptimizationStatus.Optimized, result.Status);
+    var optimized = File.ReadAllBytes(path);
+    Assert.Equal(6, ImageInspector.InspectWebP(optimized).ExifOrientation);
+    Assert.False(TestFiles.HasCameraExif(optimized));
   }
 
   [Fact]

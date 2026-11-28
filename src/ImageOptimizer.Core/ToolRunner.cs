@@ -30,11 +30,25 @@ public interface IToolRunner
 public sealed class ToolRunner : IToolRunner
 {
   private readonly IReadOnlyList<string> _searchDirectories;
+  private readonly bool _searchPath;
 
-  public ToolRunner(IEnumerable<string>? searchDirectories = null)
+  /// <param name="searchDirectories">Folders holding the bundled tools; <see cref="DefaultSearchDirectories"/> when null.</param>
+  /// <param name="searchPath">
+  /// Also look on PATH when a tool isn't in those folders. Only debug builds do this by default, so development builds
+  /// work with locally installed tools. A release build only ever runs the tools it ships with, never an unknown copy
+  /// of the same name that happens to be on PATH.
+  /// </param>
+  public ToolRunner(IEnumerable<string>? searchDirectories = null, bool? searchPath = null)
   {
     _searchDirectories = (searchDirectories ?? DefaultSearchDirectories()).ToList();
+    _searchPath = searchPath ?? IsDebugBuild;
   }
+
+#if DEBUG
+  private const bool IsDebugBuild = true;
+#else
+  private const bool IsDebugBuild = false;
+#endif
 
   public static IEnumerable<string> DefaultSearchDirectories()
   {
@@ -54,7 +68,7 @@ public sealed class ToolRunner : IToolRunner
 
   public string? Locate(string tool) => LocateFile(OperatingSystem.IsWindows() ? tool + ".exe" : tool);
 
-  /// <summary>Finds a bundled file (a tool or a script) in the tools folders, then on PATH.</summary>
+  /// <summary>Finds a bundled file (a tool or a script) in the tools folders, then (in debug builds) on PATH.</summary>
   public string? LocateFile(string fileName)
   {
     Subfolders.TryGetValue(Path.GetFileNameWithoutExtension(fileName), out var subfolder);
@@ -64,6 +78,9 @@ public sealed class ToolRunner : IToolRunner
       if (File.Exists(candidate))
         return candidate;
     }
+
+    if (!_searchPath)
+      return null;
 
     // Fall back to PATH so development builds work with locally installed tools.
     var path = Environment.GetEnvironmentVariable("PATH") ?? "";

@@ -41,12 +41,28 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
       return CandidateSet.Skip(Strings.AnimatedLeftUntouched(ImageFormat.Png));
 
     var output = context.WorkFile("oxipng.png");
-    await tools.RunAsync("oxipng", Arguments(context.Settings, data, context.InputPath, output), cancellationToken).ConfigureAwait(false);
+    await RunOxipngAsync(tools, context.Settings, data, context.InputPath, output, keepPixelFormat: false, cancellationToken).ConfigureAwait(false);
     return new CandidateSet([new Candidate(output)]);
   }
 
+  /// <summary>
+  /// Runs oxipng. When metadata is removed from an image that's turned by its EXIF data, all of the EXIF data is
+  /// removed with the rest, then a new eXIf chunk holding only the orientation is put back, so the image still shows
+  /// the right way up without keeping its GPS location or camera details.
+  /// </summary>
+  internal static async Task RunOxipngAsync(IToolRunner tools, OptimizerSettings settings, byte[] data, string input, string output,
+      bool keepPixelFormat, CancellationToken cancellationToken)
+  {
+    await tools.RunAsync("oxipng", Arguments(settings, input, output, keepPixelFormat), cancellationToken).ConfigureAwait(false);
+    if (settings.StripMetadata && ImageInspector.GetPngExifOrientation(data) is > 1 and var orientation)
+    {
+      var optimized = await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false);
+      await File.WriteAllBytesAsync(output, MinimalExif.InsertIntoPng(optimized, orientation), cancellationToken).ConfigureAwait(false);
+    }
+  }
+
   /// <param name="keepPixelFormat">Only recompress, never change the color type or bit depth.</param>
-  internal static List<string> Arguments(OptimizerSettings settings, byte[] data, string input, string output, bool keepPixelFormat = false)
+  internal static List<string> Arguments(OptimizerSettings settings, string input, string output, bool keepPixelFormat = false)
   {
     var args = new List<string> { "--quiet", "--interlace", "keep" };
     if (settings.MaximumCompression)
@@ -56,11 +72,7 @@ public sealed class PngOptimizer(IToolRunner tools) : IFormatOptimizer
     if (keepPixelFormat)
       args.AddRange(["--nb", "--nc", "--np"]);
     if (settings.StripMetadata)
-    {
-      // Like JPEGs, keep the EXIF data when it turns the image, so it isn't shown sideways.
-      var keep = ImageInspector.GetPngExifOrientation(data) is > 1 ? DisplayChunks + ",eXIf" : DisplayChunks;
-      args.AddRange(["--keep", keep]);
-    }
+      args.AddRange(["--keep", DisplayChunks]);
     args.AddRange(["--out", output, input]);
     return args;
   }
@@ -94,7 +106,7 @@ public sealed class IcoOptimizer(IToolRunner tools) : IFormatOptimizer
       var input = context.WorkFile($"entry-{i}.png");
       var output = context.WorkFile($"entry-{i}-oxipng.png");
       await File.WriteAllBytesAsync(input, data, cancellationToken).ConfigureAwait(false);
-      await tools.RunAsync("oxipng", PngOptimizer.Arguments(context.Settings, data, input, output, keepPixelFormat: true), cancellationToken)
+      await PngOptimizer.RunOxipngAsync(tools, context.Settings, data, input, output, keepPixelFormat: true, cancellationToken)
           .ConfigureAwait(false);
 
       var optimized = await File.ReadAllBytesAsync(output, cancellationToken).ConfigureAwait(false);
@@ -132,7 +144,10 @@ public sealed class JpegOptimizer(IToolRunner tools) : IFormatOptimizer
     var data = await File.ReadAllBytesAsync(context.InputPath, cancellationToken).ConfigureAwait(false);
     if (ImageInspector.HasJpegTrailingData(data))
       return CandidateSet.Skip(Strings.JpegTrailingData);
-    var copy = ChooseCopyMode(context.Settings, data);
+    // Removing metadata drops all of the EXIF data, including the orientation tag, so a photo turned by it gets a
+    // new EXIF block holding only the orientation afterwards. Its GPS location and camera details are gone.
+    var copy = context.Settings.StripMetadata ? "icc" : "all";
+    var orientation = context.Settings.StripMetadata ? ImageInspector.GetJpegExifOrientation(data) : null;
 
     var baseline = context.WorkFile("baseline.jpg");
     var tasks = new List<Task>
@@ -149,17 +164,16 @@ public sealed class JpegOptimizer(IToolRunner tools) : IFormatOptimizer
     }
 
     await Task.WhenAll(tasks).ConfigureAwait(false);
+    if (orientation is > 1)
+    {
+      foreach (var candidate in candidates)
+      {
+        var optimized = await File.ReadAllBytesAsync(candidate.Path, cancellationToken).ConfigureAwait(false);
+        await File.WriteAllBytesAsync(candidate.Path, MinimalExif.InsertIntoJpeg(optimized, orientation.Value), cancellationToken)
+            .ConfigureAwait(false);
+      }
+    }
     return new CandidateSet(candidates);
-  }
-
-  private static string ChooseCopyMode(OptimizerSettings settings, byte[] data)
-  {
-    if (!settings.StripMetadata)
-      return "all";
-
-    // Dropping EXIF would also drop the orientation tag and turn photos sideways, so keep it when it matters.
-    var orientation = ImageInspector.GetJpegExifOrientation(data);
-    return orientation is > 1 ? "all" : "icc";
   }
 }
 
@@ -180,7 +194,7 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
     if (info.IsStillLossless)
       return new CandidateSet([await ReencodeLosslessAsync(context, info, cancellationToken).ConfigureAwait(false)]);
 
-    if (context.Settings.StripMetadata && ((info.HasExif && !info.ExifRotates) || info.HasXmp))
+    if (context.Settings.StripMetadata && ((info.HasExif && !info.HasOnlyMinimalExif) || info.HasXmp))
       return new CandidateSet([await StripMetadataAsync(context, info, cancellationToken).ConfigureAwait(false)]);
 
     return CandidateSet.Skip(info.IsAnimated
@@ -201,7 +215,7 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
     var keep = new List<string>();
     if (info.HasIccProfile)
       keep.Add("icc");
-    if (info.HasExif && (!context.Settings.StripMetadata || info.ExifRotates))
+    if (info.HasExif && !context.Settings.StripMetadata)
       keep.Add("exif");
     if (info.HasXmp && !context.Settings.StripMetadata)
       keep.Add("xmp");
@@ -214,13 +228,29 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
       await tools.RunAsync("webpmux", ["-set", kind, chunk, current, "-o", next], cancellationToken).ConfigureAwait(false);
       current = next;
     }
+    if (context.Settings.StripMetadata && info.ExifRotates)
+      current = await SetMinimalExifAsync(context, info, current, "cwebp-exif.webp", cancellationToken).ConfigureAwait(false);
     return new Candidate(current);
+  }
+
+  /// <summary>
+  /// Replaces the EXIF data with a block holding only the orientation, so the image still shows the right way up
+  /// without keeping its GPS location or camera details.
+  /// </summary>
+  private async Task<string> SetMinimalExifAsync(OptimizationContext context, WebPInfo info, string current, string outputName,
+      CancellationToken cancellationToken)
+  {
+    var exif = context.WorkFile("orientation.exif");
+    await File.WriteAllBytesAsync(exif, MinimalExif.Tiff(info.ExifOrientation!.Value), cancellationToken).ConfigureAwait(false);
+    var next = context.WorkFile(outputName);
+    await tools.RunAsync("webpmux", ["-set", "exif", exif, current, "-o", next], cancellationToken).ConfigureAwait(false);
+    return next;
   }
 
   private async Task<Candidate> StripMetadataAsync(OptimizationContext context, WebPInfo info, CancellationToken cancellationToken)
   {
     var current = context.InputPath;
-    // Like JPEGs, keep the EXIF data when it turns the image, so it isn't shown sideways.
+    // EXIF data that turns the image is swapped for a block holding only the orientation, so it isn't shown sideways.
     foreach (var (kind, present) in new[] { ("exif", info.HasExif && !info.ExifRotates), ("xmp", info.HasXmp) })
     {
       if (!present)
@@ -229,6 +259,8 @@ public sealed class WebPOptimizer(IToolRunner tools) : IFormatOptimizer
       await tools.RunAsync("webpmux", ["-strip", kind, current, "-o", next], cancellationToken).ConfigureAwait(false);
       current = next;
     }
+    if (info.ExifRotates && !info.HasOnlyMinimalExif)
+      current = await SetMinimalExifAsync(context, info, current, "strip-exif.webp", cancellationToken).ConfigureAwait(false);
     return new Candidate(current, PixelDataUntouched: true);
   }
 }

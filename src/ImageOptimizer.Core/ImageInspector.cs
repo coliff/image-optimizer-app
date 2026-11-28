@@ -210,7 +210,7 @@ public static class ImageInspector
       else if (type.SequenceEqual("ICCP"u8))
         info = info with { HasIccProfile = true };
       else if (type.SequenceEqual("EXIF"u8))
-        info = info with { HasExif = true, ExifOrientation = ReadWebPExifOrientation(data, offset + 8, size) };
+        info = info with { HasExif = true, ExifSize = size, ExifOrientation = ReadWebPExifOrientation(data, offset + 8, size) };
       else if (type.SequenceEqual("XMP "u8))
         info = info with { HasXmp = true };
 
@@ -250,8 +250,17 @@ public readonly record struct WebPInfo
   /// <summary>The orientation in the EXIF data (1–8), or null when there is none.</summary>
   public int? ExifOrientation { get; init; }
 
-  /// <summary>EXIF data that turns the image, so it's kept even when metadata is removed, as it is for JPEG and PNG.</summary>
+  /// <summary>EXIF data that turns the image, so its orientation is kept even when metadata is removed.</summary>
   public bool ExifRotates => ExifOrientation is > 1;
+
+  /// <summary>Size of the EXIF chunk's data in bytes.</summary>
+  public uint ExifSize { get; init; }
+
+  /// <summary>
+  /// EXIF data that turns the image and is no bigger than a block holding only the orientation, so removing
+  /// metadata has nothing more to take out of it.
+  /// </summary>
+  public bool HasOnlyMinimalExif => ExifRotates && ExifSize <= MinimalExif.TiffLength;
 
   /// <summary>A still image whose pixels are stored losslessly, so it can be re-encoded without loss.</summary>
   public bool IsStillLossless => IsValid && IsLossless && !IsLossy && !IsAnimated;

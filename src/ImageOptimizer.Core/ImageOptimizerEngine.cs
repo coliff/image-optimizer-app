@@ -70,7 +70,7 @@ public sealed class ImageOptimizerEngine
       original = new FileInfo(path);
       if (!original.Exists)
         return new(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, Strings.FileNotFound);
-      format = ImageFormats.Detect(path);
+      format = await RetryWhileLockedAsync(() => ImageFormats.Detect(path), cancellationToken).ConfigureAwait(false);
     }
     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
     {
@@ -98,7 +98,7 @@ public sealed class ImageOptimizerEngine
 
       // Tools only ever read a private copy, so a misbehaving tool can't damage the original.
       var input = Path.Combine(workDirectory, "input" + ExtensionFor(format));
-      File.Copy(path, input);
+      await RetryWhileLockedAsync(() => File.Copy(path, input, overwrite: true), cancellationToken).ConfigureAwait(false);
 
       CandidateSet set;
       var heavy = IsHeavy(format, settings);
@@ -155,7 +155,9 @@ public sealed class ImageOptimizerEngine
       // Noted down first, so a staging copy left by a crash or a kill from Task Manager can be found and removed.
       pendingRecord = RecordPending(staging);
       File.Copy(winner.Path, staging);
-      File.Replace(staging, path, destinationBackupFileName: null, ignoreMetadataErrors: true);
+      var stagingPath = staging;
+      await RetryWhileLockedAsync(() => File.Replace(stagingPath, path, destinationBackupFileName: null, ignoreMetadataErrors: true),
+          cancellationToken).ConfigureAwait(false);
       staging = null;
 
       // The smaller file is in place now, so nothing after this may report the file as failed. Antivirus,
@@ -200,6 +202,44 @@ public sealed class ImageOptimizerEngine
       }
     }
   }
+
+  /// <summary>
+  /// How long to wait before each new try when another program has the file open. OneDrive, antivirus and Explorer's
+  /// thumbnailer often open a file for a moment, so a short wait is usually enough.
+  /// </summary>
+  internal static readonly TimeSpan[] LockedRetryDelays = [TimeSpan.FromMilliseconds(250), TimeSpan.FromMilliseconds(750)];
+
+  private static Task RetryWhileLockedAsync(Action action, CancellationToken cancellationToken) =>
+      RetryWhileLockedAsync<object?>(() =>
+      {
+        action();
+        return null;
+      }, cancellationToken);
+
+  /// <summary>Runs <paramref name="action"/>, trying again a couple of times while another program has the file open.</summary>
+  internal static async Task<T> RetryWhileLockedAsync<T>(Func<T> action, CancellationToken cancellationToken)
+  {
+    for (var attempt = 0; ; attempt++)
+    {
+      try
+      {
+        return action();
+      }
+      catch (IOException ex) when (attempt < LockedRetryDelays.Length && IsLocked(ex))
+      {
+        await Task.Delay(LockedRetryDelays[attempt], cancellationToken).ConfigureAwait(false);
+      }
+    }
+  }
+
+  /// <summary>True when the file is open in another program, rather than missing, read-only or broken.</summary>
+  internal static bool IsLocked(IOException ex) => (uint)ex.HResult >> 16 == 0x8007 && (ex.HResult & 0xFFFF) switch
+  {
+    32 => true,    // ERROR_SHARING_VIOLATION
+    33 => true,    // ERROR_LOCK_VIOLATION
+    1175 => true,  // ERROR_UNABLE_TO_REMOVE_REPLACED: File.Replace couldn't replace the original, which is unchanged
+    _ => false,
+  };
 
   private const string StagingMarker = ".imageoptimizer-";
   private const string PendingFolder = "pending";
