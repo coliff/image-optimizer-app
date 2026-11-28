@@ -6,6 +6,10 @@
   the list as they're found and start optimizing straight away, and the footer shows how many have been found so far.
 - A folder that's deleted or locked while it's being searched is skipped, instead of stopping the search.
 - The README now gives the right place for the settings file in the Microsoft Store version.
+- Settings are saved safely: a crash or power cut while saving keeps your previous settings, instead of quietly
+  resetting them all to the defaults.
+- When an optimizer can't process a file, the tooltip explains it in plain words in your language, instead of the
+  tool's raw error. The tool's own message is still shown underneath as "Details", for bug reports.
 
 ## v1.0.1 - 2026-11-09
 

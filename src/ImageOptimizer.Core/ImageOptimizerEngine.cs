@@ -12,12 +12,15 @@ public enum OptimizationStatus
   Failed,
 }
 
+/// <param name="Message">Why the file was skipped or failed, in words for people.</param>
+/// <param name="Detail">Technical detail behind a failure (a tool's own output), when there is any.</param>
 public sealed record OptimizationResult(
     OptimizationStatus Status,
     ImageFormat Format,
     long OriginalSize,
     long FinalSize,
-    string? Message = null)
+    string? Message = null,
+    string? Detail = null)
 {
   public long BytesSaved => OriginalSize - FinalSize;
   public double SavingsRatio => OriginalSize > 0 ? (double)BytesSaved / OriginalSize : 0;
@@ -76,8 +79,8 @@ public sealed class ImageOptimizerEngine
 
     var originalSize = original.Length;
     var originalWriteTime = original.LastWriteTimeUtc;
-    OptimizationResult Result(OptimizationStatus status, string? message = null, long? finalSize = null) =>
-        new(status, format, originalSize, finalSize ?? originalSize, message);
+    OptimizationResult Result(OptimizationStatus status, string? message = null, long? finalSize = null, string? detail = null) =>
+        new(status, format, originalSize, finalSize ?? originalSize, message, detail);
 
     if (format == ImageFormat.Unknown || !_optimizers.TryGetValue(format, out var optimizer))
       return Result(OptimizationStatus.Skipped, Strings.NotAnImage);
@@ -171,7 +174,7 @@ public sealed class ImageOptimizerEngine
     }
     catch (ToolFailedException ex)
     {
-      return Result(OptimizationStatus.Failed, ex.Message);
+      return Result(OptimizationStatus.Failed, ex.Message, detail: ex.Detail);
     }
     catch (UnauthorizedAccessException)
     {

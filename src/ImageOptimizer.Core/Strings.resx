@@ -118,4 +118,8 @@
     <value>Icon has no PNG images to optimize</value>
     <comment>An icon (.ico) file can hold PNG and BMP images; only PNG images can be recompressed.</comment>
   </data>
+  <data name="ToolFailed" xml:space="preserve">
+    <value>The image couldn't be processed. It may be damaged, or use something the optimizer doesn't support</value>
+    <comment>A bundled tool stopped with an error. Shown before "The file was left untouched."</comment>
+  </data>
 </root>

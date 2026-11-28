@@ -112,6 +112,9 @@ public sealed class FileItem(string path) : INotifyPropertyChanged
         FileStatus.Failed => Strings.ToolTipFailed(Result?.Message?.TrimEnd('.', '。') ?? Strings.StatusFailed),
         _ => Result?.Message?.TrimEnd('.') ?? Strings.ToolTipLeftUntouched,
       };
+      // A failing tool's own output stays available on its own line, for bug reports.
+      if (Status == FileStatus.Failed && Result is { Detail: { } technical } && !string.IsNullOrWhiteSpace(technical))
+        detail += "\n" + Strings.ToolTipDetails(technical);
       return $"{Path}\n{detail}";
     }
   }

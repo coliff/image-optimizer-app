@@ -8,11 +8,17 @@ public sealed class ToolNotFoundException(string tool)
   public string Tool { get; } = tool;
 }
 
+/// <summary>
+/// A bundled tool stopped with an error. <see cref="Exception.Message"/> is a plain, translated explanation for
+/// people; <see cref="Detail"/> has the tool's own (English) output, for bug reports.
+/// </summary>
 public sealed class ToolFailedException(string tool, int exitCode, string output)
-    : Exception($"{tool} exited with code {exitCode}: {output}".Trim())
+    : Exception(Strings.ToolFailed)
 {
   public string Tool { get; } = tool;
   public int ExitCode { get; } = exitCode;
+  public string Output { get; } = output;
+  public string Detail => $"{Tool} (exit code {ExitCode}): {Output}".Trim().TrimEnd(':');
 }
 
 public interface IToolRunner

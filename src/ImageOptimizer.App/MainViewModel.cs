@@ -235,7 +235,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         }
         catch (Exception ex)
         {
-          result = new OptimizationResult(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, ex.Message);
+          result = new OptimizationResult(OptimizationStatus.Failed, ImageFormat.Unknown, 0, 0, Strings.UnexpectedError, ex.Message);
         }
         finally
         {
