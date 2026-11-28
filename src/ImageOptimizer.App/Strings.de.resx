@@ -197,4 +197,10 @@
   <data name="GitHubLinkName" xml:space="preserve">
     <value>Image Optimizer auf GitHub</value>
   </data>
+  <data name="ToolTipDetails" xml:space="preserve">
+    <value>Details: {0}</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Ein unerwarteter Fehler ist aufgetreten</value>
+  </data>
 </root>

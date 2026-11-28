@@ -66,6 +66,8 @@ public static class Strings
   public static string ToolTipAlreadyOptimized => Get();
   public static string ToolTipLeftUntouched => Get();
   public static string ToolTipFailed(string reason) => Format(reason);
+  public static string ToolTipDetails(string detail) => Format(detail);
+  public static string UnexpectedError => Get();
 
   // Settings window
   public static string RestoreDefaults => Get();

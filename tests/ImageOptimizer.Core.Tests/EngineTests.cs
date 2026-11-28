@@ -117,7 +117,9 @@ public class EngineTests : IDisposable
     var result = await engine.OptimizeAsync(path, new OptimizerSettings(), TestContext.Current.CancellationToken);
 
     Assert.Equal(OptimizationStatus.Failed, result.Status);
-    Assert.Contains("boom", result.Message);
+    // A plain, translated explanation for people, with the tool's own output kept as the detail.
+    Assert.Equal(Strings.ToolFailed, result.Message);
+    Assert.Equal("oxipng (exit code 1): boom", result.Detail);
     Assert.Equal(before, File.ReadAllBytes(path));
     Assert.Empty(Directory.GetDirectories(Path.Combine(_files.Directory, "work")));
   }

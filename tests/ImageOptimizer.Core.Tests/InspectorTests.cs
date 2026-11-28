@@ -314,6 +314,37 @@ public class InspectorTests
     Assert.Equal(new OptimizerSettings(), OptimizerSettings.Load(path));
   }
 
+  [Fact]
+  public void Saving_settings_replaces_the_file_in_one_step()
+  {
+    using var files = new TestFiles();
+    var path = Path.Combine(files.Directory, "settings.json");
+    new OptimizerSettings { OptimizeGif = false }.Save(path);
+
+    // A temporary file left by a crash part way through an earlier save doesn't get in the way.
+    File.WriteAllText(path + ".tmp", "{ \"OptimizeGif\": fal");
+    var updated = new OptimizerSettings { OptimizeGif = false, StripMetadata = false };
+    updated.Save(path);
+
+    Assert.Equal(updated, OptimizerSettings.Load(path));
+    Assert.Equal(["settings.json"], Directory.GetFiles(files.Directory).Select(Path.GetFileName));
+  }
+
+  [Fact]
+  public void A_failed_save_keeps_the_previous_settings()
+  {
+    using var files = new TestFiles();
+    var path = Path.Combine(files.Directory, "settings.json");
+    var saved = new OptimizerSettings { MaximumCompression = true };
+    saved.Save(path);
+
+    // The temporary file can't be written, so the save fails before the settings file is touched.
+    Directory.CreateDirectory(path + ".tmp");
+    var error = Record.Exception(() => new OptimizerSettings().Save(path));
+    Assert.True(error is IOException or UnauthorizedAccessException, error?.ToString());
+    Assert.Equal(saved, OptimizerSettings.Load(path));
+  }
+
   [Theory]
   [InlineData(FileAttributes.Normal, false)]
   [InlineData(FileAttributes.Archive | FileAttributes.ReparsePoint, false)]

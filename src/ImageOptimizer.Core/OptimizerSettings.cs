@@ -73,9 +73,34 @@ public sealed record OptimizerSettings
     return new();
   }
 
+  /// <summary>
+  /// Writes the settings to a temporary file next to <paramref name="path"/> and then swaps it in, so a crash or
+  /// power cut part way through leaves the previous settings in place rather than a half-written file.
+  /// </summary>
   public void Save(string path)
   {
     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-    File.WriteAllText(path, JsonSerializer.Serialize(this, JsonOptions));
+    var temporary = path + ".tmp";
+    try
+    {
+      using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
+      {
+        stream.Write(JsonSerializer.SerializeToUtf8Bytes(this, JsonOptions));
+        // On disk before the swap, so the new name can't end up pointing at an empty file after a power cut.
+        stream.Flush(flushToDisk: true);
+      }
+      File.Move(temporary, path, overwrite: true);
+    }
+    catch
+    {
+      try
+      {
+        File.Delete(temporary);
+      }
+      catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+      {
+      }
+      throw;
+    }
   }
 }

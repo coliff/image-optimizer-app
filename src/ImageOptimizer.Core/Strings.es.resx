@@ -108,4 +108,7 @@
   <data name="IcoNoPngImages" xml:space="preserve">
     <value>El icono no contiene imágenes PNG que optimizar</value>
   </data>
+  <data name="ToolFailed" xml:space="preserve">
+    <value>No se pudo procesar la imagen. Puede que esté dañada o que use algo que el optimizador no admite</value>
+  </data>
 </root>

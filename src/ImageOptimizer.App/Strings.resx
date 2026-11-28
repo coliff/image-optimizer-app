@@ -209,4 +209,12 @@
   <data name="GitHubLinkName" xml:space="preserve">
     <value>Image Optimizer on GitHub</value>
   </data>
+  <data name="ToolTipDetails" xml:space="preserve">
+    <value>Details: {0}</value>
+    <comment>{0} is a program's own error output, usually in English. Shown in a file's tooltip.</comment>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Something unexpected went wrong</value>
+    <comment>Shown before "The file was left untouched."</comment>
+  </data>
 </root>

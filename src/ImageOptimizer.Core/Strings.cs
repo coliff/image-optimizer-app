@@ -29,6 +29,7 @@ internal static class Strings
   public static string FileChanged => Get();
   public static string CannotWrite => Get();
   public static string ToolMissing(string tool) => Format(tool);
+  public static string ToolFailed => Get();
   public static string InvalidFile(ImageFormat format) => Format(ImageFormats.DisplayName(format));
   public static string AnimatedLeftUntouched(ImageFormat format) => Format(ImageFormats.DisplayName(format));
   public static string LossyCannotRecompress(ImageFormat format) => Format(ImageFormats.DisplayName(format));
