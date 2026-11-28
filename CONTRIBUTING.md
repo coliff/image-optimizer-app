@@ -18,6 +18,8 @@ MSIX package; `pack-msix.ps1` builds it with CMake and Visual Studio's C++ tools
 
 The engine (`src/ImageOptimizer.Core`) is cross-platform, so its tests also run on Linux or macOS
 with `oxipng`, `jpegtran`, `cwebp`/`dwebp`/`webpmux`, `avifenc`/`avifdec`, `cjxl`/`djxl` and `gifsicle` on the `PATH`.
+Only Debug builds look for tools on the `PATH`; Release builds only use the bundled `tools` folder (or
+`IMAGEOPTIMIZER_TOOLS`), so run the tests in Debug or point `IMAGEOPTIMIZER_TOOLS` at your tools.
 
 The tests include [FsCheck](https://github.com/fscheck/FsCheck) property tests (`PropertyTests.cs`) that fuzz the
 engine with random and damaged images, checking that nothing crashes and that a file is only ever replaced by a

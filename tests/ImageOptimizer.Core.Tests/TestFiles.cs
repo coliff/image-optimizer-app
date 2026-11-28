@@ -69,10 +69,51 @@ public sealed class TestFiles : IDisposable
     return ~crc;
   }
 
-  /// <summary>Inserts an EXIF APP1 segment with the given orientation right after SOI.</summary>
-  public static byte[] WithExifOrientation(byte[] jpeg, ushort orientation, bool littleEndian = false)
+  /// <summary>Text in <see cref="CameraExifTiff"/> that must not survive removing metadata.</summary>
+  public const string CameraMake = "SecretPhone";
+
+  /// <summary>
+  /// EXIF data (TIFF) like a phone photo's: a camera make, the orientation, and a GPS IFD with a latitude reference.
+  /// </summary>
+  public static byte[] CameraExifTiff(ushort orientation)
   {
-    byte[] payload = [.. "Exif\0\0"u8, .. ExifTiff(orientation, littleEndian)];
+    var tiff = new byte[80];
+    void U16(int at, ushort v) => BinaryPrimitives.WriteUInt16BigEndian(tiff.AsSpan(at), v);
+    void U32(int at, uint v) => BinaryPrimitives.WriteUInt32BigEndian(tiff.AsSpan(at), v);
+    void Entry(int at, ushort tag, ushort type, uint count, uint value)
+    {
+      U16(at, tag);
+      U16(at + 2, type);
+      U32(at + 4, count);
+      U32(at + 8, value);
+    }
+    tiff[0] = tiff[1] = (byte)'M';
+    U16(2, 42);
+    U32(4, 8);
+    U16(8, 3);                                  // three IFD0 entries
+    Entry(10, 0x010F, 2, 12, 50);               // Make, ASCII, at offset 50
+    Entry(22, 0x0112, 3, 1, (uint)orientation << 16);
+    Entry(34, 0x8825, 4, 1, 62);                // GPS IFD at offset 62
+    U32(46, 0);                                 // no next IFD
+    System.Text.Encoding.ASCII.GetBytes(CameraMake + "\0").CopyTo(tiff, 50);
+    U16(62, 1);                                 // one GPS entry
+    Entry(64, 0x0001, 2, 2, (uint)'N' << 24);   // GPSLatitudeRef "N"
+    U32(76, 0);
+    return tiff;
+  }
+
+  /// <summary>True when the camera make from <see cref="CameraExifTiff"/> is still somewhere in the file.</summary>
+  public static bool HasCameraExif(byte[] file) =>
+      file.AsSpan().IndexOf(System.Text.Encoding.ASCII.GetBytes(CameraMake)) >= 0;
+
+  /// <summary>Inserts an EXIF APP1 segment with the given orientation right after SOI.</summary>
+  public static byte[] WithExifOrientation(byte[] jpeg, ushort orientation, bool littleEndian = false) =>
+      WithJpegExif(jpeg, ExifTiff(orientation, littleEndian));
+
+  /// <summary>Inserts an EXIF APP1 segment holding the given TIFF data right after SOI.</summary>
+  public static byte[] WithJpegExif(byte[] jpeg, byte[] tiff)
+  {
+    byte[] payload = [.. "Exif\0\0"u8, .. tiff];
     var segment = new byte[4 + payload.Length];
     segment[0] = 0xFF;
     segment[1] = 0xE1;
@@ -82,10 +123,14 @@ public sealed class TestFiles : IDisposable
   }
 
   /// <summary>Inserts an eXIf chunk with the given orientation after IHDR.</summary>
-  public static byte[] WithPngExifOrientation(byte[] png, ushort orientation)
+  public static byte[] WithPngExifOrientation(byte[] png, ushort orientation) =>
+      WithPngExif(png, ExifTiff(orientation, littleEndian: false));
+
+  /// <summary>Inserts an eXIf chunk holding the given TIFF data after IHDR.</summary>
+  public static byte[] WithPngExif(byte[] png, byte[] tiff)
   {
     const int ihdrEnd = 8 + 4 + 4 + 13 + 4;
-    return [.. png[..ihdrEnd], .. Chunk("eXIf", ExifTiff(orientation, littleEndian: false)), .. png[ihdrEnd..]];
+    return [.. png[..ihdrEnd], .. Chunk("eXIf", tiff), .. png[ihdrEnd..]];
   }
 
   /// <summary>EXIF data (TIFF) holding only the given orientation.</summary>

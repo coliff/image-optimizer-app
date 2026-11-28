@@ -20,6 +20,10 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
   private int _pending;
   private int _scanning;
   private int _found;
+  // Files queued and finished since the list was last idle, so the footer counts this run only ("1 of 3"), not the
+  // files that were already done when more were added. Kept as counts so the footer never has to walk the whole list.
+  private int _batchTotal;
+  private int _batchDone;
 
   public MainViewModel(ImageOptimizerEngine engine, OptimizerSettings settings)
   {
@@ -73,10 +77,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
       if (Files.Count == 0)
         return "";
       if (IsBusy)
-      {
-        var done = Files.Count(f => f.IsFinished);
-        return Strings.Progress(done + 1, Files.Count);
-      }
+        return Strings.Progress(Math.Min(_batchDone + 1, _batchTotal), _batchTotal);
 
       var measured = Files
           .Where(f => f.Status is FileStatus.Optimized or FileStatus.AlreadyOptimized && f.Result is not null)
@@ -160,6 +161,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     finally
     {
       _scanning--;
+      ResetBatchIfIdle();
       RaiseStateChanged();
     }
   }
@@ -189,10 +191,14 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
       if (item.Status == FileStatus.Working)
         continue;
       if (item.Status == FileStatus.Queued)
+      {
         _pending--;
+        _batchTotal--;
+      }
       Files.Remove(item);
       _byPath.Remove(item.Path);
     }
+    ResetBatchIfIdle();
     RaiseStateChanged();
   }
 
@@ -203,7 +209,15 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     item.Status = FileStatus.Queued;
     item.Result = null;
     _pending++;
+    _batchTotal++;
     _queue.Writer.TryWrite(item);
+  }
+
+  /// <summary>Starts counting afresh once nothing is queued or being searched, so the next files added are a new run.</summary>
+  private void ResetBatchIfIdle()
+  {
+    if (_pending == 0 && _scanning == 0)
+      _batchTotal = _batchDone = 0;
   }
 
   private async Task RunWorkerAsync()
@@ -245,6 +259,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
         item.Apply(result);
         _pending--;
+        _batchDone++;
+        ResetBatchIfIdle();
         RaiseStateChanged();
       }
     }

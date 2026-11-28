@@ -51,6 +51,49 @@ public class EngineTests : IDisposable
     Assert.Equal([path], Directory.GetFiles(_files.Directory));
   }
 
+  private static IOException Locked() => new("The file is in use.", unchecked((int)0x80070020));
+
+  [Fact]
+  public async Task Tries_again_while_another_program_has_the_file_open()
+  {
+    var attempts = 0;
+    var result = await ImageOptimizerEngine.RetryWhileLockedAsync(
+        () => ++attempts < 3 ? throw Locked() : "done", TestContext.Current.CancellationToken);
+
+    Assert.Equal("done", result);
+    Assert.Equal(3, attempts);
+  }
+
+  [Fact]
+  public async Task Gives_up_when_the_file_stays_open()
+  {
+    var attempts = 0;
+    await Assert.ThrowsAsync<IOException>(() => ImageOptimizerEngine.RetryWhileLockedAsync<int>(
+        () => { attempts++; throw Locked(); }, TestContext.Current.CancellationToken));
+
+    Assert.Equal(1 + ImageOptimizerEngine.LockedRetryDelays.Length, attempts);
+  }
+
+  [Fact]
+  public async Task Other_errors_are_not_tried_again()
+  {
+    var attempts = 0;
+    await Assert.ThrowsAsync<FileNotFoundException>(() => ImageOptimizerEngine.RetryWhileLockedAsync<int>(
+        () => { attempts++; throw new FileNotFoundException(); }, TestContext.Current.CancellationToken));
+
+    Assert.Equal(1, attempts);
+  }
+
+  [Fact]
+  public void Only_sharing_and_lock_violations_count_as_locked()
+  {
+    Assert.True(ImageOptimizerEngine.IsLocked(Locked()));
+    Assert.True(ImageOptimizerEngine.IsLocked(new IOException("", unchecked((int)0x80070021))));
+    Assert.True(ImageOptimizerEngine.IsLocked(new IOException("", unchecked((int)0x80070497))));
+    Assert.False(ImageOptimizerEngine.IsLocked(new IOException("", unchecked((int)0x80070070)))); // disk full
+    Assert.False(ImageOptimizerEngine.IsLocked(new IOException("", 32)));
+  }
+
   [Fact]
   public void Staging_copies_keep_the_image_extension_and_are_not_collected()
   {

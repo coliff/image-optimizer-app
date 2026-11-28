@@ -10,6 +10,16 @@
   resetting them all to the defaults.
 - When an optimizer can't process a file, the tooltip explains it in plain words in your language, instead of the
   tool's raw error. The tool's own message is still shown underneath as "Details", for bug reports.
+- With "Remove metadata" on, photos turned by their EXIF data (most phone photos) now keep only the orientation
+  tag. Before, they kept all of their EXIF data, including GPS location and camera details. Still lossless.
+- The progress count in the footer is right when you add files to a list that already has finished ones: adding
+  3 files shows "1 of 3", not "101 of 103".
+- Very large lists no longer slow down as they run, because the footer no longer counts the whole list after
+  every file.
+- Files that OneDrive, antivirus or Explorer open for a moment are tried again a couple of times, instead of being
+  marked as failed straight away.
+- The app only ever runs the optimizers it ships with. If one is missing, the file is marked as failed, instead of
+  quietly using a copy of the same name found elsewhere on the PC.
 
 ## v1.0.1 - 2026-11-09
 
